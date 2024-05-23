@@ -71,6 +71,7 @@ class HomePageWidget extends StatelessWidget {
                                   price: ads[index].price,
                                   favorite: (){},
                                   adId: ads[index].id.toString(),
+                                  index:  index,
                                 ),
                               ),
                             );

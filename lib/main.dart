@@ -8,8 +8,8 @@ import 'package:vivadoo/providers/ads_provider/filtered_ads_provideer.dart';
 import 'package:vivadoo/providers/filters/filter_provider.dart';
 import 'package:vivadoo/providers/filters/location_filter.dart';
 import 'package:vivadoo/providers/general/home_page_provider.dart';
+import 'package:vivadoo/providers/general/loading_provider.dart';
 import 'package:vivadoo/providers/general/nav_bar_provider.dart';
-import 'package:vivadoo/providers/general/post_details_screen_provider.dart';
 import 'package:vivadoo/screens/app_init/splash_screen.dart';
 
 import 'constants.dart';
@@ -36,12 +36,12 @@ class MyApp extends StatelessWidget {
       providers : [
         ChangeNotifierProvider(create: (context) => NavBarProvider()),
         ChangeNotifierProvider(create: (context) => HomePageProvider()),
-        ChangeNotifierProvider(create: (context) => PostDetailsProvider()),
         ChangeNotifierProvider(create: (context) => FilterProvider()),
         ChangeNotifierProvider(create: (context) => LocationFilterProvider()),
         ChangeNotifierProvider(create: (context) => AdsProvider()),
         ChangeNotifierProvider(create: (context) => FilteredAdsProvider()),
         ChangeNotifierProvider(create: (context) => AdDetailsProvider()),
+        ChangeNotifierProvider(create: (context) => LoadingProvider()),
       ],
       child: GetMaterialApp(
         navigatorKey: navigatorKey,

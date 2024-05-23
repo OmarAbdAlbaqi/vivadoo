@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
     getPrefs();
     context.read<FilteredAdsProvider>().getCategories();
     context.read<LocationFilterProvider>().getAreaList();
-    context.read<AdsProvider>().getAds(context).then((_) => getPage());
+    context.read<AdsProvider>().refreshAds(context).then((_) => getPage());
     context.read<FilteredAdsProvider>().getMetaFields();
     super.initState();
   }

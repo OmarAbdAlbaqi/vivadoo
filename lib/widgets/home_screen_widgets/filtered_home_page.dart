@@ -53,7 +53,7 @@ class FilteredHomePage extends StatelessWidget {
             },
             controller: refreshController,
             semanticChildCount: 2,
-            child:ListView(
+            child: ListView(
               children: [
                 Container(
                   color: Colors.white,

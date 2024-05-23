@@ -25,13 +25,16 @@ class LocationFilterProvider with ChangeNotifier{
     fromFilter = value;
     notifyListeners();
   }
+
   clearText () {
     textEditingController.clear();
   }
+
   resetSearch(){
     searchedResult = [];
     notifyListeners();
   }
+
   setToSearchText (String value){
     toSearchText = value;
   }

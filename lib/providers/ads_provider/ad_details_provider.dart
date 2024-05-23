@@ -2,11 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import 'package:vivadoo/main.dart';
 import 'package:vivadoo/models/ad_model.dart';
-import 'package:vivadoo/providers/ads_provider/ads_provider.dart';
-import 'package:vivadoo/providers/ads_provider/filtered_ads_provideer.dart';
+import 'package:vivadoo/utils/pop-ups/pop-ups.dart';
 
 import '../../constants.dart';
 import '../../models/ad_details_model.dart';
@@ -14,43 +12,30 @@ import '../../models/ad_details_model.dart';
 class AdDetailsProvider with ChangeNotifier{
   int imageIndex = 1;
   int originalImageIndex = 1;
-  bool loading = false;
   int currentAdIndex = 0;
   int maxLine = 0;
-  setMaxLine (int value){
-    maxLine = value;
+  List<AdDetailsModel> listOfAdDetails = [];
+  double titleOpacity = 0;
+  bool isSummary = true;
+
+  setTitleOpacity(double newOpacity) {
+    titleOpacity = newOpacity;
+    notifyListeners();
+  }
+
+  setIsSummary(bool value){
+    isSummary = value;
     notifyListeners();
   }
 
   setCurrentAdIndex(int value){
     currentAdIndex = value;
-    print(currentAdIndex);
   }
-
-  int? setNewAdId(BuildContext context){
-    List<AdModel> adsList =context.read<AdsProvider>().adsList;
-    List<AdModel> filteredAdsList = context.read<FilteredAdsProvider>().filteredAdsList;
-    if(filteredAdsList.isEmpty){
-      return adsList[currentAdIndex +1].id;
-    }else{
-      filteredAdsList[currentAdIndex +1].id;
-    }
-    return null;
-  }
-
-
-  setLoading(bool value){
-    loading = value;
-    notifyListeners();
-  }
-
 
   setOriginalImageIndex(int value){
     originalImageIndex = value + 1;
-    print(originalImageIndex);
     notifyListeners();
   }
-
 
   setImageIndex(int value){
     imageIndex = value + 1;
@@ -58,64 +43,63 @@ class AdDetailsProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<AdDetailsModel?> getAdDetails (BuildContext context,String adId) async {
+  setListOfAdDetails(List<AdModel> ads,{bool clearList = false}){
+    int startingIndex = ads.length - listOfAdDetails.length;
+    if(clearList == true){
+      listOfAdDetails = [];
+      startingIndex = 0;
+    }
+    for(int i = startingIndex ; i < ads.length ; i++){
+      var element = ads[i];
+      listOfAdDetails.add(AdDetailsModel(images: [{"main":element.thumb}], id: element.id, title: element.title, priceFormatted: element.price, location: element.location));
+    }
+  }
+
+  Future<void> getAdDetails (BuildContext context,String adId) async {
     Uri url = Uri.https(
       Constants.authority,
       Constants.adDetailsPath,
       {"id": adId}
     );
-    print(url);
     try {
       http.Response response = await http.get(url).timeout(const Duration(seconds: 10));
       if(response.statusCode == 200){
         var extractedData = jsonDecode(response.body);
-        print(AdDetailsModel.fromJson(extractedData));
-        return AdDetailsModel.fromJson(extractedData);
+        AdDetailsModel adDetailsModel = AdDetailsModel.fromJson(extractedData);
+        AdDetailsModel temp = listOfAdDetails.firstWhere((element) => element.id == int.parse(adId));
+        temp.images = adDetailsModel.images;
+        temp.publicLink = adDetailsModel.publicLink;
+        temp.longLink = adDetailsModel.longLink;
+        temp.postBy = adDetailsModel.postBy;
+        temp.postViews = adDetailsModel.postViews;
+        temp.currency = adDetailsModel.currency;
+        temp.contactByMail = adDetailsModel.contactByMail;
+        temp.hasChat = adDetailsModel.hasChat;
+        temp.contactByPhone = adDetailsModel.contactByPhone;
+        temp.contactPhone = adDetailsModel.contactPhone;
+        temp.description = adDetailsModel.description;
+        temp.dirDescription = adDetailsModel.dirDescription;
+        temp.category = adDetailsModel.category;
+        temp.date = adDetailsModel.date;
+        temp.metafields = adDetailsModel.metafields;
+        temp.userIsPro = adDetailsModel.userIsPro;
+        temp.count = adDetailsModel.count;
+        temp.since = adDetailsModel.since;
+        int index = listOfAdDetails.indexWhere((element) => element.id == int.parse(adId));
+        listOfAdDetails[index] = temp;
+
       }else{
-        print(response.reasonPhrase);
         Navigator.pop(context.mounted ? navigatorKey.currentState!.overlay!.context : context);
         if(context.mounted){
-          showDialog(
-              context: context,
-              builder: (BuildContext ctx){
-                return Dialog(
-                  backgroundColor: Colors.transparent,
-                  child: Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFffffff),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text("Something went wrong!/nPlease try again later." , style: TextStyle(fontSize: 14 , color: Colors.black , fontWeight: FontWeight.w500),),
-                        GestureDetector(
-                          onTap: () => Navigator.pop(ctx),
-                          child: Container(
-                            width: 70,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: const Color(0xFF000000),
-                            ),
-                            alignment: Alignment.center,
-                            child: const Text("OK" , style: TextStyle(fontWeight: FontWeight.w500 , color: Color(0xFFffffff)),),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              });
+          PopUps.apiError(context, response.reasonPhrase!);
         }
       }
     } catch (err) {
       print("Error: $err");
+      if(context.mounted){
+        PopUps.somethingWentWrong(context);
+      }
     }
-    return null;
+    notifyListeners();
   }
 }

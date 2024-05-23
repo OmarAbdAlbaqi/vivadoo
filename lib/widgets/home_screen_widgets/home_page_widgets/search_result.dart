@@ -27,7 +27,6 @@ Widget searchResult (BuildContext context){
                   return GestureDetector(
                     onTap: (){
                       final filterProvider = context.read<FilteredAdsProvider>();
-                      filterProvider.resetFilter();
                       filterProvider.setQuery(searchResult[index]);
                         filterProvider.getFilteredAds(context, false);
                         context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);

@@ -1,54 +1,52 @@
 class AdDetailsModel {
-  final List<Map<String, dynamic>> images;
-  final String publicLink;
-  final String longLink;
-  final String title;
-  // final int status;
-  final String postBy;
-  final String price;
-  final int postViews;
-  final String currency;
-  final bool contactByMail;
-  final bool hasChat;
-  final bool contactByPhone;
-  final String contactPhone;
-  final String description;
-  final String dirDescription;
-  final String category;
-  final String location;
-  // final bool isMobile;
-  final String date;
-  final String priceFormatted;
-  final List<Map<String, dynamic>> metafields;
-  final int userIsPro;
-  final int count;
-  final String since;
+  final int? id;
+   List<Map<String, dynamic>> images;
+   String? publicLink;
+   String? longLink;
+  final String? title;
+   String? postBy;
+  final String? price;
+   int? postViews;
+   String? currency;
+   bool? contactByMail;
+   bool? hasChat;
+   bool? contactByPhone;
+   String? contactPhone;
+   String? description;
+   String? dirDescription;
+   String? category;
+  final String? location;
+   String? date;
+  final String? priceFormatted;
+   List<Map<String, dynamic>>? metafields;
+   int? userIsPro;
+   int? count;
+   String? since;
 
   AdDetailsModel({
+    this.id,
     required this.images,
-    required this.publicLink,
-    required this.longLink,
-    required this.title,
-    // required this.status,
-    required this.postBy,
-    required this.price,
-    required this.postViews,
-    required this.currency,
-    required this.contactByMail,
-    required this.hasChat,
-    required this.contactByPhone,
-    required this.contactPhone,
-    required this.description,
-    required this.dirDescription,
-    required this.category,
-    required this.location,
-    // required this.isMobile,
-    required this.date,
-    required this.priceFormatted,
-    required this.metafields,
-    required this.userIsPro,
-    required this.count,
-    required this.since,
+     this.publicLink,
+     this.longLink,
+     this.title,
+     this.postBy,
+     this.price,
+     this.postViews,
+     this.currency,
+     this.contactByMail,
+     this.hasChat,
+     this.contactByPhone,
+     this.contactPhone,
+     this.description,
+     this.dirDescription,
+     this.category,
+     this.location,
+     this.date,
+     this.priceFormatted,
+     this.metafields,
+     this.userIsPro,
+     this.count,
+     this.since,
   });
 
   factory AdDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -70,7 +68,6 @@ class AdDetailsModel {
       dirDescription: json['dirDescription']??"",
       category: json['category']??"",
       location: json['location']??"",
-      // isMobile: json['isMobile'],
       date: json['date'] ?? "",
       priceFormatted: json['priceFormated']??"",
       metafields: List<Map<String, dynamic>>.from(json['metafields']),
@@ -82,6 +79,6 @@ class AdDetailsModel {
 
   @override
   String toString() {
-    return 'AdDetailsModel {publicLink: $publicLink,\nlongLink: $longLink, \ntitle: $title,\npostBy: $postBy,\nprice: $price,\npostViews: $postViews,\ncurrency: $currency,\ncontactByMail: $contactByMail,\nhasChat: $hasChat,\ncontactByPhone: $contactByPhone,\ncontactPhone: $contactPhone,\ndescription: $description,\ndirDescription: $dirDescription,\ncategory: $category,\nlocation: $location,\ndate: $date,\npriceFormatted: $priceFormatted,\nmetafields: $metafields,\nuserIsPro: $userIsPro,\ncount: $count,\nsince: $since }';
+    return 'AdDetailsModel{id: $id, title: $title}';
   }
 }

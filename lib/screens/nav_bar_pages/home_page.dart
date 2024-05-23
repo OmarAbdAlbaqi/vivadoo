@@ -46,13 +46,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         String page = context.read<AdsProvider>().page;
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
         context.read<AdsProvider>().setPage((int.parse(page) + 1).toString());
-        context.read<AdsProvider>().getAds(context).then((_) => context.read<AdsProvider>().setLoading(false));
+        context.read<AdsProvider>().getMoreAds(context).then((_) => context.read<AdsProvider>().setLoading(false));
       }else if (context.read<HomePageProvider>().homeType == HomeType.filteredHome){
         context.read<FilteredAdsProvider>().setLoading(true);
         String page = context.read<FilteredAdsProvider>().page;
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
         context.read<FilteredAdsProvider>().setPage((int.parse(page) + 1).toString());
-        context.read<FilteredAdsProvider>().getTheNextPageOfFilteredAds(context).then((_) => context.read<FilteredAdsProvider>().setLoading(false));
+        context.read<FilteredAdsProvider>().getMoreFilteredAds(context).then((_) => context.read<FilteredAdsProvider>().setLoading(false));
       }
 
     }

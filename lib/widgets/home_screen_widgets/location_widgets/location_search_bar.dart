@@ -13,7 +13,6 @@ Widget locationSearchBar (BuildContext context) {
       }else{
         context.read<LocationFilterProvider>().resetSearch();
       }
-
     },
     decoration: InputDecoration(
         fillColor: Colors.white,

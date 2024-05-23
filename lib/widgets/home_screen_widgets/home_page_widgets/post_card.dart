@@ -4,18 +4,21 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:vivadoo/main.dart';
+import 'package:vivadoo/providers/ads_provider/ad_details_provider.dart';
 import 'package:vivadoo/providers/ads_provider/ads_provider.dart';
 import 'package:vivadoo/providers/ads_provider/filtered_ads_provideer.dart';
 import 'package:vivadoo/providers/general/home_page_provider.dart';
 import '../../../screens/ad_details/post_details_screen.dart';
+import '../../../screens/ad_details/test.dart';
 class PostCard extends StatefulWidget {
-  const PostCard({super.key, required this.imageUrl, required this.title, required this.price, required this.isFavorite, required this.favorite, required this.adId});
+  const PostCard({super.key, required this.imageUrl, required this.title, required this.price, required this.isFavorite, required this.favorite, required this.adId, required this.index});
   final String imageUrl;
   final String title;
   final String price;
   final bool isFavorite;
   final  VoidCallback favorite;
   final String adId;
+  final int index;
   
 
   @override
@@ -52,10 +55,11 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        context.read<AdsProvider>().setAdIndex(context , widget.adId);
+        context.read<AdDetailsProvider>().setCurrentAdIndex(widget.index);
+        context.read<AdDetailsProvider>().getAdDetails(context, widget.adId);
         context.read<HomePageProvider>().setHomeType(HomeType.splash);
         Get.to(
-            ()=> PostDetailsScreen(isFavorite: false,adId: widget.adId,),
+            ()=> CarouselTest(isFavorite: false,adId: widget.adId, initialIndex: widget.index),
           transition: Transition.native,
           duration: const Duration(milliseconds: 350),
           curve: Curves.easeIn

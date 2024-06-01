@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:vivadoo/providers/ads_provider/filtered_ads_provideer.dart';
+import 'package:vivadoo/providers/filters/location_filter.dart';
 
 import '../../models/filters/category_model.dart';
 import '../../models/filters/meta_fields_model.dart';
@@ -225,8 +226,8 @@ class FilterProvider with ChangeNotifier{
 filterParams = {"maxResults" : "20",
   "page" : "1",
   "governorate":"buy-and-sell-in-lebanon",};
-    if(context.read<FilteredAdsProvider>().city != "all-cities"){
-      setFilterParams({"city": context.read<FilteredAdsProvider>().city},"add");
+    if(context.read<LocationFilterProvider>().city != "all-cities"){
+      setFilterParams({"city": context.read<LocationFilterProvider>().city},"add");
     }
     rangeSelection ();
     print("filter params that should be clean $selected");

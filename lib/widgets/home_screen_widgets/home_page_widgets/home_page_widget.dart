@@ -25,6 +25,8 @@ class HomePageWidget extends StatelessWidget {
     bool firstAnimate = context.watch<HomePageProvider>().firstAnimated;
     return Stack(
       children: [
+
+        //home page ads
         SmartRefresher(
           header: CustomHeader(
             builder: (BuildContext context, RefreshStatus? mode) {
@@ -48,7 +50,7 @@ class HomePageWidget extends StatelessWidget {
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 700),
-                height: context.watch<HomePageProvider>().isScrollingUp ? 0 : 66,),
+                height: context.watch<HomePageProvider>().isScrollingUp ? 0 : 80,),
               Selector<AdsProvider , List<AdModel>>(
                   selector: (context , prov) => prov.adsList,
                   builder: (context , ads , _) {
@@ -96,11 +98,13 @@ class HomePageWidget extends StatelessWidget {
             ],
           ),
         ),
+
+        //home page filter tabs
         Selector<HomePageProvider , bool>(
           selector: (context , prov) => prov.isScrollingUp,
           builder: (context , isScrollingUp , _){
             return AnimatedPositioned(
-              top: isScrollingUp ? -60 : 0,
+              top: isScrollingUp ? -78 : 0,
               left: 0,
               right: 0,
               duration: const Duration(milliseconds: 300),
@@ -110,169 +114,289 @@ class HomePageWidget extends StatelessWidget {
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.fromLTRB(12 , 8 , 12 , 6),
                   width: width,
-                  height: 60,
-                  color: const Color.fromRGBO(88, 89, 91, 1),
+                  height: 78,
+                  color: Colors.white,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      GestureDetector(
-                        onTap:(){
-                          context.read<FilterProvider>().categoryId = 0;
-                          context.read<FilterProvider>().subCategoryId = 2;
-                          context.read<FilterProvider>().setCategoryMetaFields(context);
-                          context.read<FilterProvider>().setFilterParams(
-                              {
-                                "category": "property",
-                                "with_featured": "1"
-                              },
-                              "add");
-                          context.read<FilterProvider>().setCategoryLabel("Real Estate");
-                          context.read<FilteredAdsProvider>().getFilteredAds(context , true);
-                          Get.to(
-                              ()=> FilteredHomePage( scrollController: scrollController),
+
+                      //property
+                      HomePageFilterCard(
+                          scrollController: scrollController,
+                          onTap: (){
+                            context.read<FilterProvider>().categoryId = 0;
+                            context.read<FilterProvider>().subCategoryId = 2;
+                            context.read<FilterProvider>().setCategoryMetaFields(context);
+                            context.read<FilterProvider>().setFilterParams(
+                                {
+                                  "category": "property",
+                                  "with_featured": "1"
+                                },
+                                "add");
+                            context.read<FilterProvider>().setCategoryLabel("Real Estate");
+                            context.read<FilteredAdsProvider>().getFilteredAds(context , true);
+                            Get.to(
+                                  ()=> FilteredHomePage( scrollController: scrollController),
                               transition: Transition.rightToLeft,
                               curve: Curves.linear,
-                            duration: const Duration(milliseconds: 250),
-                          );
-                          context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
-                          context.read<FilteredAdsProvider>().setFilterCounter();
-                        },
-                        child: Container(
-                          height: 55,
-                          width: 65,
-                          color: Colors.transparent,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Image.asset("assets/icons/filter_search/house.png", width: 25,height: 25,color: Colors.white,),
-                              const Text("Property" , style: TextStyle(fontSize: 12 , fontWeight: FontWeight.w500 , color: Colors.white),),
-                            ],
-                          ),
-                        ),
+                              duration: const Duration(milliseconds: 250),
+                            );
+                            context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
+                          },
+                          imagePath: "assets/icons/filter_search/house.png",
+                          title: "Property"),
+
+                      //cars
+                      HomePageFilterCard(
+                          scrollController: scrollController,
+                          onTap: (){
+                            context.read<FilterProvider>().categoryId = 1;
+                            context.read<FilterProvider>().subCategoryId = 10;
+                            context.read<FilterProvider>().setCategoryMetaFields(context);
+                            context.read<FilterProvider>().setFilterParams(
+                              {
+                                "category" : "motors",
+                                "subCategory" : "cars",
+                                "with_featured" : "1",
+                              },
+                              "add",
+                            );
+                            context.read<FilterProvider>().setCategoryLabel("Cars For Sale");
+                            context.read<FilteredAdsProvider>().getFilteredAds(context , true);
+                            context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
+                            Get.to(
+                                  ()=> FilteredHomePage( scrollController: scrollController),
+                              transition: Transition.rightToLeft,
+                              curve: Curves.linear,
+                              duration: const Duration(milliseconds: 250),
+                            );
+                          },
+                          imagePath: "assets/icons/filter_search/car.png",
+                          title: "Cars",
                       ),
-                      GestureDetector(
-                        onTap: (){
-                          context.read<FilterProvider>().categoryId = 1;
-                          context.read<FilterProvider>().subCategoryId = 10;
-                          context.read<FilterProvider>().setCategoryMetaFields(context);
-                          context.read<FilterProvider>().setFilterParams(
-                            {
-                              "category" : "motors",
-                              "subCategory" : "cars",
-                              "with_featured" : "1",
-                            },
-                            "add",
-                          );
-                          context.read<FilterProvider>().setCategoryLabel("Cars For Sale");
-                          context.read<FilteredAdsProvider>().getFilteredAds(context , true);
-                          context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
-                          context.read<FilteredAdsProvider>().setFilterCounter();
-                          Get.to(
-                                ()=> FilteredHomePage( scrollController: scrollController),
-                            transition: Transition.rightToLeft,
-                            curve: Curves.linear,
-                            duration: const Duration(milliseconds: 250),
-                          );
-                        },
-                        child: Container(
-                          height: 55,
-                          width: 65,
-                          color: Colors.transparent,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Image.asset("assets/icons/filter_search/car.png", width: 25,height: 25,color: Colors.white,),
-                              const Text("Cars" , style: TextStyle(fontSize: 12 , fontWeight: FontWeight.w500 , color: Colors.white),),
-                            ],
-                          ),
-                        ),
+
+                      //job
+                      HomePageFilterCard(
+                          scrollController: scrollController,
+                          onTap: (){
+                            context.read<FilterProvider>().categoryId = 0;
+                            context.read<FilterProvider>().subCategoryId = 4;
+                            context.read<FilterProvider>().setCategoryMetaFields(context);
+                            context.read<FilterProvider>().setFilterParams(
+                              {
+                                "category" : "jobs",
+                                "with_featured" : "1",
+                              },
+                              "add",
+                            );
+                            Get.to(
+                                  ()=> FilteredHomePage( scrollController: scrollController),
+                              transition: Transition.rightToLeft,
+                              curve: Curves.linear,
+                              duration: const Duration(milliseconds: 250),
+                            );
+                            context.read<FilterProvider>().setCategoryLabel("Jobs");
+                            context.read<FilteredAdsProvider>().getFilteredAds(context , true);
+                            context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
+                          },
+                          imagePath: "assets/icons/filter_search/search.png",
+                          title: "Jobs",
                       ),
-                      GestureDetector(
-                        onTap: (){
-                          context.read<FilterProvider>().categoryId = 0;
-                          context.read<FilterProvider>().subCategoryId = 4;
-                          context.read<FilterProvider>().setCategoryMetaFields(context);
-                          context.read<FilterProvider>().setFilterParams(
-                            {
-                              "category" : "jobs",
-                              "with_featured" : "1",
-                            },
-                            "add",
-                          );
-                          Get.to(
-                                ()=> FilteredHomePage( scrollController: scrollController),
-                            transition: Transition.rightToLeft,
-                            curve: Curves.linear,
-                            duration: const Duration(milliseconds: 250),
-                          );
-                          context.read<FilterProvider>().setCategoryLabel("Jobs");
-                          context.read<FilteredAdsProvider>().getFilteredAds(context , true);
-                          context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
-                          context.read<FilteredAdsProvider>().setFilterCounter();
-                        },
-                        child: Container(
-                          height: 55,
-                          width: 65,
-                          color: Colors.transparent,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Image.asset("assets/icons/filter_search/search.png", width: 25,height: 25,color: Colors.white,),
-                              const Text("Jobs" , style: TextStyle(fontSize: 12 , fontWeight: FontWeight.w500 , color: Colors.white),),
-                            ],
-                          ),
-                        ),
+
+                      //for sale
+                      HomePageFilterCard(
+                          scrollController: scrollController,
+                          onTap: (){
+                            context.read<FilterProvider>().categoryId = 0;
+                            context.read<FilterProvider>().subCategoryId = 3;
+                            context.read<FilterProvider>().setCategoryMetaFields(context);
+                            context.read<FilterProvider>().setFilterParams(
+                              {
+                                "category" : "for-sale",
+                                "with_featured" : "1",
+                              },
+                              "add",
+                            );
+                            Get.to(
+                                  ()=> FilteredHomePage( scrollController: scrollController),
+                              transition: Transition.rightToLeft,
+                              curve: Curves.linear,
+                              duration: const Duration(milliseconds: 250),
+                            );
+                            context.read<FilterProvider>().setCategoryLabel("For Sale");
+                            context.read<FilteredAdsProvider>().getFilteredAds(context , true);
+                            context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
+                          },
+                          imagePath: "assets/icons/filter_search/check.png",
+                          title: "For Sales",
                       ),
-                      GestureDetector(
-                        onTap: (){
-                          context.read<FilterProvider>().categoryId = 0;
-                          context.read<FilterProvider>().subCategoryId = 3;
-                          context.read<FilterProvider>().setCategoryMetaFields(context);
-                          context.read<FilterProvider>().setFilterParams(
-                            {
-                              "category" : "for-sale",
-                              "with_featured" : "1",
-                            },
-                            "add",
-                          );
-                          Get.to(
-                                ()=> FilteredHomePage( scrollController: scrollController),
-                            transition: Transition.rightToLeft,
-                            curve: Curves.linear,
-                            duration: const Duration(milliseconds: 250),
-                          );
-                          context.read<FilterProvider>().setCategoryLabel("For Sale");
-                          context.read<FilteredAdsProvider>().getFilteredAds(context , true);
-                          context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
-                          context.read<FilteredAdsProvider>().setFilterCounter();
-                        },
-                        child: Container(
-                          height: 55,
-                          width: 65,
-                          color: Colors.transparent,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Image.asset("assets/icons/filter_search/check.png", width: 25,height: 25,color: Colors.white,),
-                              const Text("For Sales" , style: TextStyle(fontSize: 12 , fontWeight: FontWeight.w500 , color: Colors.white),),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 55,
-                        width: 65,
-                        color: Colors.transparent,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Image.asset("assets/icons/filter_search/more.png", width: 25,height: 25,color: Colors.white,),
-                            const Text("More" , style: TextStyle(fontSize: 12 , fontWeight: FontWeight.w500 , color: Colors.white),),
-                          ],
-                        ),
-                      ),
+
+                      //more
+                      HomePageFilterCard(
+                          scrollController: scrollController,
+                          onTap: (){},
+                          imagePath: "assets/icons/filter_search/more.png",
+                          title: "More",
+                      )
+
+                      // GestureDetector(
+                      //   onTap:(){
+                      //     context.read<FilterProvider>().categoryId = 0;
+                      //     context.read<FilterProvider>().subCategoryId = 2;
+                      //     context.read<FilterProvider>().setCategoryMetaFields(context);
+                      //     context.read<FilterProvider>().setFilterParams(
+                      //         {
+                      //           "category": "property",
+                      //           "with_featured": "1"
+                      //         },
+                      //         "add");
+                      //     context.read<FilterProvider>().setCategoryLabel("Real Estate");
+                      //     context.read<FilteredAdsProvider>().getFilteredAds(context , true);
+                      //     Get.to(
+                      //         ()=> FilteredHomePage( scrollController: scrollController),
+                      //         transition: Transition.rightToLeft,
+                      //         curve: Curves.linear,
+                      //       duration: const Duration(milliseconds: 250),
+                      //     );
+                      //     context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
+                      //   },
+                      //   child: Column(
+                      //     children: [
+                      //       Container(
+                      //         margin: const EdgeInsets.only(bottom: 2),
+                      //         padding: const EdgeInsets.all(10),
+                      //         height: 45,
+                      //         width: 45,
+                      //         decoration: BoxDecoration(
+                      //           color: const Color.fromRGBO(229, 229, 229, 1),
+                      //           borderRadius: BorderRadius.circular(16),
+                      //         ),
+                      //         child: Image.asset("assets/icons/filter_search/house.png", width: 25,height: 25,color: Colors.black,),
+                      //       ),
+                      //       const Text("Property" , style: TextStyle(fontSize: 12 , fontWeight: FontWeight.w500 , color: Colors.black),),
+                      //     ],
+                      //   ),
+                      // ),
+                      // GestureDetector(
+                      //   onTap: (){
+                      //     context.read<FilterProvider>().categoryId = 1;
+                      //     context.read<FilterProvider>().subCategoryId = 10;
+                      //     context.read<FilterProvider>().setCategoryMetaFields(context);
+                      //     context.read<FilterProvider>().setFilterParams(
+                      //       {
+                      //         "category" : "motors",
+                      //         "subCategory" : "cars",
+                      //         "with_featured" : "1",
+                      //       },
+                      //       "add",
+                      //     );
+                      //     context.read<FilterProvider>().setCategoryLabel("Cars For Sale");
+                      //     context.read<FilteredAdsProvider>().getFilteredAds(context , true);
+                      //     context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
+                      //     Get.to(
+                      //           ()=> FilteredHomePage( scrollController: scrollController),
+                      //       transition: Transition.rightToLeft,
+                      //       curve: Curves.linear,
+                      //       duration: const Duration(milliseconds: 250),
+                      //     );
+                      //   },
+                      //   child: Container(
+                      //     height: 55,
+                      //     width: 65,
+                      //     color: Colors.transparent,
+                      //     child: Column(
+                      //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      //       children: [
+                      //         Image.asset("assets/icons/filter_search/car.png", width: 25,height: 25,color: Colors.white,),
+                      //         const Text("Cars" , style: TextStyle(fontSize: 12 , fontWeight: FontWeight.w500 , color: Colors.white),),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
+                      // GestureDetector(
+                      //   onTap: (){
+                      //     context.read<FilterProvider>().categoryId = 0;
+                      //     context.read<FilterProvider>().subCategoryId = 4;
+                      //     context.read<FilterProvider>().setCategoryMetaFields(context);
+                      //     context.read<FilterProvider>().setFilterParams(
+                      //       {
+                      //         "category" : "jobs",
+                      //         "with_featured" : "1",
+                      //       },
+                      //       "add",
+                      //     );
+                      //     Get.to(
+                      //           ()=> FilteredHomePage( scrollController: scrollController),
+                      //       transition: Transition.rightToLeft,
+                      //       curve: Curves.linear,
+                      //       duration: const Duration(milliseconds: 250),
+                      //     );
+                      //     context.read<FilterProvider>().setCategoryLabel("Jobs");
+                      //     context.read<FilteredAdsProvider>().getFilteredAds(context , true);
+                      //     context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
+                      //   },
+                      //   child: Container(
+                      //     height: 55,
+                      //     width: 65,
+                      //     color: Colors.transparent,
+                      //     child: Column(
+                      //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      //       children: [
+                      //         Image.asset("assets/icons/filter_search/search.png", width: 25,height: 25,color: Colors.white,),
+                      //         const Text("Jobs" , style: TextStyle(fontSize: 12 , fontWeight: FontWeight.w500 , color: Colors.white),),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
+                      // GestureDetector(
+                      //   onTap: (){
+                      //     context.read<FilterProvider>().categoryId = 0;
+                      //     context.read<FilterProvider>().subCategoryId = 3;
+                      //     context.read<FilterProvider>().setCategoryMetaFields(context);
+                      //     context.read<FilterProvider>().setFilterParams(
+                      //       {
+                      //         "category" : "for-sale",
+                      //         "with_featured" : "1",
+                      //       },
+                      //       "add",
+                      //     );
+                      //     Get.to(
+                      //           ()=> FilteredHomePage( scrollController: scrollController),
+                      //       transition: Transition.rightToLeft,
+                      //       curve: Curves.linear,
+                      //       duration: const Duration(milliseconds: 250),
+                      //     );
+                      //     context.read<FilterProvider>().setCategoryLabel("For Sale");
+                      //     context.read<FilteredAdsProvider>().getFilteredAds(context , true);
+                      //     context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
+                      //   },
+                      //   child: Container(
+                      //     height: 55,
+                      //     width: 65,
+                      //     color: Colors.transparent,
+                      //     child: Column(
+                      //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      //       children: [
+                      //         Image.asset("assets/icons/filter_search/check.png", width: 25,height: 25,color: Colors.white,),
+                      //         const Text("For Sales" , style: TextStyle(fontSize: 12 , fontWeight: FontWeight.w500 , color: Colors.white),),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
+                      // Container(
+                      //   height: 55,
+                      //   width: 65,
+                      //   color: Colors.transparent,
+                      //   child: Column(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      //     children: [
+                      //       Image.asset("assets/icons/filter_search/more.png", width: 25,height: 25,color: Colors.white,),
+                      //       const Text("More" , style: TextStyle(fontSize: 12 , fontWeight: FontWeight.w500 , color: Colors.white),),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -283,6 +407,37 @@ class HomePageWidget extends StatelessWidget {
         ),
         searchResult(context),
       ],
+    );
+  }
+}
+
+
+class HomePageFilterCard extends StatelessWidget {
+  const HomePageFilterCard({super.key, required this.scrollController, required this.onTap, required this.imagePath, required this.title});
+  final ScrollController scrollController;
+  final void Function() onTap;
+  final String imagePath;
+  final String title;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap:onTap,
+      child: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(bottom: 2),
+            padding: const EdgeInsets.all(10),
+            height: 45,
+            width: 45,
+            decoration: BoxDecoration(
+              color: const Color.fromRGBO(229, 229, 229, 1),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Image.asset(imagePath, width: 25,height: 25,color: Colors.black,),
+          ),
+           Text(title , style: const TextStyle(fontSize: 12 , fontWeight: FontWeight.w500 , color: Colors.black),),
+        ],
+      ),
     );
   }
 }

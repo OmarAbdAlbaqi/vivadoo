@@ -28,7 +28,7 @@ Widget locationSearchResult (BuildContext context ){
                 itemBuilder: (context , index){
                   return GestureDetector(
                     onTap: (){
-                      final filterProvider = context.read<FilteredAdsProvider>();
+                      final filterProvider = context.read<LocationFilterProvider>();
                       if(context.read<LocationFilterProvider>().fromFilter){
                         filterProvider.setTempLocation(searchResult[index].label);
                         context.read<HomePageProvider>().setHomeType(HomeType.filter);
@@ -37,7 +37,7 @@ Widget locationSearchResult (BuildContext context ){
                       }else{
                         filterProvider.setCity(searchResult[index].link);
                         filterProvider.setLocation(searchResult[index].label);
-                        filterProvider.getFilteredAds(context, false);
+                        context.read<FilteredAdsProvider>().getFilteredAds(context, false);
                         context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
                         // tabController.animateTo(1);
                       }

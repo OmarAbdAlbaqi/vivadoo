@@ -17,8 +17,7 @@ class FilteredAdsProvider with ChangeNotifier{
   List<CategoryModel> categoryList = [];
   String  page = "1";
 
-  String location = "All Over Country";
-  String city = "all-cities";
+
   String category = "all-categories";
   String subCategory = "all-sub-categories";
   String sort = "date-sort-desc";
@@ -27,7 +26,7 @@ class FilteredAdsProvider with ChangeNotifier{
 
 
 
-  String tempLocation = "";
+
   String categoryLabel = "";
   String tempCatLabel = "";
   bool radiusSliderVisible = false;
@@ -87,22 +86,6 @@ class FilteredAdsProvider with ChangeNotifier{
 
 
 
-
-  setTempLocation(String value){
-    tempLocation = value;
-    notifyListeners();
-  }
-
-
-
-
-  setFilterCounter() {
-    filterCounter = 1;
-    if(location != "All Over Country"){
-      filterCounter++;
-    }
-
-  }
   
   setRadius(String value){
     radius  = value;
@@ -115,11 +98,6 @@ class FilteredAdsProvider with ChangeNotifier{
 
   setRadiusSliderVisible(){
     radiusSliderVisible =! radiusSliderVisible;
-    notifyListeners();
-  }
-
-  setLocation (String value){
-    location = value;
     notifyListeners();
   }
 
@@ -144,9 +122,6 @@ class FilteredAdsProvider with ChangeNotifier{
     page = value;
   }
 
-  setCity (String value){
-    city = value;
-  }
 
   setCategory (String value){
     category = value;
@@ -216,13 +191,12 @@ class FilteredAdsProvider with ChangeNotifier{
     try {
       http.Response response = await http.get(url).timeout(const Duration(seconds: 10));
       if(response.statusCode == 200){
+        print("status Code of getting Filtered Ads is ${response.statusCode.toString()}");
         var extractedData = jsonDecode(response.body);
         List items = extractedData['items'];
         firstLaunch ? Future.delayed(const Duration(milliseconds: 200)).then((value){
           filteredAdsList = items.map((ad) => AdModel.fromJson(ad)).toList();
         }): filteredAdsList = items.map((ad) => AdModel.fromJson(ad)).toList();
-        notifyListeners();
-        setLoading(false);
         Future.delayed(const Duration(seconds: 1)).then((value) => setFirstAnimation(true));
         if(context.mounted){
           context.read<AdDetailsProvider>().setListOfAdDetails(filteredAdsList, clearList: true);
@@ -236,6 +210,8 @@ class FilteredAdsProvider with ChangeNotifier{
       if(context.mounted){
         PopUps.somethingWentWrong(context);
       }
+    } finally {
+      setLoading(false);
     }
     notifyListeners();
   }

@@ -57,20 +57,18 @@ class SubLocationWidget extends StatelessWidget {
                             return GestureDetector(
                               onTap: () {
                                 if(context.read<LocationFilterProvider>().fromFilter){
-                                  context.read<FilteredAdsProvider>().setTempLocation("All Over ${areaList[context.read<LocationFilterProvider>().selectedArea].label}");
+                                  context.read<LocationFilterProvider>().setTempLocation("All Over ${areaList[context.read<LocationFilterProvider>().selectedArea].label}");
                                   context.read<HomePageProvider>().setHomeType(HomeType.filter);
                                   Get.back();
-                                  context.read<FilteredAdsProvider>().setFilterCounter();
                                   context.read<LocationFilterProvider>().setFromFilter(false);
                                 }else{
                                   int index = context.read<LocationFilterProvider>().selectedArea;
                                   String link = areaList[index].link;
-                                  context.read<FilteredAdsProvider>().setLocation("All Over ${areaList[context.read<LocationFilterProvider>().selectedArea].label}");
-                                  context.read<FilteredAdsProvider>().setCity(link);
+                                  context.read<LocationFilterProvider>().setLocation("All Over ${areaList[context.read<LocationFilterProvider>().selectedArea].label}");
+                                  context.read<LocationFilterProvider>().setCity(link);
                                   context.read<FilteredAdsProvider>().getFilteredAds(context, false);
                                   context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
                                   Get.back();
-                                  context.read<FilteredAdsProvider>().setFilterCounter();
                                 }
                               },
                               child: Container(
@@ -136,16 +134,15 @@ class SubLocationWidget extends StatelessWidget {
                                       itemBuilder: (context , index){
                                         return InkWell(
                                           onTap: (){
-                                            final filterProvider = context.read<FilteredAdsProvider>();
+                                            final filterProvider = context.read<LocationFilterProvider>();
                                             if(context.read<LocationFilterProvider>().fromFilter){
                                               context.read<LocationFilterProvider>().addToLocalRecent(subAreaList[index]);
                                               context.read<HomePageProvider>().setHomeType(HomeType.filter);
                                               filterProvider.setTempLocation(subAreaList[index].label);
                                               String link = subAreaList[index].link;
-                                              context.read<FilteredAdsProvider>().setCity(link);
+                                              context.read<LocationFilterProvider>().setCity(link);
                                               Get.back();
                                               Get.back();
-                                              context.read<FilteredAdsProvider>().setFilterCounter();
                                               context.read<LocationFilterProvider>().cleanSubArea();
                                               context.read<LocationFilterProvider>().setFromFilter(false);
                                             }else{
@@ -153,9 +150,8 @@ class SubLocationWidget extends StatelessWidget {
                                               context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
                                               filterProvider.setLocation(subAreaList[index].label);
                                               filterProvider.setCity(subAreaList[index].link);
-                                              filterProvider.getFilteredAds(context, false);
+                                              context.read<FilteredAdsProvider>().getFilteredAds(context, false);
                                               Get.back();
-                                              context.read<FilteredAdsProvider>().setFilterCounter();
                                               context.read<LocationFilterProvider>().cleanSubArea();
                                             }
                                           },

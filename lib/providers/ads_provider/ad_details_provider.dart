@@ -14,10 +14,18 @@ class AdDetailsProvider with ChangeNotifier{
   int originalImageIndex = 1;
   int currentAdIndex = 0;
   int maxLine = 0;
+  bool readMore = false;
   List<AdDetailsModel> listOfAdDetails = [];
   double titleOpacity = 0;
   bool isSummary = true;
 
+
+
+  toggleReadMore(){
+    readMore =! readMore;
+    print(readMore);
+    notifyListeners();
+  }
   setTitleOpacity(double newOpacity) {
     titleOpacity = newOpacity;
     notifyListeners();
@@ -53,7 +61,9 @@ class AdDetailsProvider with ChangeNotifier{
       var element = ads[i];
       listOfAdDetails.add(AdDetailsModel(images: [{"main":element.thumb}], id: element.id, title: element.title, priceFormatted: element.price, location: element.location));
     }
+    notifyListeners();
   }
+
 
   Future<void> getAdDetails (BuildContext context,String adId) async {
     Uri url = Uri.https(

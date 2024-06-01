@@ -12,6 +12,10 @@ class LocationFilterProvider with ChangeNotifier{
   List<AreaModel> areaList = [];
   List<SubAreaModel> subAreaList = [];
   List<SubAreaModel> searchedResult = [];
+  String location = "All Over Country";
+  String tempLocation = "";
+  String city = "all-cities";
+
   double recentValue = 1;
   double regionsValue = 1;
   double subAreaValue = 1;
@@ -19,6 +23,22 @@ class LocationFilterProvider with ChangeNotifier{
   String toSearchText = "";
   bool fromFilter = false;
   TextEditingController textEditingController = TextEditingController();
+
+  setTempLocation(String value){
+    tempLocation = value;
+    notifyListeners();
+  }
+
+
+  setCity(String value){
+    city = value;
+    notifyListeners();
+  }
+
+  setLocation(String value){
+    location = value;
+    notifyListeners();
+  }
 
 
   setFromFilter (bool value){

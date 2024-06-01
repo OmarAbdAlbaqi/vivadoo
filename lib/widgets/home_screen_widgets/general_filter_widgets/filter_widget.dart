@@ -67,11 +67,11 @@ class FilterWidget extends StatelessWidget {
                 const SizedBox(height: 6,),
 
                 //location
-                Selector<FilteredAdsProvider , String>(
+                Selector<LocationFilterProvider , String>(
                   selector: (context , prov) => prov.tempLocation,
                   builder: (context , location , _){
                     return filterSelector("LOCATION",
-                        location.isEmpty ? context.watch<FilteredAdsProvider>().location : location , (){
+                        location.isEmpty ? context.watch<LocationFilterProvider>().location : location , (){
                           context.read<HomePageProvider>().setHomeType(HomeType.locationFilter);
                           context.read<LocationFilterProvider>().setFromFilter(true);
                           Get.to(

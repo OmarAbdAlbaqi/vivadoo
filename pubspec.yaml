@@ -27,14 +27,14 @@ dependencies:
   hive_generator:
   pull_to_refresh: ^2.0.0
   syncfusion_flutter_sliders: ^25.1.40
-  share_plus: ^9.0.0
+  social_share: ^2.3.1
+
+  url_launcher: ^6.2.6
   permission_handler: ^11.3.1
   device_info_plus: ^10.1.0
   dio: ^5.4.2+1
   image_gallery_saver: ^2.0.3
   webview_flutter: ^4.7.0
-  http_parser: ^4.0.2
-  html: ^0.15.4
   another_transformer_page_view: ^2.0.1
 
 

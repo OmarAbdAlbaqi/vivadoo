@@ -92,20 +92,18 @@ class LocationFilterWidget extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           if(context.read<LocationFilterProvider>().fromFilter){
-                            final filteredProvider = context.read<FilteredAdsProvider>();
+                            final filteredProvider = context.read<LocationFilterProvider>();
                             filteredProvider.setTempLocation("All Over Country");
                             context.read<HomePageProvider>().setHomeType(HomeType.filter);
                             Get.back();
-                            context.read<FilteredAdsProvider>().setFilterCounter();
                             context.read<LocationFilterProvider>().setFromFilter(false);
                           }else{
-                            final filteredProvider = context.read<FilteredAdsProvider>();
+                            final filteredProvider = context.read<LocationFilterProvider>();
                             filteredProvider.setCity("all-cities");
                             filteredProvider.setLocation("All Over Country");
-                            filteredProvider.getFilteredAds(context, false);
+                            context.read<FilteredAdsProvider>().getFilteredAds(context, false);
                             context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
                             Get.back();
-                            context.read<FilteredAdsProvider>().setFilterCounter();
                           }
                         },
                         child: Container(
@@ -182,19 +180,18 @@ class LocationFilterWidget extends StatelessWidget {
                                           itemBuilder: (context , index){
                                             return  InkWell(
                                               onTap: (){
-                                                final filterProvider = context.read<FilteredAdsProvider>();
+                                                final filterProvider = context.read<LocationFilterProvider>();
                                                 if(context.read<LocationFilterProvider>().fromFilter){
                                                   context.read<HomePageProvider>().setHomeType(HomeType.filter);
                                                   filterProvider.setTempLocation(items[index].label);
-                                                  filterProvider.setFilterCounter();
+
                                                   Get.back();
                                                   context.read<LocationFilterProvider>().setFromFilter(false);
                                                 }else{
                                                   context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
                                                   filterProvider.setLocation(items[index].label);
                                                   filterProvider.setCity(items[index].link);
-                                                  filterProvider.getFilteredAds(context, false);
-                                                  filterProvider.setFilterCounter();
+                                                  context.read<FilteredAdsProvider>().getFilteredAds(context, false);
                                                   Get.back();
                                                 }
                                               },

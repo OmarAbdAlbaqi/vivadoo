@@ -29,46 +29,6 @@ class HtmlTextView extends StatelessWidget {
 
 
 
-// class HtmlParser {
-//   final String htmlText;
-//   final double lineSpacing;
-//
-//   HtmlParser(this.htmlText, this.lineSpacing);
-//
-//   List<Widget> parse() {
-//     final elements = _splitHtmlTags(htmlText);
-//     return elements.map((element) {
-//       return Container(
-//         padding: EdgeInsets.symmetric(vertical: lineSpacing),
-//         child: Text(
-//           _decodeHtmlString(element),
-//           overflow: TextOverflow.ellipsis,
-//           style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500),
-//         ),
-//       );
-//     }).toList();
-//   }
-//
-//   List<String> _splitHtmlTags(String htmlString) {
-//     // Split HTML tags and content
-//     return htmlString.split(RegExp(r'(<[^>]*>)'));
-//   }
-//
-//   String _decodeHtmlString(String htmlString) {
-//     // Decode HTML entities
-//     final decodedString = const HtmlEscape().convert(htmlString);
-//     // Strip remaining HTML tags
-//     return _stripHtmlTags(decodedString);
-//   }
-//
-//   String _stripHtmlTags(String htmlString) {
-//     // Remove HTML tags
-//     RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
-//     return htmlString.replaceAll(exp, '');
-//   }
-// }
-
-
 
 
 class HtmlParser {

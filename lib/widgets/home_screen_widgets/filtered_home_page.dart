@@ -14,6 +14,7 @@ import 'package:vivadoo/widgets/home_screen_widgets/general_filter_widgets/filte
 import '../../constants.dart';
 import '../../main.dart';
 import '../../models/ad_model.dart';
+import '../../providers/filters/location_filter.dart';
 import '../ad_cards/full_width_card_standard.dart';
 
 class FilteredHomePage extends StatelessWidget {
@@ -141,7 +142,7 @@ class FilteredHomePage extends StatelessWidget {
                           // tabController.animateTo(3);
                           context.read<HomePageProvider>().setHomeType(HomeType.locationFilter);
                         },
-                        child: Selector<FilteredAdsProvider , String>(
+                        child: Selector<LocationFilterProvider , String>(
                             selector: (context , prov) => prov.location,
                             builder: (context , location , _) {
                               bool locationExist = location != "All Over Country";
@@ -207,12 +208,12 @@ class FilteredHomePage extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Visibility(
-                        visible: context.watch<FilteredAdsProvider>().location != "All Over Country",
+                        visible: context.watch<LocationFilterProvider>().location != "All Over Country",
                         child:  GestureDetector(
                           onTap: () {
                             context.read<FilteredAdsProvider>().setRadiusSliderVisible();
                           },
-                          child: Selector<FilteredAdsProvider , String>(
+                          child: Selector<LocationFilterProvider , String>(
                               selector: (context , prov) => prov.location,
                               builder: (context , location , _) {
                                 bool locationExist = location != "All Over Country";
@@ -419,7 +420,7 @@ class FilteredHomePage extends StatelessWidget {
                                 return AnimatedContainer(
                                   duration: const Duration(milliseconds: 300),
                                   width: double.infinity,
-                                  height: visible && context.watch<FilteredAdsProvider>().location != "All Over Country" ? 120 : 0,
+                                  height: visible && context.watch<LocationFilterProvider>().location != "All Over Country" ? 120 : 0,
                                   color: const Color(0xFFffffff),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

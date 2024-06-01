@@ -6,14 +6,13 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:html/parser.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:social_share/social_share.dart';
+import 'package:vivadoo/screens/ad_details/user_ads_screen.dart';
 import '../../models/ad_details_model.dart';
 import '../../providers/ads_provider/ad_details_provider.dart';
-import '../../widgets/html_to_string.dart';
 
 
 import '../../constants.dart';
@@ -81,6 +80,16 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
     super.dispose();
   }
 
+  String convertHtml(String htmlString) {
+    String withNewLines = htmlString.replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n');
+    String withoutHtmlTags = withNewLines.replaceAll(RegExp(r'<[^>]*>'), '');
+
+    List<String> lines = withoutHtmlTags.split('\n');
+    context.read<AdDetailsProvider>().maxLine = lines.length;
+
+    return withoutHtmlTags;
+  }
+
   bool isFavorite = false;
   double initialPositionX = 0;
   @override
@@ -141,8 +150,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                   ),
                   const SizedBox(width: 12),
                   GestureDetector(
-                    onTap: () async {
-                        await Share.share(widget.adDetailsModel.publicLink ?? "");
+                    onTap: () {
+                        SocialShare.shareOptions(widget.adDetailsModel.longLink ?? "");
                     },
                     child: const Icon(Icons.share , color: Colors.white,),
                   ),
@@ -357,6 +366,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
             physics: const NeverScrollableScrollPhysics(),
             padding: EdgeInsets.zero,
             children: [
+
+              //title price address
               Container(
                 width: double.infinity,
                 height: 150,
@@ -388,17 +399,18 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                   ],
                 ),
               ),
+
               const SizedBox(height: 12),
+
+              //user card
               GestureDetector(
                 onTap: (){
-                  var document = parse("&bull;350 hp<br />&bull;Long tube headers after market <br />&bull;Tuned by Xavier Massad (5Modes)<br />&bull; LOW MILEAGE <br />&bull; MOTEUR / VITESSE TOP <br />&bull; AFTER MARKET EXHAUST <br />&bull; ⁠AFTER MARKET RIMS<br />&bull; ⁠DIFF 3,7 (AUTOBLOCK)<br>");
-
-                  // Get.to(
-                  //     () => const UserAdsScreen(),
-                  //   transition: Transition.native,
-                  //   duration: const Duration(milliseconds: 300),
-                  //   curve: Curves.easeInOut
-                  // );
+                  Get.to(
+                      () => const UserAdsScreen(),
+                    transition: Transition.native,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut
+                  );
                 },
                 child: Container(
                   padding: const EdgeInsets.only(left: 8 , right: 8),
@@ -438,9 +450,41 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(widget.adDetailsModel.postBy ?? "" , style: const TextStyle(color: Color(0xff000000) ),),
+                          Visibility(
+                              visible: widget.adDetailsModel.postBy != null,
+                            replacement: Shimmer.fromColors(
+                                baseColor: Colors.grey.withOpacity(0.3),
+                                highlightColor: Colors.white,
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width * 0.5,
+                                  height: 16,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white,
+                                  ),
+                                )),
+                              child: Text(widget.adDetailsModel.postBy ?? "" , style: const TextStyle(color: Color(0xff000000) ),),
+                          ),
                           const SizedBox(height: 6),
-                          Text(widget.adDetailsModel.since ?? "" , style: TextStyle(fontSize: 12,color: Colors.grey.withOpacity(0.7) ),),
+                          Visibility(
+                              visible: widget.adDetailsModel.since != null,
+                            replacement: Shimmer.fromColors(
+                              baseColor: Colors.grey.withOpacity(0.3),
+                              highlightColor: Colors.white,
+                              child:  Shimmer.fromColors(
+                                  baseColor: Colors.grey.withOpacity(0.3),
+                                  highlightColor: Colors.white,
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width * 0.5,
+                                    height: 16,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.white,
+                                    ),
+                                  )),
+                            ),
+                              child: Text(widget.adDetailsModel.since ?? "" , style: TextStyle(fontSize: 12,color: Colors.grey.withOpacity(0.7) ),)
+                          ),
                           Visibility(
                               visible: widget.adDetailsModel.userIsPro  ==  1 ? true : false ,
                               child: const Row(
@@ -460,7 +504,10 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                   ),
                 ),
               ),
+
               const SizedBox(height: 12),
+
+              //specs
               Container(
                 decoration: const BoxDecoration(
                   color: Color(0xffffffff),
@@ -481,6 +528,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                 ),
                 child: Column(
                   children: [
+
+                    //tabs
                     SizedBox(
                       height: 40,
                       width: MediaQuery.of(context).size.width,
@@ -525,31 +574,70 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                     Selector<AdDetailsProvider , bool>(
                       selector: (context , prov) => prov.isSummary,
                       builder: (context , isSummary ,_){
+
                         return isSummary ?
-                        Selector<AdDetailsProvider , int>(
-                            selector: (context , prov) => prov.maxLine,
-                            builder: (context , maxLine , _) {
-                              return AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                padding: const EdgeInsets.symmetric(horizontal: 20),
-                                child: HtmlTextView(htmlText: widget.adDetailsModel.description ?? "" ,  maxLines: 100),
-                              );
-                            }
+
+                            //summary
+                        Consumer<AdDetailsProvider >(
+                          // selector: (context, prov) => prov.maxLine,
+                          builder: (context, prov, _) {
+                            return Column(
+                              children: [
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  height: prov.maxLine > 4 ? prov.readMore ? prov.maxLine * 25 : 100 : prov.maxLine * 30,
+                                  padding: const EdgeInsets.fromLTRB(12, 8, 8, 0),
+                                  width: double.infinity,
+                                  color: Colors.transparent,
+                                  child: Text(convertHtml(widget.adDetailsModel.description ?? ""))
+                                ),
+                                Visibility(
+                                  visible: prov.maxLine > 4,
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      prov.toggleReadMore();
+                                    },
+                                    child: const Text("Read More", style: TextStyle(fontSize: 16 , color: Colors.indigoAccent),),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
                         ):
 
-                        Container(
-                          width: double.infinity,
-                          height: 60,
-                          color: Colors.red,
+                            //specs
+                        ListView.separated(
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                            itemCount: widget.adDetailsModel.metafields?.length ?? 0,
+                          itemBuilder: (context , index){
+                              return Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                width: double.infinity,
+                                height: 70,
+                                color: Colors.transparent,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(widget.adDetailsModel.metafields?[index]['name'], style: const TextStyle(fontSize: 16, color: Colors.grey),),
+                                    Text(widget.adDetailsModel.metafields?[index]['value'], style: const TextStyle(fontSize: 16, color: Colors.black),),
+                                  ],
+                                ),
+                              );
+                          },
+                          separatorBuilder: (context , index) => const Divider(height: 0,indent: 12,endIndent: 12,thickness: 0.3,),
                         );
-
                       },
                     )
 
                   ],
                 ),
               ),
+
               const SizedBox(height: 12),
+
+              //share this listening
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 width: double.infinity,
@@ -576,20 +664,29 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                   children: [
                     const Text("Share This Listeing" , style: TextStyle(fontWeight: FontWeight.w500),),
                     GestureDetector(
-                      onTap: (){},
+                      onTap: (){
+                        //TODO share to facebook story
+                      },
                       child: Image.asset("assets/icons/post_details_icons/facebook.png" , width: 35,),
                     ),
                     GestureDetector(
-                      onTap: (){},
+                      onTap: () async {
+                        //TODO share to Messenger
+
+                      },
                       child: Image.asset("assets/icons/post_details_icons/messenger.png" , width: 35,),
                     ),
                     GestureDetector(
-                      onTap: (){},
+                      onTap: (){
+                        SocialShare.shareWhatsapp(widget.adDetailsModel.longLink??"");
+                      },
                       child: Image.asset("assets/icons/post_details_icons/whatsapp.png" , width: 35,),
                     ),
 
                     GestureDetector(
-                      onTap: (){},
+                      onTap: () async {
+                        SocialShare.shareOptions(widget.adDetailsModel.longLink??"");
+                      },
                       child: const CircleAvatar(
                           radius: 18,
                           backgroundColor: Colors.green,
@@ -598,7 +695,10 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                   ],
                 ),
               ),
+
               const SizedBox(height: 12),
+
+              //date
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12 , vertical: 12),
                 width: double.infinity,
@@ -626,14 +726,14 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                       children: [
                         const Icon(Icons.watch_later_rounded , color: Color(0xFF58595b),),
                         const SizedBox(width:  6),
-                        Text("Today at 12:48" , style: TextStyle(fontSize: 13,color: Colors.grey.withOpacity(0.8)),),
+                        Text(widget.adDetailsModel.date ?? "" , style: TextStyle(fontSize: 13,color: Colors.grey.withOpacity(0.8)),),
                       ],
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("0 Visits | ID :83492394" , style: TextStyle(color: Colors.grey.withOpacity(0.8)),),
+                        Text("${widget.adDetailsModel.postViews} Visits | ID :${widget.adDetailsModel.id}" , style: TextStyle(color: Colors.grey.withOpacity(0.8)),),
                         GestureDetector(
                             onTap: (){
 
@@ -706,3 +806,4 @@ class ImageHolder extends StatelessWidget {
     );
   }
 }
+

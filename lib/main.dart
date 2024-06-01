@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:vivadoo/providers/ads_provider/ad_details_provider.dart';
 import 'package:vivadoo/providers/ads_provider/ads_provider.dart';
 import 'package:vivadoo/providers/ads_provider/filtered_ads_provideer.dart';
+import 'package:vivadoo/providers/ads_provider/user_ads_screen_provider.dart';
 import 'package:vivadoo/providers/filters/filter_provider.dart';
 import 'package:vivadoo/providers/filters/location_filter.dart';
 import 'package:vivadoo/providers/general/home_page_provider.dart';
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => FilteredAdsProvider()),
         ChangeNotifierProvider(create: (context) => AdDetailsProvider()),
         ChangeNotifierProvider(create: (context) => LoadingProvider()),
+        ChangeNotifierProvider(create: (context) => UserAdsScreenProvider()),
       ],
       child: GetMaterialApp(
         navigatorKey: navigatorKey,
@@ -51,11 +53,12 @@ class MyApp extends StatelessWidget {
               selector: (context , prov) => prov.homeType,
             builder: (context ,homeType, _ ) {
               return Scaffold(
+                backgroundColor: Colors.white,
                 appBar: homeType == HomeType.splash? null :homeType == HomeType.home || homeType == HomeType.filteredHome
                     ?
                 AppBar(
                   automaticallyImplyLeading: false,
-                  backgroundColor: Constants.appBarBackgroundColor,
+                  backgroundColor: Colors.transparent,
                   titleSpacing: 12,
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -72,7 +75,7 @@ class MyApp extends StatelessWidget {
                             width: homeType == HomeType.home ? 0 : 40,
                             alignment: Alignment.center,
                             child: const Icon(
-                              Icons.arrow_back_ios_new_rounded, color: Colors.white,),
+                              Icons.arrow_back_ios_new_rounded, color: Colors.black,),
                           )),
                       AnimatedContainer(
                         width: homeType == HomeType.home ? MediaQuery
@@ -85,8 +88,35 @@ class MyApp extends StatelessWidget {
                         height: 45,
                         duration: const Duration(milliseconds: 300),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          boxShadow: const [
+                            BoxShadow(
+                                blurStyle: BlurStyle.solid,
+                                color: Color.fromRGBO(240, 240, 240, 1),
+                                spreadRadius: -1,
+                                blurRadius: 4,
+                                offset: Offset(0.1, 0)),
+                            BoxShadow(
+                                blurStyle: BlurStyle.solid,
+                                color: Color.fromRGBO(240, 240, 240, 1),
+                                spreadRadius: -1,
+                                blurRadius: 4,
+                                offset: Offset(-0.1, 0)),
+                            BoxShadow(
+                                blurStyle: BlurStyle.solid,
+                                color: Color.fromRGBO(240, 240, 240, 1),
+                                spreadRadius: -1,
+                                blurRadius: 4,
+                                offset: Offset(0, 0.1)),
+                            BoxShadow(
+                                blurStyle: BlurStyle.solid,
+                                color: Color.fromRGBO(240, 240, 240, 1),
+                                spreadRadius: -1,
+                                blurRadius: 4,
+                                offset: Offset(0, -0.1)),
+                          ],
+                          color: const Color.fromRGBO(229, 229, 229, 1),
                           borderRadius: BorderRadius.circular(8),
+                          
                         ),
                         child: TextFormField(
                           controller: context.watch<HomePageProvider>().textEditingController,
@@ -196,9 +226,7 @@ class MyApp extends StatelessWidget {
             overlayColor: Constants.orange.withOpacity(0.2),
             rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
             trackHeight: 1,
-
             rangeValueIndicatorShape: const RectangularRangeSliderValueIndicatorShape(
-
             ),
 
             valueIndicatorColor: Constants.orange,

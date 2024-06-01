@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       selector: (context , prov) => prov.homeType,
       builder: (context , homeType , _) {
         return Scaffold(
-          backgroundColor: const Color.fromARGB(255, 245, 246, 247),
+          backgroundColor: Colors.white,
           floatingActionButton: Visibility(
             visible: context
                 .watch<HomePageProvider>()

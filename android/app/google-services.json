@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "44403949798",
+    "firebase_url": "https://vivadoo-ddb5c.firebaseio.com",
+    "project_id": "vivadoo-ddb5c",
+    "storage_bucket": "vivadoo-ddb5c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:44403949798:android:063b56935e527cfe48fb27",
+        "android_client_info": {
+          "package_name": "com.thalesit.vivadoo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "44403949798-1b5n8gv242t4tcks1id4r119opkkgtjh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thalesit.vivadoo",
+            "certificate_hash": "e9455cc5802d6fdcc36bbc7be549d9d922637f47"
+          }
+        },
+        {
+          "client_id": "44403949798-m050074cvdu975p4r48sbnb0pgvrh9hi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thalesit.vivadoo",
+            "certificate_hash": "181f68ae54e6e268cb8c5705022bbe1c12e13ba2"
+          }
+        },
+        {
+          "client_id": "44403949798-i43jsd6bdhghemgboph7h8qmb4h8i8tn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOd04FmN5jfwPuSF2taT9Yrx-euYsPPxc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "44403949798-i43jsd6bdhghemgboph7h8qmb4h8i8tn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "44403949798-p6dlkf62je8fd9c5t1tnmi9rn9sop8fq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Thales.Vivadoo"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

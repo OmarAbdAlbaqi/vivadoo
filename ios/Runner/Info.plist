@@ -4,6 +4,8 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>CFBundleVersion</key>
+            <string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -15,21 +17,31 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>vivadoo</string>
+	<string>Vivadoo</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>instagram-stories</string>
+		<string>facebook-stories</string>
+		<string>facebook</string>
+		<string>instagram</string>
+		<string>twitter</string>
+		<string>whatsapp</string>
+		<string>tg</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Vivadoo need to access your camera to get a new photos for your ad</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Vivadoo need this permission to add the post pictures to your Gallery</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-    <string>photo library usage</string>
+	<string>Vivadoo need to access your Photos to get the photos of your ad</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -42,16 +54,6 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>LSApplicationQueriesSchemes</key>
-    	<array>
-    	<string>instagram-stories</string>
-    	<string>facebook-stories</string>
-    	<string>facebook</string>
-    	<string>instagram</string>
-    	<string>twitter</string>
-    	<string>whatsapp</string>
-        <string>tg</string>
-    	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -59,5 +61,60 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+
+	<!-- FACEBOOK CONFIG START HERE -->
+        <key>NSUserTrackingUsageDescription</key>
+        <string>This identifier will be used to deliver personalized ads to you.</string>
+        <key>FacebookAutoLogAppEventsEnabled</key>
+        <false/>
+        	<key>CFBundleURLTypes</key>
+        	<array>
+        		<dict>
+        			<key>CFBundleTypeRole</key>
+        			<string>Editor</string>
+        			<key>CFBundleURLSchemes</key>
+        			<array>
+        				<string>fb1551956555392900</string>
+        			</array>
+        		</dict>
+        		<dict>
+        			<key>CFBundleTypeRole</key>
+        			<string>Editor</string>
+        			<key>CFBundleURLSchemes</key>
+        			<array>
+        				<string>com.googleusercontent.apps.616164333259-dqh9k3v00t29ntaeh9der8fn6qcpb7s0</string>
+        			</array>
+        		</dict>
+        	</array>
+        	<key>FacebookAppID</key>
+        	<string>1551956555392900</string>
+        	<key>FacebookClientToken</key>
+        	<string>5c641305407e36d9fe30829951f0e56f</string>
+        	<key>FacebookDisplayName</key>
+        	<string>Vivadoo</string>
+            <!-- FACEBOOK CONFIG END HERE -->
+
+            <!-- GOOGLE CONFIG START HERE -->
+
+            <key>GIDClientID</key>
+            <!-- TODO Replace this value: -->
+            <!-- Copied from GoogleService-Info.plist key CLIENT_ID -->
+            <string>44403949798-p6dlkf62je8fd9c5t1tnmi9rn9sop8fq.apps.googleusercontent.com</string>
+
+            <key>CFBundleURLTypes</key>
+            <array>
+            	<dict>
+            		<key>CFBundleTypeRole</key>
+            		<string>Editor</string>
+            		<key>CFBundleURLSchemes</key>
+            		<array>
+            			<!-- TODO Replace this value: -->
+            			<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
+            			<string>com.googleusercontent.apps.44403949798-p6dlkf62je8fd9c5t1tnmi9rn9sop8fq</string>
+            		</array>
+            	</dict>
+            </array>
+            <!-- GOOGLE CONFIG END HERE -->
 </dict>
 </plist>

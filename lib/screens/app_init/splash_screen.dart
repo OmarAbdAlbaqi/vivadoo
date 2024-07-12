@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vivadoo/main.dart';
 import 'package:vivadoo/providers/ads_provider/ads_provider.dart';
-import 'package:vivadoo/providers/ads_provider/filtered_ads_provideer.dart';
+import 'package:vivadoo/providers/ads_provider/filtered_ads_provider.dart';
 import 'package:vivadoo/providers/general/home_page_provider.dart';
 import 'package:vivadoo/screens/main_screen.dart';
 
@@ -43,8 +44,8 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   getPage(){
-    context.read<HomePageProvider>().setHomeType(HomeType.home);
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainScreen()));
+    context.go('/home');
+    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainScreen()));
   }
 
   @override

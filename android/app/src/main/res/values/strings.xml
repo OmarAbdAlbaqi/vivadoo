@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vivadoo</string>
+    <string name="facebook_app_id">1551956555392900</string>
+    <string name="fb_login_protocol_scheme">fb1551956555392900</string>
+    <string name="facebook_client_token">5c641305407e36d9fe30829951f0e56f</string>
+</resources>

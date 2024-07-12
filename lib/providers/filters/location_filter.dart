@@ -15,14 +15,21 @@ class LocationFilterProvider with ChangeNotifier{
   String location = "All Over Country";
   String tempLocation = "";
   String city = "all-cities";
+  String tempCity = "all-cities";
 
   double recentValue = 1;
   double regionsValue = 1;
   double subAreaValue = 1;
   int selectedArea = 0;
   String toSearchText = "";
-  bool fromFilter = false;
   TextEditingController textEditingController = TextEditingController();
+
+  bool loading = false;
+
+  setLoading(bool newLoading){
+    loading = newLoading;
+    notifyListeners();
+  }
 
   setTempLocation(String value){
     tempLocation = value;
@@ -31,18 +38,16 @@ class LocationFilterProvider with ChangeNotifier{
 
 
   setCity(String value){
-    city = value;
+    if(value == ""){
+      city = tempCity;
+    }else{
+      city = value;
+    }
     notifyListeners();
   }
 
   setLocation(String value){
     location = value;
-    notifyListeners();
-  }
-
-
-  setFromFilter (bool value){
-    fromFilter = value;
     notifyListeners();
   }
 
@@ -91,6 +96,7 @@ class LocationFilterProvider with ChangeNotifier{
   }
 
   getSubAreaList(String code) async {
+    setLoading(true);
     Uri url = Uri.parse("${Constants.baseUrl}api/location?code=$code");
     http.Response res = await http.get(url);
     if(res.statusCode == 200){
@@ -98,6 +104,7 @@ class LocationFilterProvider with ChangeNotifier{
       List items = extractedData['items'];
       subAreaList = items.map((e) => SubAreaModel.fromJson(e)).toList();
     }
+    setLoading(false);
     notifyListeners();
   }
 

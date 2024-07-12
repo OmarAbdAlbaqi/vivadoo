@@ -1,23 +1,23 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:provider/provider.dart';
 import 'package:vivadoo/providers/filters/filter_provider.dart';
-import 'package:vivadoo/widgets/home_screen_widgets/location_widgets/location_filter_widget.dart';
-import '../../../main.dart';
 import '../../../models/filters/category_model.dart';
-import '../../../models/filters/meta_fields_model.dart';
-import '../../../providers/ads_provider/filtered_ads_provideer.dart';
+import '../../../providers/ads_provider/ad_details_provider.dart';
+import '../../../providers/ads_provider/filtered_ads_provider.dart';
 import '../../../providers/filters/location_filter.dart';
-import '../../../providers/general/home_page_provider.dart';
 
 import '../../../constants.dart';
 import 'category_card.dart';
+import 'meta_fields_widget.dart';
 
 class FilterWidget extends StatelessWidget {
   const FilterWidget({super.key});
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -71,15 +71,9 @@ class FilterWidget extends StatelessWidget {
                   selector: (context , prov) => prov.tempLocation,
                   builder: (context , location , _){
                     return filterSelector("LOCATION",
-                        location.isEmpty ? context.watch<LocationFilterProvider>().location : location , (){
-                          context.read<HomePageProvider>().setHomeType(HomeType.locationFilter);
-                          context.read<LocationFilterProvider>().setFromFilter(true);
-                          Get.to(
-                              ()=> const LocationFilterWidget(),
-                              transition: Transition.rightToLeft,
-                              curve: Curves.linear,
-                              duration: const Duration(milliseconds: 250),
-                          );
+                        location.isEmpty ? context.watch<LocationFilterProvider>().location : location ,
+                            (){
+                          context.go('/home/filteredHome/filter/locationFilterFromFilter');
                         });
                   },
                 ),
@@ -109,7 +103,7 @@ class FilterWidget extends StatelessWidget {
                                       return ListView.separated(
                                         itemCount:  makesList.length ,
                                         itemBuilder: (ctx, int index) {
-                                          return index == 0 ? const SizedBox(height: 10,):makeCard(context,makesList[index]);
+                                          return index == 0 ? const SizedBox(height: 10,):makeCard(ctx,makesList[index]);
                                         },
                                         separatorBuilder: (context , index) => index == 0 ?  const Center(): const Divider(endIndent: 12,indent: 12,thickness: 0,),
                                       );
@@ -135,24 +129,38 @@ class FilterWidget extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               color: const Color.fromRGBO(245, 246, 247, 1),
               height: 70,
               width: double.infinity,
               alignment: Alignment.topCenter,
-              child: GestureDetector(
-                onTap: (){
-                  context.read<FilterProvider>().showAds(context );
+              child: ElevatedButton(
+                onPressed: () async {
+                  context.read<LocationFilterProvider>().setCity("");
+                  await context.read<FilterProvider>().showAds(context);
+                  // context.read<AdDetailsProvider>().setListOfAdDetails(context.read<FilteredAdsProvider>().filteredAdsList, clearList: true);
+                  context.pop();
                 },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 25),
-                  width: double.infinity,
-                  height: 45,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: const Color.fromRGBO(59, 89, 152, 1),
+                style: ButtonStyle(
+                  minimumSize: MaterialStateProperty.all<Size?>(
+                      const Size(double.infinity, 45)),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: const BorderSide(
+                        color: Colors.orange,
+                        width: 2,
+                      ),
+                    ),
                   ),
-                  child: const Text("Search" , style: TextStyle(color: Color(0xFFffffff) , fontSize: 14 , fontWeight: FontWeight.w600),),
+                  alignment: Alignment.center,
+                  animationDuration: const Duration(milliseconds: 500),
+                  backgroundColor: getColor(Colors.orange, Colors.white),
+                  foregroundColor: getColor(Colors.white, Colors.orange),
+                ),
+                child: const Text(
+                  "Search",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -161,208 +169,19 @@ class FilterWidget extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget rangeFieldWidget (BuildContext context, MetaFieldsModel metaFieldsModel){
-  int id = metaFieldsModel.range.firstWhere((element) => element['id'] == context.read<FilterProvider>().subCategoryId)['range_value'];
-  List ranges = context.read<FilteredAdsProvider>().ranges.firstWhere((element) => element['id'] == id)['values'];
-  WidgetsBinding.instance.addPostFrameCallback((_){
-    if(context.read<FilterProvider>().currentRangeValues == const RangeValues(0,1)){
-      context.read<FilterProvider>().setRangeValue(RangeValues(double.parse(ranges[0]), double.parse(ranges[ranges.length -1])));
-    }
-  });
-  return SizedBox(
-    width: double.infinity,
-    height: 130,
-    child: Selector<FilterProvider , RangeValues>(
-        selector: (context , prov) => prov.currentRangeValues,
-        builder: (context , rangeValue , _) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-             Padding(
-              padding: const EdgeInsets.only(left: 20 , top: 20),
-              child: Text(metaFieldsModel.name , style: const TextStyle(color: Constants.orange , fontSize: 14 , fontWeight: FontWeight.w500 ),),
-            ),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              width: MediaQuery.of(context).size.width - 40,height: 40,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(rangeValue.start.toInt().toString()),
-                  Text(rangeValue.end.toInt().toString()),
-                ],
-              ),
-            ),
-            RangeSlider(
-                min: rangeValue.start == 0 ? 0 : double.parse(ranges[0]),
-                max: rangeValue.end == 1 ? 1 :double.parse(ranges[ranges.length -1]),
-                divisions: (int.parse(ranges[ranges.length -1]) - int.parse(ranges[0])) * 10 + 1,
-                values: rangeValue,
-                // labels: RangeLabels(rangeValue.start.toInt().toString() , rangeValue.end.toInt().toString()),
-                onChanged: (value){
-                  context.read<FilterProvider>().rangeMetaFieldId = metaFieldsModel.id.toString();
-                  context.read<FilterProvider>().setRangeValue(value);
-                }),
-
-          ],
-        );
-      }
-    ),
-  );
-}
-
-Widget uniqueSelectionWidget (BuildContext context, MetaFieldsModel metaFieldsModel){
-  String? group (Map<String, dynamic>? temp){
-    if(temp != null){
-      List<MapEntry<String, dynamic>> entries = temp.entries.toList();
-      if (entries.isNotEmpty) {
-        MapEntry<String, dynamic> firstEntry = entries.first;
-        dynamic firstValue = firstEntry.value;
-        return firstValue.toString();
+  MaterialStateProperty<Color> getColor(Color color, Color colorPressed) {
+    getColor(Set<MaterialState> states) {
+      if (states.contains(MaterialState.pressed)) {
+        return colorPressed;
+      } else {
+        return color;
       }
     }
-    return null;
+
+    return MaterialStateProperty.resolveWith(getColor);
   }
-  return Consumer<FilterProvider>(
-    builder: (context , filter , _) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20 , top: 20),
-            child: Text(metaFieldsModel.name , style: const TextStyle(color: Constants.orange , fontSize: 14 , fontWeight: FontWeight.w500 ),),
-          ),
-          ListView.builder(
-            padding: const EdgeInsets.only(left: 12),
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-              itemCount: metaFieldsModel.options.length,
-              itemBuilder: (context , index){
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Radio(
-                        fillColor: MaterialStateProperty.all<Color>(Colors.orange),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        value: metaFieldsModel.options[index],
-                        groupValue: group(filter.selected[metaFieldsModel.name]) ?? "",
-                        onChanged: (value){
-                          // filter.uniqueSelection(metaFieldsModel.name  , {"[${metaFieldsModel.id}][$index]" : value});
-                        }),
-                    GestureDetector(
-                      onTap: (){
-                        filter.uniqueSelection(metaFieldsModel.name  ,{"[${metaFieldsModel.id}][$index]" : metaFieldsModel.options[index]});
-                    },
-                      child: Container(
-                        width: 300,
-                        height: 40,
-                        color: Colors.transparent,
-                        alignment: Alignment.centerLeft,
-                        child: Text(metaFieldsModel.options[index],),
-                      ),
-                    ),
-                  ],
-                );
-              })
-        ],
-      );
-    }
-  );
 }
 
-Widget multiSelectionWidget (BuildContext context , MetaFieldsModel metaFieldsModel){
-  return Consumer<FilterProvider>(
-    builder: (context , filter , _) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20 , top: 20),
-            child: Text(metaFieldsModel.name , style: const TextStyle(color: Constants.orange , fontSize: 14 , fontWeight: FontWeight.w500 ),),
-          ),
-          ListView.builder(
-            padding: const EdgeInsets.only(left: 18),
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: metaFieldsModel.options.length,
-            itemBuilder: (context , index){
-              return GestureDetector(
-                onTap: (){
-                  filter.multiCheckSelection("[${metaFieldsModel.id}][$index]",metaFieldsModel.options[index], index);
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Constants.orange),
-                      ),
-                      alignment: Alignment.center,
-                      child: Visibility(
-                        visible: filter.selected.containsKey("[${metaFieldsModel.id}][$index]"),
-                        child: const Icon(Icons.check , color: Constants.orange),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Container(
-                      width: 300,
-                        height: 40,
-                        alignment: Alignment.centerLeft,
-                        color: Colors.transparent,
-                        child: Text(metaFieldsModel.options[index])),
-                  ],
-                ),
-              );
-            },
-          ),
-
-        ],
-      );
-    }
-  );
-}
-
-Widget metaFieldsWidget() {
-  return Selector<FilterProvider, List<MetaFieldsModel>>(
-    selector: (context, prov) => prov.categoryMetaFields,
-    builder: (context, fields, _) {
-      return ListView.builder(
-        padding: EdgeInsets.zero,
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: fields.length,
-        itemBuilder: (context, index) {
-          switch (fields[index].type) {
-            case "RANGE":{
-              WidgetsBinding.instance.addPostFrameCallback((_){
-                context.read<FilteredAdsProvider>().setRangeValue(RangeValues(fields[index].range[0]['min'].toDouble() , fields[index].range[0]['max'].toDouble()));
-              });
-                return rangeFieldWidget(context, fields[index]);
-              }
-            case "MULTISELECT":{
-                return multiSelectionWidget(context , fields[index]);
-              }
-            case "UNIQUESELECT":{
-                return uniqueSelectionWidget(context , fields[index]);
-              }
-            case "TEXT":{
-                return Container();
-              }
-            default:{
-                return Container(
-
-                ); // Handle any other types if needed
-              }
-          }
-        },
-      );
-    },
-  );
-}
 
 Widget filterSelector(String title , String category , Function onTap){
   return GestureDetector(

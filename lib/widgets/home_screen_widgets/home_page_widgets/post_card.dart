@@ -1,15 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:vivadoo/main.dart';
 import 'package:vivadoo/providers/ads_provider/ad_details_provider.dart';
 import 'package:vivadoo/providers/ads_provider/ads_provider.dart';
-import 'package:vivadoo/providers/ads_provider/filtered_ads_provideer.dart';
+import 'package:vivadoo/providers/ads_provider/filtered_ads_provider.dart';
 import 'package:vivadoo/providers/general/home_page_provider.dart';
 import '../../../screens/ad_details/post_details_screen.dart';
-import '../../../screens/ad_details/test.dart';
+import '../../../screens/ad_details/carousel_ads_widget.dart';
 class PostCard extends StatefulWidget {
   const PostCard({super.key, required this.imageUrl, required this.title, required this.price, required this.isFavorite, required this.favorite, required this.adId, required this.index});
   final String imageUrl;
@@ -55,15 +56,9 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        context.read<AdDetailsProvider>().setCurrentAdIndex(widget.index);
+        context.read<AdDetailsProvider>().initialPage = widget.index;
         context.read<AdDetailsProvider>().getAdDetails(context, widget.adId);
-        context.read<HomePageProvider>().setHomeType(HomeType.splash);
-        Get.to(
-            ()=> CarouselTest(isFavorite: false,adId: widget.adId, initialIndex: widget.index),
-          transition: Transition.native,
-          duration: const Duration(milliseconds: 350),
-          curve: Curves.easeIn
-        );
+        context.push('/homePageAdDetails', extra: {'isFavorite':false, 'initialIndex':widget.index});
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 6),
@@ -86,20 +81,23 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
                 aspectRatio: 1.22,
               child: ClipRRect(
                 borderRadius: const BorderRadius.only(topLeft: Radius.circular(4) , topRight: Radius.circular(4)),
-                child: CachedNetworkImage(
-                  imageUrl: widget.imageUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (context, _) => Shimmer.fromColors(
-                    baseColor: Colors.grey.withOpacity(0.4),
-                    highlightColor: Colors.grey.withOpacity(0.1),
-                    child: AspectRatio(
-                      aspectRatio: 1.22,
-                      child: Container(
-                        decoration: const  BoxDecoration(
-                          borderRadius: BorderRadius.only(topLeft: Radius.circular(4) , topRight: Radius.circular(4)),
-                          color: Colors.white,
+                child: Hero(
+                  tag: widget.imageUrl,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, _) => Shimmer.fromColors(
+                      baseColor: Colors.grey.withOpacity(0.4),
+                      highlightColor: Colors.grey.withOpacity(0.1),
+                      child: AspectRatio(
+                        aspectRatio: 1.22,
+                        child: Container(
+                          decoration: const  BoxDecoration(
+                            borderRadius: BorderRadius.only(topLeft: Radius.circular(4) , topRight: Radius.circular(4)),
+                            color: Colors.white,
+                          ),
+                          width: double.infinity,
                         ),
-                        width: double.infinity,
                       ),
                     ),
                   ),

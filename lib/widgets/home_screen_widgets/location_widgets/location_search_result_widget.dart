@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vivadoo/main.dart';
-import 'package:vivadoo/providers/ads_provider/filtered_ads_provideer.dart';
-import 'package:vivadoo/providers/general/home_page_provider.dart';
+import 'package:vivadoo/providers/ads_provider/filtered_ads_provider.dart';
 
 import '../../../models/filters/sub_area_model.dart';
 import '../../../providers/filters/location_filter.dart';
+import '../../../utils/hive_manager.dart';
 Widget locationSearchResult (BuildContext context ){
   return Selector<LocationFilterProvider , List<SubAreaModel>>(
       selector: (context , prov) => prov.searchedResult,
@@ -28,18 +27,14 @@ Widget locationSearchResult (BuildContext context ){
                 itemBuilder: (context , index){
                   return GestureDetector(
                     onTap: (){
+                      String route = HiveStorageManager.hiveBox.get('route');
                       final filterProvider = context.read<LocationFilterProvider>();
-                      if(context.read<LocationFilterProvider>().fromFilter){
+                      if(route == "LocationFilterFromFilter" || route == "SubLocationFilterFromFilter"){
                         filterProvider.setTempLocation(searchResult[index].label);
-                        context.read<HomePageProvider>().setHomeType(HomeType.filter);
-                        // tabController.animateTo(2);
-                        context.read<LocationFilterProvider>().setFromFilter(false);
                       }else{
                         filterProvider.setCity(searchResult[index].link);
                         filterProvider.setLocation(searchResult[index].label);
-                        context.read<FilteredAdsProvider>().getFilteredAds(context, false);
-                        context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
-                        // tabController.animateTo(1);
+                        context.read<FilteredAdsProvider>().getFilteredAds(context);
                       }
                     },
                     child: Container(

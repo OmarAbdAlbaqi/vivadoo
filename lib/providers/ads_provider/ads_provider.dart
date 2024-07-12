@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:vivadoo/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:vivadoo/providers/ads_provider/ad_details_provider.dart';
-import 'package:vivadoo/providers/ads_provider/filtered_ads_provideer.dart';
+import 'package:vivadoo/providers/ads_provider/filtered_ads_provider.dart';
 import 'package:vivadoo/providers/filters/filter_provider.dart';
 
 import '../../models/ad_model.dart';
@@ -20,31 +20,41 @@ class AdsProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  setPage (String value){
-    page = value;
-  }
 
   Future<void> getMoreAds (BuildContext context) async {
     Map<String, dynamic> params = context.read<FilterProvider>().filterParams;
+    params['page'] = (int.parse(page) + 1).toString() ;
+
     Uri url = Uri.https(
         Constants.authority,
         Constants.adsPath,
         params
     );
-    http.Response response = await http.get(url);
-    if(response.statusCode == 200){
-      var extractedData = jsonDecode(response.body);
-      List items = extractedData['items'];
-      adsList.addAll(items.map((ad) => AdModel.fromJson(ad)).toList());
-      if(context.mounted){
-        context.read<AdDetailsProvider>().setListOfAdDetails(adsList);
+    try {
+      http.Response response = await http.get(url).timeout(const Duration(seconds: 10));
+      if(response.statusCode == 200){
+        var extractedData = jsonDecode(response.body);
+        List items = extractedData['items'];
+        List<AdModel> temp = adsList;
+        temp.addAll(items.map((ad) => AdModel.fromJson(ad)).toList());
+        adsList = temp;
+        page = (int.parse(page) + 1).toString();
+        notifyListeners();
+        if(context.mounted){
+          context.read<AdDetailsProvider>().setListOfAdDetails(items.map((ad) => AdModel.fromJson(ad)).toList());
+        }
       }
-    }
-    else {
+      else {
+        if(context.mounted){
+          PopUps.somethingWentWrong(context);
+        }
+      }
+    } catch (e) {
       if(context.mounted){
         PopUps.somethingWentWrong(context);
       }
     }
+    notifyListeners();
   }
 
   Future<void> refreshAds (BuildContext context) async {
@@ -54,19 +64,28 @@ class AdsProvider with ChangeNotifier{
         Constants.adsPath,
         params
     );
-    http.Response response = await http.get(url);
-    if(response.statusCode == 200){
-      var extractedData = jsonDecode(response.body);
-      List items = extractedData['items'];
-      adsList = items.map((ad) => AdModel.fromJson(ad)).toList();
-      if(context.mounted){
-        context.read<AdDetailsProvider>().setListOfAdDetails(adsList, clearList: true);
+    try {
+      http.Response response = await http.get(url).timeout(const Duration(seconds: 10));
+      if(response.statusCode == 200){
+        var extractedData = jsonDecode(response.body);
+        List items = extractedData['items'];
+        adsList = items.map((ad) => AdModel.fromJson(ad)).toList();
+        if(context.mounted){
+          print("shu meshan halaaaaaa ?");
+          context.read<AdDetailsProvider>().setListOfAdDetails(adsList, clearList: true);
+        }
+      } else {
+        if(context.mounted){
+          //TODO change to aPIError
+          PopUps.somethingWentWrong(context);
+        }
       }
-    } else {
+    } catch (e) {
       if(context.mounted){
         PopUps.somethingWentWrong(context);
       }
     }
+    notifyListeners();
   }
 }
 

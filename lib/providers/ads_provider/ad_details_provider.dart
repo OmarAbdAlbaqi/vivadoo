@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:vivadoo/main.dart';
 import 'package:vivadoo/models/ad_model.dart';
+import 'package:vivadoo/providers/ads_provider/ads_provider.dart';
 import 'package:vivadoo/utils/pop-ups/pop-ups.dart';
 
 import '../../constants.dart';
@@ -12,18 +14,17 @@ import '../../models/ad_details_model.dart';
 class AdDetailsProvider with ChangeNotifier{
   int imageIndex = 1;
   int originalImageIndex = 1;
-  int currentAdIndex = 0;
   int maxLine = 0;
   bool readMore = false;
   List<AdDetailsModel> listOfAdDetails = [];
   double titleOpacity = 0;
   bool isSummary = true;
+  int initialPage = 0;
 
 
 
   toggleReadMore(){
     readMore =! readMore;
-    print(readMore);
     notifyListeners();
   }
   setTitleOpacity(double newOpacity) {
@@ -36,9 +37,7 @@ class AdDetailsProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  setCurrentAdIndex(int value){
-    currentAdIndex = value;
-  }
+
 
   setOriginalImageIndex(int value){
     originalImageIndex = value + 1;
@@ -52,15 +51,17 @@ class AdDetailsProvider with ChangeNotifier{
   }
 
   setListOfAdDetails(List<AdModel> ads,{bool clearList = false}){
-    int startingIndex = ads.length - listOfAdDetails.length;
+    print("setListOfAdDetails ha been called\nclear List = $clearList");
+
     if(clearList == true){
       listOfAdDetails = [];
-      startingIndex = 0;
     }
-    for(int i = startingIndex ; i < ads.length ; i++){
+    for(int i = 0 ; i < ads.length ; i++){
       var element = ads[i];
+
       listOfAdDetails.add(AdDetailsModel(images: [{"main":element.thumb}], id: element.id, title: element.title, priceFormatted: element.price, location: element.location));
     }
+
     notifyListeners();
   }
 

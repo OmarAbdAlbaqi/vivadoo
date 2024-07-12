@@ -8,7 +8,7 @@ Widget categoryCard (BuildContext context , CategoryModel categoryModel ,  int i
   return StickyHeader(
     header: Container(
       padding: const EdgeInsets.only(left: 20 , right: 12),
-      width: MediaQuery.of(context).size.width - 24,
+      width: MediaQuery.of(context).size.width ,
       height: 30,
       decoration: const BoxDecoration(
         color: Color.fromRGBO(170, 170, 170, 1),

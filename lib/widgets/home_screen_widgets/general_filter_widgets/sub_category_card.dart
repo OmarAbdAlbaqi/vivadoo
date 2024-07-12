@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vivadoo/models/filters/sub_category_model.dart';
-import 'package:vivadoo/providers/ads_provider/filtered_ads_provideer.dart';
+import 'package:vivadoo/providers/ads_provider/filtered_ads_provider.dart';
 import 'package:vivadoo/providers/filters/filter_provider.dart';
 Widget subCategoryCard (BuildContext context , SubCategoryModel subCategoryModel , int categoryId){
   return GestureDetector(
@@ -11,7 +11,6 @@ Widget subCategoryCard (BuildContext context , SubCategoryModel subCategoryModel
       context.read<FilterProvider>().categoryId = subCategoryModel.parent;
       context.read<FilterProvider>().subCategoryId = subCategoryModel.id;
       context.read<FilterProvider>().setCategoryMetaFields(context);
-      // context.read<FilteredAdsProvider>().getCategoryFields(subCategoryModel.id , categoryId);
       Navigator.pop(context);
     },
     child: Container(

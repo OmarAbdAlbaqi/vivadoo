@@ -1,23 +1,20 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers.dart';
-import 'package:vivadoo/widgets/home_screen_widgets/location_widgets/sub_location_widget.dart';
-import '../../../main.dart';
+import 'package:vivadoo/providers/filters/filter_provider.dart';
+import 'package:vivadoo/utils/hive_manager.dart';
 import '../../../models/filters/hive/local_area_model.dart';
-import '../../../providers/ads_provider/filtered_ads_provideer.dart';
+import '../../../providers/ads_provider/filtered_ads_provider.dart';
 import '../../../providers/filters/location_filter.dart';
-import '../../../providers/general/home_page_provider.dart';
 import '../../../widgets/home_screen_widgets/location_widgets/location_search_bar.dart';
 
 import '../../../models/filters/area_model.dart';
 import '../../../models/filters/hive/recent_locations_box.dart';
 import 'location_search_result_widget.dart';
-
-
-
 
 class LocationFilterWidget extends StatelessWidget {
   const LocationFilterWidget({super.key});
@@ -33,6 +30,7 @@ class LocationFilterWidget extends StatelessWidget {
         },
         child: Column(
           children: [
+            //search bar
             Container(
               margin: const EdgeInsets.all(6),
               width: double.infinity,
@@ -51,6 +49,8 @@ class LocationFilterWidget extends StatelessWidget {
               ),
               child: locationSearchBar(context),
             ),
+
+
             Expanded(
               child: Stack(
                 children: [
@@ -91,20 +91,16 @@ class LocationFilterWidget extends StatelessWidget {
                       //all over country
                       GestureDetector(
                         onTap: () {
-                          if(context.read<LocationFilterProvider>().fromFilter){
-                            final filteredProvider = context.read<LocationFilterProvider>();
+                          String route = HiveStorageManager.hiveBox.get('route');
+                          final filteredProvider = context.read<LocationFilterProvider>();
+                          if(route == "LocationFilterFromFilter"){
                             filteredProvider.setTempLocation("All Over Country");
-                            context.read<HomePageProvider>().setHomeType(HomeType.filter);
-                            Get.back();
-                            context.read<LocationFilterProvider>().setFromFilter(false);
                           }else{
-                            final filteredProvider = context.read<LocationFilterProvider>();
                             filteredProvider.setCity("all-cities");
                             filteredProvider.setLocation("All Over Country");
-                            context.read<FilteredAdsProvider>().getFilteredAds(context, false);
-                            context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
-                            Get.back();
+                            context.read<FilterProvider>().showAds(context);
                           }
+                          context.pop();
                         },
                         child: Container(
                           padding: const EdgeInsets.only(left: 20),
@@ -134,6 +130,7 @@ class LocationFilterWidget extends StatelessWidget {
                         color: Colors.grey.withOpacity(0.5),
                       ),
                       const SizedBox(height: 20,),
+
                       Visibility(
                         visible: RecentLocationBox.getLocalRecentLocations().listenable().value.isNotEmpty,
                         child: Selector<LocationFilterProvider , double>(
@@ -180,20 +177,17 @@ class LocationFilterWidget extends StatelessWidget {
                                           itemBuilder: (context , index){
                                             return  InkWell(
                                               onTap: (){
-                                                final filterProvider = context.read<LocationFilterProvider>();
-                                                if(context.read<LocationFilterProvider>().fromFilter){
-                                                  context.read<HomePageProvider>().setHomeType(HomeType.filter);
-                                                  filterProvider.setTempLocation(items[index].label);
-
-                                                  Get.back();
-                                                  context.read<LocationFilterProvider>().setFromFilter(false);
+                                                final locationFilterProvider = context.read<LocationFilterProvider>();
+                                                String route = HiveStorageManager.hiveBox.get('route');
+                                                if(route == "LocationFilterFromFilter"){
+                                                  locationFilterProvider.setTempLocation(items[index].label);
+                                                  locationFilterProvider.tempCity = items[index].link;
                                                 }else{
-                                                  context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
-                                                  filterProvider.setLocation(items[index].label);
-                                                  filterProvider.setCity(items[index].link);
-                                                  context.read<FilteredAdsProvider>().getFilteredAds(context, false);
-                                                  Get.back();
+                                                  locationFilterProvider.setLocation(items[index].label);
+                                                  locationFilterProvider.setCity(items[index].link);
+                                                  context.read<FilterProvider>().showAds(context);
                                                 }
+                                                context.pop();
                                               },
                                               child: Container(
                                                 margin: const EdgeInsets.only(left: 20),
@@ -229,6 +223,8 @@ class LocationFilterWidget extends StatelessWidget {
                               );
                             }),
                       ),
+
+                      //select region
                       Selector<LocationFilterProvider , double>(
                           selector: (context , prov) => prov.regionsValue,
                           builder: (context , value , _){
@@ -258,6 +254,7 @@ class LocationFilterWidget extends StatelessWidget {
                                   ],
                                 ),
                               ),
+
                               content: Selector<LocationFilterProvider , List<AreaModel>>(
                                   selector: (context , prov) => prov.areaList,
                                   builder: (context , areaList , _) {
@@ -269,12 +266,13 @@ class LocationFilterWidget extends StatelessWidget {
                                       itemBuilder: (context , index){
                                         return InkWell(
                                           onTap: (){
-                                            Get.to(
-                                                ()=> const SubLocationWidget(),
-                                              transition: Transition.rightToLeft,
-                                              curve: Curves.linear,
-                                              duration: const Duration(milliseconds: 250),
-                                            );
+                                            String route = HiveStorageManager.hiveBox.get('route');
+                                            if(route == "LocationFilterFromFilter"){
+                                              context.push("/home/filteredHome/filter/locationFilterFromFilter/subLocationFilterFromFilter");
+                                            }else{
+                                              context.push("/home/filteredHome/locationFilterFromHome/subLocationFilterFromHome");
+                                            }
+
                                             context.read<LocationFilterProvider>().getSubAreaList(areaList[index].code.toString());
                                             context.read<LocationFilterProvider>().setSelectedArea(index);
                                           },

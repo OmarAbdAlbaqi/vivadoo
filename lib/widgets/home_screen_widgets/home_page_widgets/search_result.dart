@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../main.dart';
-import '../../../providers/ads_provider/filtered_ads_provideer.dart';
+import '../../../providers/ads_provider/filtered_ads_provider.dart';
 import '../../../providers/general/home_page_provider.dart';
 
 Widget searchResult (BuildContext context){
@@ -28,8 +27,7 @@ Widget searchResult (BuildContext context){
                     onTap: (){
                       final filterProvider = context.read<FilteredAdsProvider>();
                       filterProvider.setQuery(searchResult[index]);
-                        filterProvider.getFilteredAds(context, false);
-                        context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
+                        filterProvider.getFilteredAds(context);
                         // tabController.animateTo(1);
                     },
                     child: Container(

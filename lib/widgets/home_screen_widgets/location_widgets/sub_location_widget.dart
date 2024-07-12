@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
-import 'package:vivadoo/main.dart';
+import 'package:vivadoo/app_navigation.dart';
 import 'package:vivadoo/models/filters/sub_area_model.dart';
-import 'package:vivadoo/providers/ads_provider/filtered_ads_provideer.dart';
+import 'package:vivadoo/providers/ads_provider/ads_provider.dart';
+import 'package:vivadoo/providers/ads_provider/filtered_ads_provider.dart';
+import 'package:vivadoo/providers/filters/filter_provider.dart';
 import 'package:vivadoo/providers/filters/location_filter.dart';
-import 'package:vivadoo/providers/general/home_page_provider.dart';
 import 'package:vivadoo/widgets/home_screen_widgets/location_widgets/location_search_bar.dart';
 
 import '../../../models/filters/area_model.dart';
+import '../../../utils/hive_manager.dart';
 import 'location_search_result_widget.dart';
-
-
 
 class SubLocationWidget extends StatelessWidget {
   const SubLocationWidget({super.key});
@@ -56,20 +57,20 @@ class SubLocationWidget extends StatelessWidget {
                           builder: (context , areaList , _) {
                             return GestureDetector(
                               onTap: () {
-                                if(context.read<LocationFilterProvider>().fromFilter){
+                                final locationFilterProvider = context.read<LocationFilterProvider>();
+                                String route = HiveStorageManager.hiveBox.get('route');
+                                int index = context.read<LocationFilterProvider>().selectedArea;
+                                if(route == "SubLocationFilterFromFilter"){
+                                  locationFilterProvider.tempCity = areaList[index].link;
                                   context.read<LocationFilterProvider>().setTempLocation("All Over ${areaList[context.read<LocationFilterProvider>().selectedArea].label}");
-                                  context.read<HomePageProvider>().setHomeType(HomeType.filter);
-                                  Get.back();
-                                  context.read<LocationFilterProvider>().setFromFilter(false);
                                 }else{
-                                  int index = context.read<LocationFilterProvider>().selectedArea;
-                                  String link = areaList[index].link;
+                                  locationFilterProvider.setCity(areaList[index].link);
                                   context.read<LocationFilterProvider>().setLocation("All Over ${areaList[context.read<LocationFilterProvider>().selectedArea].label}");
-                                  context.read<LocationFilterProvider>().setCity(link);
-                                  context.read<FilteredAdsProvider>().getFilteredAds(context, false);
-                                  context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
-                                  Get.back();
+                                  context.read<FilterProvider>().showAds(context);
                                 }
+                                context.read<LocationFilterProvider>().cleanSubArea();
+                                context.pop();
+                                Future.delayed(const Duration(milliseconds: 300)).then((value) => context.pop());
                               },
                               child: Container(
                                 margin: const EdgeInsets.only(left: 20),
@@ -134,26 +135,20 @@ class SubLocationWidget extends StatelessWidget {
                                       itemBuilder: (context , index){
                                         return InkWell(
                                           onTap: (){
-                                            final filterProvider = context.read<LocationFilterProvider>();
-                                            if(context.read<LocationFilterProvider>().fromFilter){
-                                              context.read<LocationFilterProvider>().addToLocalRecent(subAreaList[index]);
-                                              context.read<HomePageProvider>().setHomeType(HomeType.filter);
-                                              filterProvider.setTempLocation(subAreaList[index].label);
-                                              String link = subAreaList[index].link;
-                                              context.read<LocationFilterProvider>().setCity(link);
-                                              Get.back();
-                                              Get.back();
-                                              context.read<LocationFilterProvider>().cleanSubArea();
-                                              context.read<LocationFilterProvider>().setFromFilter(false);
+                                            final locationFilterProvider = context.read<LocationFilterProvider>();
+                                            String route = HiveStorageManager.hiveBox.get('route');
+                                            context.read<LocationFilterProvider>().addToLocalRecent(subAreaList[index]);
+                                            if(route == "SubLocationFilterFromFilter"){
+                                              locationFilterProvider.setTempLocation(subAreaList[index].label);
+                                              context.read<LocationFilterProvider>().tempCity = subAreaList[index].link;
                                             }else{
-                                              context.read<LocationFilterProvider>().addToLocalRecent(subAreaList[index]);
-                                              context.read<HomePageProvider>().setHomeType(HomeType.filteredHome);
-                                              filterProvider.setLocation(subAreaList[index].label);
-                                              filterProvider.setCity(subAreaList[index].link);
-                                              context.read<FilteredAdsProvider>().getFilteredAds(context, false);
-                                              Get.back();
-                                              context.read<LocationFilterProvider>().cleanSubArea();
+                                              locationFilterProvider.setLocation(subAreaList[index].label);
+                                              locationFilterProvider.setCity(subAreaList[index].link);
+                                              context.read<FilterProvider>().showAds(context);
                                             }
+                                            context.read<LocationFilterProvider>().cleanSubArea();
+                                            context.pop();
+                                            Future.delayed(const Duration(milliseconds: 300)).then((value) => context.pop());
                                           },
                                           child: Container(
                                             margin: const EdgeInsets.only(left: 20),

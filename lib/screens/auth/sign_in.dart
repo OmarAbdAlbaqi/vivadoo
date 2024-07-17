@@ -320,7 +320,13 @@ class SignIn extends StatelessWidget {
                               backgroundColor: context.read<MyVivadooProvider>().getColor(Constants.orange, Colors.white),
                               foregroundColor: context.read<MyVivadooProvider>().getColor(Colors.white, Constants.orange),
                             ),
-                            child: const Text(
+                            child: signIn.signInLoading ?
+                                const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(),
+                                )
+                                : const Text(
                               'Sign in',
                               style: TextStyle(
                                 fontSize: 16,

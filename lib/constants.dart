@@ -11,5 +11,6 @@ class Constants{
   static const String signUpPath = "en/classifieds/api-secure/signup";
   static const String forgotPasswordPath = "en/classifieds/api-secure/forgot";
   static const String facebookAuthPath = "en/classifieds/api-secure/authexternal";
+  static const String userAdsListPath = "en/classifieds/api-secure/list";
 
 }

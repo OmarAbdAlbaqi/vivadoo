@@ -180,7 +180,7 @@ class LocationFilterWidget extends StatelessWidget {
                                                 final locationFilterProvider = context.read<LocationFilterProvider>();
                                                 String route = HiveStorageManager.hiveBox.get('route');
                                                 if(route == "LocationFilterFromFilter"){
-                                                  locationFilterProvider.setTempLocation(items[index].label);
+                                                  locationFilterProvider.setTempLocation("${items[index].label} - ${items[index].parentLabel}");
                                                   locationFilterProvider.tempCity = items[index].link;
                                                 }else{
                                                   locationFilterProvider.setLocation(items[index].label);
@@ -269,7 +269,9 @@ class LocationFilterWidget extends StatelessWidget {
                                             String route = HiveStorageManager.hiveBox.get('route');
                                             if(route == "LocationFilterFromFilter"){
                                               context.push("/home/filteredHome/filter/locationFilterFromFilter/subLocationFilterFromFilter");
-                                            }else{
+                                            }else if(route == "LocationFilterFromFilterHome") {
+                                              context.push("/home/filterFromHome/locationFilterFromFilterHome/subLocationFilterFromFilterHome");
+                                            } else {
                                               context.push("/home/filteredHome/locationFilterFromHome/subLocationFilterFromHome");
                                             }
 

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vivadoo/providers/navigation_shell_provider.dart';
 import 'package:vivadoo/screens/auth/forgot_password.dart';
+import 'package:vivadoo/widgets/my_vivadoo_widgets/my_vivadoo_profile.dart';
 import 'package:vivadoo/widgets/post_new_ad_widgets/ad_poster_information_widget/ad_poster_information_widget.dart';
+import 'package:vivadoo/widgets/post_new_ad_widgets/preview_ad.dart';
 import '../screens/ad_details/carousel_ads_widget.dart';
 import '../screens/app_init/splash_screen.dart';
 import '../screens/auth/sign_in.dart';
@@ -58,6 +60,15 @@ class AppNavigation {
         builder: (context, state) {
           final data = state.extra! as Map<String, dynamic>;
           return CarouselAdsWidget(isFavorite: data['isFavorite'], initialIndex: data['initialIndex']);
+        },
+      ),
+      //PreviewAd
+      GoRoute(
+        path: '/previewAd',
+        name: 'PreviewAd',
+        builder: (context, state) {
+          final data = state.extra! as Map<String, dynamic>;
+          return PreviewAd(isFavorite: data['isFavorite'], adDetailsModel: data['adDetailsModel']);
         },
       ),
       StatefulShellRoute.indexedStack(
@@ -135,6 +146,32 @@ class AppNavigation {
                                 ),
                               ]
                           ),
+                          GoRoute(
+                              name: "FilterFromHome",
+                              path: 'filterFromHome',
+                              builder: (context, state) {
+                                final data = state.extra as Map<String, dynamic>?;
+                                return FilterWidget(showCategoryDialog: data?['showDialog']);
+                              },
+                              routes: [
+                                GoRoute(
+                                    name: "LocationFilterFromFilterHome",
+                                    path: 'locationFilterFromFilterHome',
+                                    builder: (context, state) {
+                                      return const LocationFilterWidget();
+                                    },
+                                    routes: [
+                                      GoRoute(
+                                          name: "SubLocationFilterFromFilterHome",
+                                          path: 'subLocationFilterFromFilterHome',
+                                          builder: (context, state) {
+                                            return const SubLocationWidget();
+                                          }
+                                      ),
+                                    ]
+                                ),
+                              ]
+                          ),
                         ]
                     ),
                   ],
@@ -185,12 +222,20 @@ class AppNavigation {
                                 return const ForgotPasswordWidget();
                               },
                             ),
+                            GoRoute(
+                              name: "MyVivadooProfile",
+                              path: 'myVivadooProfile',
+                              builder: (context, state) {
+                                return const MyVivadooProfile();
+                              },
+                            ),
                           ]
                       ),
                     ]
                 ),
               ],
             ),
+
             // post new ad
             StatefulShellBranch(
               observers: [MyRouteObserver()],
@@ -234,6 +279,9 @@ class AppNavigation {
                                           builder: (context, state) {
                                             return const AdPosterInformationWidget();
                                           },
+                                        routes: [
+
+                                        ]
                                       ),
                                     ]
                                   ),
@@ -335,14 +383,24 @@ class MyRouteObserver extends NavigatorObserver {
         break;
       case "Category And Location":
         box.put('route', 'PostNewAd');
-        box.put('PostNewAdSavedPage', 'PostNewAd');
         break;
       case "NewAdDetails":
         box.put('route', 'Category And Location');
-        box.put('PostNewAdSavedPage', 'Category And Location');
         break;
       case "PosterInformation":
         box.put('route', 'NewAdDetails');
+        break;
+      case "PreviewAd":
+        box.put('route', 'PosterInformation');
+        break;
+      case "FilterFromHome":
+        box.put('route', 'Home');
+        break;
+      case "LocationFilterFromFilterHome":
+        box.put('route', 'FilterFromHome');
+        break;
+      case "SubLocationFilterFromFilterHome":
+        box.put('route', 'LocationFilterFromFilterHome');
         break;
     }
     box.put('prevRoute', poppedFrom);
@@ -353,13 +411,10 @@ class MyRouteObserver extends NavigatorObserver {
     super.didPush(route, previousRoute);
     if (route.settings.name != null && route.isCurrent) {
       box.put('prevRoute', box.get('route'));
-
       box.put('route', route.settings.name);
       print("the route is : ${route.settings.name}");
       box.put('popped', false);
       if(route.settings.name == "Category And Location" || route.settings.name == "NewAdDetails" || route.settings.name == "PostNewAd" ){
-        box.put('PostNewAdSavedPage', route.settings.name);
-
       }
     }
   }

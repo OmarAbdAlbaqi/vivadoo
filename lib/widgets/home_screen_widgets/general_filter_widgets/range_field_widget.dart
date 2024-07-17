@@ -48,6 +48,7 @@ Widget rangeFieldWidget (BuildContext context, MetaFieldsModel metaFieldsModel){
                   onChanged: (value){
                     context.read<FilterProvider>().rangeMetaFieldId = metaFieldsModel.id.toString();
                     context.read<FilterProvider>().setRangeValue(value);
+                    context.read<FilterProvider>().showAdsCount(context);
                   }),
 
             ],

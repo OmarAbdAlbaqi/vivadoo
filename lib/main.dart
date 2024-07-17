@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,7 @@ import 'package:vivadoo/providers/auth/social_media_auth/apple_auth_provider.dar
 import 'package:vivadoo/providers/auth/social_media_auth/facebook_auth_provider.dart';
 import 'package:vivadoo/providers/auth/social_media_auth/google_auth_provider.dart';
 import 'package:vivadoo/providers/post_new_ad_provider/ad_poster_information_provider.dart';
+import 'package:vivadoo/services/push_notifications.dart';
 import '../app_navigation.dart';
 import '../providers/auth/sign_in_provider.dart';
 import '../providers/auth/sign_up_provider.dart';
@@ -32,12 +34,20 @@ import '../providers/general/nav_bar_provider.dart';
 import 'constants.dart';
 import 'models/ad_model.dart';
 
-enum HomeType {home,filteredHome,filter,locationFilter,splash}
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+Future<void> handleBackGroundMessage(RemoteMessage message) async {
+  print(message.data);
+}
+appInit() async {
+  await FirebaseAPI().initNotifications();
+}
+
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await HiveStorageManager.openHiveBox();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await appInit();
   runApp(const MyApp());
 }
 
@@ -52,8 +62,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AdsProvider()),
         ChangeNotifierProvider(create: (context) => FilterProvider()),
         ChangeNotifierProvider(create: (context) => LocationFilterProvider()),
-        ChangeNotifierProvider(create: (context) => FilteredAdsProvider()),
         ChangeNotifierProvider(create: (context) => AdDetailsProvider()),
+        ChangeNotifierProvider(create: (context) => FilteredAdsProvider(context)),
         ChangeNotifierProvider(create: (context) => LoadingProvider()),
         ChangeNotifierProvider(create: (context) => UserAdsScreenProvider()),
         ChangeNotifierProvider(create: (context) => RouteProvider()),

@@ -35,25 +35,17 @@ class HomePageProvider with ChangeNotifier{
         setIsScrollingUp(false);
       }
       if(scrollController.position.pixels == scrollController.position.maxScrollExtent) {
-        notifyListeners();
-         String page = HiveStorageManager.hiveBox.get('route');
-        if(page == "Home"){
-          scrollController.animateTo(
-              duration:  const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              scrollController.position.maxScrollExtent);
-          if(!homePageLoading){
-            setHomePageLoading(true);
-            context.read<AdsProvider>().getMoreAds(context).then((_) => setHomePageLoading(false));
+          if(context.read<AdsProvider>().hasMore){
+            if(!homePageLoading){
+              scrollController.animateTo(
+                  duration:  const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  scrollController.position.maxScrollExtent + 100);
+              setHomePageLoading(true);
+              context.read<AdsProvider>().getMoreAds(context).then((_) => setHomePageLoading(false));
+            }
           }
-        }else if (page == "FilteredHome"){
-          context.read<FilteredAdsProvider>().setLoading(true);
-          scrollController.animateTo(
-              duration:  const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              scrollController.position.maxScrollExtent);
-          context.read<FilteredAdsProvider>().getMoreFilteredAds(context);
-        }
+        notifyListeners();
       }
     });
   }

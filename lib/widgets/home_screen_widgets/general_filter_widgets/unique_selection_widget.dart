@@ -46,6 +46,7 @@ Widget uniqueSelectionWidget (BuildContext context, MetaFieldsModel metaFieldsMo
                           }),
                       GestureDetector(
                         onTap: (){
+                          context.read<FilterProvider>().showAdsCount(context);
                           filter.uniqueSelection(metaFieldsModel.name  ,{"[${metaFieldsModel.id}][$index]" : metaFieldsModel.options[index]});
                         },
                         child: Container(

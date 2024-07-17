@@ -29,6 +29,7 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin{
   late AnimationController _controller;
   late Animation<double> _animation;
+
   @override
   void initState() {
     _controller = AnimationController(
@@ -46,12 +47,16 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
     }
     super.initState();
   }
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
+
   bool isFavorite = false;
+
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

@@ -15,7 +15,6 @@ class MyVivadooProvider with ChangeNotifier{
         return color;
       }
     }
-
     return MaterialStateProperty.resolveWith(getColor);
   }
   void changeValue(bool increase) {

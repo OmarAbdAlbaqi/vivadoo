@@ -37,6 +37,7 @@ class CustomHomeScaffold extends StatelessWidget {
               children: [
                 GestureDetector(
                     onTap: () {
+                      context.read<FilteredAdsProvider>().page = 1;
                       List<AdModel> adsList = context.read<AdsProvider>().adsList;
                       context.read<AdDetailsProvider>().setListOfAdDetails(adsList, clearList: true);
                       context.read<FilterProvider>().resetFilter();
@@ -143,9 +144,10 @@ class CustomHomeScaffold extends StatelessWidget {
                 thickness: 0.5,
               ),
             ),
-            title: Text(switch(page){
-              "Filter" => "Refine",
-              "LocationFilterFromFilter" || "LocationFilterFromHome" || "SubLocationFilterFromFilter" || "SubLocationFilterFromHome" => "Where are you looking?",
+            title: Text(
+              switch(page){
+              "Filter" || "FilterFromHome" => "Refine",
+              "LocationFilterFromFilter" || "LocationFilterFromHome" || "SubLocationFilterFromFilter" || "SubLocationFilterFromHome" || "LocationFilterFromFilterHome" || "SubLocationFilterFromFilterHome" => "Where are you looking?",
               _ => ""
             },
               style: const TextStyle(color: Color(0xFF000000),fontWeight: FontWeight.w600 , fontSize: 16),
@@ -153,6 +155,7 @@ class CustomHomeScaffold extends StatelessWidget {
             centerTitle: true,
             leading: GestureDetector(
               onTap: () {
+
                 context.read<LocationFilterProvider>().tempLocation = "";
                 context.pop();
               },

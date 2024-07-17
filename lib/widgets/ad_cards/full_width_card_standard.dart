@@ -48,7 +48,7 @@ class _FullWidthStandardAdCardState extends State<FullWidthStandardAdCard> with 
     double width = MediaQuery.of(context).size.width;
     return GestureDetector(
       onTap: (){
-        print("on press on full width ad");
+        context.read<AdDetailsProvider>().initialPage = widget.index;
         context.read<AdDetailsProvider>().getAdDetails(context, widget.adModel.id.toString());
         context.push('/homePageAdDetails', extra: {'isFavorite':false, 'adId':widget.adModel.id.toString(),'initialIndex':widget.index});
       },

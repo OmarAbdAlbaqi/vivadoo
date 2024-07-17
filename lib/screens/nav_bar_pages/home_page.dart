@@ -5,6 +5,7 @@ import 'package:vivadoo/app_navigation.dart';
 import 'package:vivadoo/utils/hive_manager.dart';
 import '../../constants.dart';
 import '../../main.dart';
+import '../../providers/custom_widget_provider/steps_bar_widget_provider.dart';
 import '../../providers/general/home_page_provider.dart';
 import '../../providers/general/nav_bar_provider.dart';
 import '../../providers/navigation_shell_provider.dart';
@@ -34,8 +35,19 @@ class HomePage extends StatelessWidget {
               }:() {
                 NavigationManager().goBranch(2);
                 context.read<NavBarProvider>().setCurrentPage(2);
-                String page = HiveStorageManager.hiveBox.get('PostNewAdSavedPage') ?? "PostNewAd";
-                HiveStorageManager.hiveBox.put('route', page);
+                int tempIndex = context.read<StepsBarWidgetProvider>().currentIndex;
+                switch(tempIndex){
+                  case 0 : HiveStorageManager.hiveBox.put('route', 'PostNewAd');
+                  break;
+                  case 1 : HiveStorageManager.hiveBox.put('route', 'Category And Location');
+                  break;
+                  case 2 : HiveStorageManager.hiveBox.put('route', 'NewAdDetails');
+                  break;
+                  case 3 : HiveStorageManager.hiveBox.put('route', 'PosterInformation');
+                  break;
+                }
+                // String page = HiveStorageManager.hiveBox.get('PostNewAdSavedPage') ?? "PostNewAd";
+                // HiveStorageManager.hiveBox.put('route', page);
               },
               child: AnimatedContainer(
                 margin: EdgeInsets.only(

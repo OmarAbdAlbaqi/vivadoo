@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:vivadoo/providers/my_vivafoo_providers/general_provider.dart';
 
 import '../../constants.dart';
+import '../hive_manager.dart';
 
 class PopUps {
   static Future somethingWentWrong (BuildContext context) => showDialog(
@@ -120,6 +123,68 @@ class PopUps {
                       child: const Text("OK" , style: TextStyle(fontWeight: FontWeight.w600 , color: Color(0xFFffffff)),),
                     ),
                   ),
+                ),
+              ],
+            ),
+          ),
+        );
+      });
+
+  static Future logoutConfirmation (BuildContext context) => showDialog(
+      context: context,
+      builder: (BuildContext ctx){
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              color: const Color(0xFFffffff),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text("Do you really want to logout?" , style: TextStyle(fontSize: 14 , color: Colors.black , fontWeight: FontWeight.w500),),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: (){
+                        context.pushReplacement('/myVivadoo');
+                        context.read<MyVivadooProvider>().changeValue(true);
+                        HiveStorageManager.setSignedIn(false);
+                        HiveStorageManager.getUserInfoModel().clear();
+                        Navigator.pop(ctx);
+                      },
+                      child: Container(
+                        width: 70,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: const Color(0xFF1e6229),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text("Yes" , style: TextStyle(fontWeight: FontWeight.w500 , color: Color(0xFFffffff)),),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(ctx),
+                      child: Container(
+                        width: 70,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: const Color.fromRGBO(255, 0, 0, 1),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text("No" , style: TextStyle(fontWeight: FontWeight.w500 , color: Color(0xFFffffff)),),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

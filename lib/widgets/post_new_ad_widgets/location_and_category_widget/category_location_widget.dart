@@ -69,151 +69,149 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CategoryAndLocationProvider>(
-      builder: (context, prov, _) {
-        return Material(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 40, left: 20, right: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+    return Material(
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 40, left: 20, right: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(right: 8),
-                      child: Icon(Icons.info, color: Color.fromRGBO(150, 150, 150, 0.8),size: 30,),
-                    ),
-                    SizedBox(
-                        width: MediaQuery.of(context).size.width - 80,
-                        child: const Text("Select the location of your item, people using search by city will find your ad more easily")),
-                  ],
+                const Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: Icon(Icons.info, color: Color.fromRGBO(150, 150, 150, 0.8),size: 30,),
                 ),
-                const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: _showBottomSheetLocation,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    width: double.infinity,
-                    height: 55,
-                    decoration: BoxDecoration(
-                        color: const Color.fromRGBO(245, 246, 247, 1),
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: const [
-                          BoxShadow(
-                              offset: Offset(-3, 3),
-                              blurRadius: 4,
-                              spreadRadius: -2,
-                              color: Colors.black12
-                          ),
-                        ]
-                    ),
-                    alignment: Alignment.centerLeft,
-                    child: Selector<LocationFilterProvider, String>(
-                      selector: (context, prov) => prov.tempLocation,
-                      builder: (context, tempLocation, _) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            tempLocation.isNotEmpty ? Text(tempLocation, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),) :const Text("Select Location", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500 , color: Color.fromRGBO(150, 150, 150, 1)),),
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration:  BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Constants.orange.withOpacity(0.2),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: Constants.orange.withOpacity(0.2),
-                                        spreadRadius: -3,
-                                        blurStyle: BlurStyle.normal,
-                                        blurRadius: 6
-                                    ),
-                                  ]
-                              ),
-                              child: const Icon(Icons.arrow_forward),
-                            ),
-
-                          ],
-                        );
-                      }
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 60),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(right: 8),
-                      child: Icon(Icons.info, color: Color.fromRGBO(150, 150, 150, 0.8),size: 30,),
-                    ),
-                    SizedBox(
-                        width: MediaQuery.of(context).size.width - 80,
-                        child: const Text("You will have a 50% more chance of being contacted if your ad is in the right category.")),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: _showBottomSheetCategories,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    width: double.infinity,
-                    height: 55,
-                    decoration: BoxDecoration(
-                        color: const Color.fromRGBO(245, 246, 247, 1),
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: const [
-                          BoxShadow(
-                              offset: Offset(-3, 3),
-                              blurRadius: 4,
-                              spreadRadius: -2,
-                              color: Colors.black12
-                          ),
-                        ]
-                    ),
-                    alignment: Alignment.centerLeft,
-                    child: Selector<FilterProvider , String>(
-                        selector: (context , prov) => prov.categoryLabel,
-                      builder: (context , categoryLabel , _) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            categoryLabel.isNotEmpty ? Text(categoryLabel, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),) :const Text("Select Category", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500 , color: Color.fromRGBO(150, 150, 150, 1)),),
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration:  BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Constants.orange.withOpacity(0.2),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: Constants.orange.withOpacity(0.2),
-                                        spreadRadius: -3,
-                                        blurStyle: BlurStyle.normal,
-                                        blurRadius: 6
-                                    ),
-                                  ]
-                              ),
-                              child: const Icon(Icons.arrow_forward),
-                            ),
-
-                          ],
-                        );
-                      }
-                    ),
-                  ),
-                ),
-
-
+                SizedBox(
+                    width: MediaQuery.of(context).size.width - 80,
+                    child: const Text("Select the location of your item, people using search by city will find your ad more easily")),
               ],
             ),
-          ),
-        );
-      }
+            const SizedBox(height: 20),
+            GestureDetector(
+              onTap: _showBottomSheetLocation,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                width: double.infinity,
+                height: 55,
+                decoration: BoxDecoration(
+                    color: const Color.fromRGBO(245, 246, 247, 1),
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: const [
+                      BoxShadow(
+                          offset: Offset(-3, 3),
+                          blurRadius: 4,
+                          spreadRadius: -2,
+                          color: Colors.black12
+                      ),
+                    ]
+                ),
+                alignment: Alignment.centerLeft,
+                child: Selector<LocationFilterProvider, String>(
+                    selector: (context, prov) => prov.tempLocation,
+                    builder: (context, tempLocation, _) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          tempLocation.isNotEmpty ? Text(tempLocation, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),) :const Text("Select Location", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500 , color: Color.fromRGBO(150, 150, 150, 1)),),
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration:  BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Constants.orange.withOpacity(0.2),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Constants.orange.withOpacity(0.2),
+                                      spreadRadius: -3,
+                                      blurStyle: BlurStyle.normal,
+                                      blurRadius: 6
+                                  ),
+                                ]
+                            ),
+                            child: const Icon(Icons.arrow_forward),
+                          ),
+
+                        ],
+                      );
+                    }
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 60),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: Icon(Icons.info, color: Color.fromRGBO(150, 150, 150, 0.8),size: 30,),
+                ),
+                SizedBox(
+                    width: MediaQuery.of(context).size.width - 80,
+                    child: const Text("You will have a 50% more chance of being contacted if your ad is in the right category.")),
+              ],
+            ),
+            const SizedBox(height: 20),
+            GestureDetector(
+              onTap: _showBottomSheetCategories,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                width: double.infinity,
+                height: 55,
+                decoration: BoxDecoration(
+                    color: const Color.fromRGBO(245, 246, 247, 1),
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: const [
+                      BoxShadow(
+                          offset: Offset(-3, 3),
+                          blurRadius: 4,
+                          spreadRadius: -2,
+                          color: Colors.black12
+                      ),
+                    ]
+                ),
+                alignment: Alignment.centerLeft,
+                child: Selector<FilterProvider , String>(
+                    selector: (context , prov) => prov.categoryLabel,
+                    builder: (context , categoryLabel , _) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          categoryLabel.isNotEmpty ? SizedBox(
+                              width: MediaQuery.of(context).size.width - 120,
+                              child: Text(categoryLabel, overflow: TextOverflow.ellipsis ,style: const TextStyle(fontSize: 16, overflow: TextOverflow.ellipsis,fontWeight: FontWeight.w500),)) :const Text("Select Category", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500 , color: Color.fromRGBO(150, 150, 150, 1)),),
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration:  BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Constants.orange.withOpacity(0.2),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Constants.orange.withOpacity(0.2),
+                                      spreadRadius: -3,
+                                      blurStyle: BlurStyle.normal,
+                                      blurRadius: 6
+                                  ),
+                                ]
+                            ),
+                            child: const Icon(Icons.arrow_forward),
+                          ),
+
+                        ],
+                      );
+                    }
+                ),
+              ),
+            ),
+
+
+          ],
+        ),
+      ),
     );
   }
   Widget bottomSheetContentLocation(BuildContext context){
@@ -376,7 +374,7 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
                                                 itemBuilder: (context , index){
                                                   return  InkWell(
                                                     onTap: (){
-                                                      context.read<LocationFilterProvider>().setTempLocation(items[index].label);
+                                                      context.read<LocationFilterProvider>().setTempLocation("${items[index].label} - ${items[index].parentLabel}");
                                                       context.read<LocationFilterProvider>().tempCity = items[index].link;
                                                       Navigator.pop(context);
                                                     },
@@ -603,7 +601,7 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
                                                                         return InkWell(
                                                                           onTap: (){
                                                                             final locationFilterProvider = context.read<LocationFilterProvider>();
-                                                                            locationFilterProvider.setTempLocation(subAreaList[index].label);
+                                                                            locationFilterProvider.setTempLocation("${subAreaList[index].label} - ${subAreaList[index].parentLabel}");
                                                                             context.read<LocationFilterProvider>().tempCity = subAreaList[index].link;
                                                                             context.read<LocationFilterProvider>().cleanSubArea();
                                                                             context.read<CategoryAndLocationProvider>().tabController.animateTo(0);

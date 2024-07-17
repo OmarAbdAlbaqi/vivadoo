@@ -12,7 +12,8 @@ class CustomMyVivadooScaffold extends StatelessWidget {
   final Widget child;
   @override
   Widget build(BuildContext context) {
-    bool signedIn = context.read<UserInfoProvider>().signedIn;
+    final  box = HiveStorageManager.hiveBox;
+    bool signedIn = box.get('signedIn') ?? false;
     return ValueListenableBuilder(
       valueListenable: HiveStorageManager.hiveBox.listenable(),
         builder: (context, hiveBox, widget) {
@@ -21,7 +22,7 @@ class CustomMyVivadooScaffold extends StatelessWidget {
             backgroundColor: const Color.fromRGBO(235, 236, 247, 1),
             appBar: AppBar(
               surfaceTintColor: Colors.white,
-              toolbarHeight: !signedIn ? 150 : context.watch<MyVivadooProvider>().toolbarHeightValue,
+              toolbarHeight: signedIn ? 150 : context.watch<MyVivadooProvider>().toolbarHeightValue,
               backgroundColor: Colors.white,
               leading: Stack(
                 children: [
@@ -36,7 +37,7 @@ class CustomMyVivadooScaffold extends StatelessWidget {
                     height: page == "MyVivadoo" ? 350 : 150,
                     decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular( page == "MyVivadoo" ? MediaQuery.of(context).size.width / 2 : MediaQuery.of(context).size.width / 4), bottomRight: Radius.circular(page == "MyVivadoo" ? MediaQuery.of(context).size.width / 2 : MediaQuery.of(context).size.width / 4))
+                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular( page == "MyVivadoo" && !signedIn ? MediaQuery.of(context).size.width / 2 : MediaQuery.of(context).size.width / 5), bottomRight: Radius.circular(page == "MyVivadoo" && !signedIn ? MediaQuery.of(context).size.width / 2 : MediaQuery.of(context).size.width / 5))
                     ),
                     child: Image.asset(
                       'assets/images/logo.png',
@@ -49,6 +50,7 @@ class CustomMyVivadooScaffold extends StatelessWidget {
               ),
               leadingWidth: double.infinity,
             ),
+
             body: child,
           );
         }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:vivadoo/main.dart';
+import 'package:vivadoo/providers/custom_widget_provider/steps_bar_widget_provider.dart';
 import 'package:vivadoo/providers/general/home_page_provider.dart';
 import 'package:vivadoo/providers/general/nav_bar_provider.dart';
 import 'package:vivadoo/screens/nav_bar_pages/home_page.dart';
@@ -109,9 +110,8 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: ValueListenableBuilder(
           valueListenable: HiveStorageManager.hiveBox.listenable(),
         builder: (context, hiveBox, widget) {
-
           return Visibility(
-            visible: hiveBox.get('route') == "Home" || hiveBox.get('route') == "MyVivadoo" || hiveBox.get('route') == "PostNewAd" || hiveBox.get('route') == "Saved" || hiveBox.get('route') == "Messages" || hiveBox.get('route') == "Category And Location"  || hiveBox.get('route') == "NewAdDetails"  || hiveBox.get('route') == "PosterInformation",
+            visible: hiveBox.get('route') == "Home" || hiveBox.get('route') == "MyVivadoo" || hiveBox.get('route') == "PostNewAd" || hiveBox.get('route') == "Saved" || hiveBox.get('route') == "Messages" || hiveBox.get('route') == "Category And Location"  || hiveBox.get('route') == "NewAdDetails"  || hiveBox.get('route') == "PosterInformation" || hiveBox.get('route') == "MyVivadooProfile",
             child: Selector<NavBarProvider , int>(
               selector: (context , prov) => prov.currentPage,
               builder: (context , currentPage , _) {
@@ -131,10 +131,15 @@ class _MainScreenState extends State<MainScreen> {
                               NavigationManager().goBranch(index);
                               switch(index){
                                 case 0 : HiveStorageManager.hiveBox.put('route', 'Home');
+                                break;
                                 case 1 : HiveStorageManager.hiveBox.put('route', 'MyVivadoo');
-                                case 2 : HiveStorageManager.hiveBox.put('route', 'PostNewAd');
+                                break;
+                                case 2 : context.read<StepsBarWidgetProvider>().setCurrentPostNewAdPage(context);
+                                break;
                                 case 3 : HiveStorageManager.hiveBox.put('route', 'Saved');
+                                break;
                                 case 4 : HiveStorageManager.hiveBox.put('route', 'Messages');
+                                break;
                               }
                               context.read<NavBarProvider>().setCurrentPage(index);
                             },

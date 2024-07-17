@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
+import 'package:vivadoo/main.dart';
+import 'package:vivadoo/providers/filters/filter_provider.dart';
+import 'package:vivadoo/providers/filters/location_filter.dart';
+import 'package:vivadoo/providers/post_new_ad_provider/ad_poster_information_provider.dart';
 import 'package:vivadoo/providers/post_new_ad_provider/category_and_location_provider.dart';
+import 'package:vivadoo/providers/post_new_ad_provider/new_ad_details_provider.dart';
 import 'package:vivadoo/widgets/post_new_ad_widgets/location_and_category_widget/category_location_widget.dart';
 
 import '../constants.dart';
 import '../providers/custom_widget_provider/steps_bar_widget_provider.dart';
 import '../providers/general/nav_bar_provider.dart';
 import '../providers/navigation_shell_provider.dart';
+import '../providers/post_new_ad_provider/add_photos_provider.dart';
 import '../utils/hive_manager.dart';
 
 
@@ -31,45 +37,42 @@ class CustomPostNewAdScaffold extends StatelessWidget {
                 key: scaffoldKeyCateAndLocation,
                 backgroundColor: Colors.white,
                 appBar: AppBar(
-                  leading: Visibility(
-                    // visible: page == "Category And Location" && prov.isBottomSheetOpen,
-                    child: GestureDetector(
-                      onTap: switch(page){
-                        "PostNewAd" =>  (){
-                          NavigationManager().goBranch(0);
-                          context.read<NavBarProvider>().setCurrentPage(0);
-                          HiveStorageManager.hiveBox.put('route', "Home");
-                        },
-                      "Category And Location" => (){
-                          if(prov.isBottomSheetOpen){
-                            prov.currentTabBarViewIndex == 0 ? Navigator.pop(context) : context.read<CategoryAndLocationProvider>().tabController.animateTo(0);
-                          } else {
-                            context.pop();
-                          }
+                  leading: GestureDetector(
+                    onTap: switch(page){
+                      "PostNewAd" =>  (){
+                        NavigationManager().goBranch(0);
+                        context.read<NavBarProvider>().setCurrentPage(0);
+                        HiveStorageManager.hiveBox.put('route', "Home");
                       },
-                      "NewAdDetails" => (){
+                    "Category And Location" => (){
+                        if(prov.isBottomSheetOpen){
+                          prov.currentTabBarViewIndex == 0 ? Navigator.pop(context) : context.read<CategoryAndLocationProvider>().tabController.animateTo(0);
+                        } else {
                           context.pop();
-                      },
+                        }
+                    },
+                    "NewAdDetails" || "PosterInformation" => (){
+                        context.pop();
+                    },
 
-                        // TODO: Handle this case.
-                        String() => (){},
-                      },
-                      //
-                      //     (){
-                      //   switch(page){
-                      //     case "PostNewAd" : {
-                      //       print("WTF is going on here");
-                      //       context.go("/home");
-                      //       context.read<NavBarProvider>().setCurrentPage(0);
-                      //       break;
-                      //   }
-                      //   }
+                      // TODO: Handle this case.
+                      String() => (){},
+                    },
+                    //
+                    //     (){
+                    //   switch(page){
+                    //     case "PostNewAd" : {
+                    //       print("WTF is going on here");
+                    //       context.go("/home");
+                    //       context.read<NavBarProvider>().setCurrentPage(0);
+                    //       break;
+                    //   }
+                    //   }
 
-                      // },
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        child: const Icon(Icons.arrow_back_ios_new),
-                      ),
+                    // },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      child: const Icon(Icons.arrow_back_ios_new),
                     ),
                   ),
                   surfaceTintColor: Colors.white,
@@ -106,22 +109,63 @@ class CustomPostNewAdScaffold extends StatelessWidget {
                               switch(prov.currentIndex){
                                 //Ad Photos
                                 case 0 : {
-                                  context.go('/postNewAd/categoryAndLocation');
-                                  prov.setCurrentIndex(1);
+                                  if(context.read<AddPhotosProvider>().imageList.isNotEmpty){
+                                    context.go('/postNewAd/categoryAndLocation');
+                                    prov.setCurrentIndex(1);
+                                  }else{
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        duration: Duration(seconds: 2),
+                                        backgroundColor: Color.fromRGBO(255, 0, 0, 1),
+                                        content: Text('Please add at least 1 picture!', style: TextStyle(fontWeight: FontWeight.w600),),
+                                      ),
+                                    );
+                                  }
                               }
                               //Location & Category
                                 case 1 : {
-                                  context.go('/postNewAd/categoryAndLocation/newAdDetails');
-                                  prov.setCurrentIndex(2);
+                                  if(context.read<LocationFilterProvider>().tempLocation.isNotEmpty && context.read<FilterProvider>().categoryLabel.isNotEmpty){
+                                    context.go('/postNewAd/categoryAndLocation/newAdDetails');
+                                    prov.setCurrentIndex(2);
+                                  }else{
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        duration: Duration(seconds: 2),
+                                        backgroundColor: Color.fromRGBO(255, 0, 0, 1),
+                                        content: Text('Please fill the required fields!', style: TextStyle(fontWeight: FontWeight.w600),),
+                                      ),
+                                    );
+                                  }
                                 }
                                 //Ad Details
                                 case 2 : {
-                                  context.go('/postNewAd/categoryAndLocation/newAdDetails/posterInformation');
-                                  prov.setCurrentIndex(3);
+                                  if(context.read<NewAdDetailsProvider>().adTitleController.text.isNotEmpty && context.read<NewAdDetailsProvider>().adPriceController.text.isNotEmpty && context.read<NewAdDetailsProvider>().adDescriptionController.text.isNotEmpty){
+                                    context.go('/postNewAd/categoryAndLocation/newAdDetails/posterInformation');
+                                    prov.setCurrentIndex(3);
+                                  }else{
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        duration: Duration(seconds: 2),
+                                        backgroundColor: Color.fromRGBO(255, 0, 0, 1),
+                                        content: Text('Please fill the required fields!', style: TextStyle(fontWeight: FontWeight.w600),),
+                                      ),
+                                    );
+                                  }
                                 }
                                 //Ad Poster Information
                                 case 3 : {
-                                  //TODO preview
+                                  if(context.read<AdPosterInformationProvider>().nameController.text.isNotEmpty && context.read<AdPosterInformationProvider>().emailController.text.isNotEmpty && context.read<AdPosterInformationProvider>().phoneController.text.isNotEmpty){
+                                    context.read<AdPosterInformationProvider>().previewAd(context);
+                                  }else{
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        duration: Duration(seconds: 2),
+                                        backgroundColor: Color.fromRGBO(255, 0, 0, 1),
+                                        content: Text('Please fill the required fields!', style: TextStyle(fontWeight: FontWeight.w600),),
+                                      ),
+                                    );
+                                  }
+
                                 }
                               }
                             },
@@ -130,7 +174,7 @@ class CustomPostNewAdScaffold extends StatelessWidget {
                                   const EdgeInsets.symmetric(horizontal: 20)
                               ),
                               minimumSize: MaterialStateProperty.all<Size?>(
-                                   Size(page == "PosterInformation" ? (MediaQuery.of(context).size.width - 50 ) /2  :MediaQuery.of(context).size.width -40 , 45)),
+                                   Size(prov.currentIndex == 3 ? (MediaQuery.of(context).size.width - 50 ) /2  :MediaQuery.of(context).size.width -40 , 45)),
                               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -146,12 +190,12 @@ class CustomPostNewAdScaffold extends StatelessWidget {
                               foregroundColor: getColor(Colors.white, Colors.orange),
                             ),
                             child: Text(
-                              page == "PosterInformation"? "preview" :"Continue",
+                              prov.currentIndex == 3 ? "preview" :"Continue",
                               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                             ),
                           ),
                           Visibility(
-                            visible: page == "PosterInformation",
+                            visible: prov.currentIndex == 3,
                             child: ElevatedButton(
                             onPressed: () {},
                             style: ButtonStyle(

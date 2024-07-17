@@ -51,6 +51,7 @@ class HomePageWidget extends StatelessWidget {
                       builder: (context , ads , _) {
                         return AnimationLimiter(
                           child: GridView.builder(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: ads.length,
                               shrinkWrap: true,
@@ -127,6 +128,7 @@ class HomePageWidget extends StatelessWidget {
                                     },
                                     "add");
                                 context.read<FilterProvider>().setCategoryLabel("Real Estate");
+                                context.read<FilteredAdsProvider>().getAsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
                                 context.push('/home/filteredHome');
                               },
@@ -149,6 +151,7 @@ class HomePageWidget extends StatelessWidget {
                                   "add",
                                 );
                                 context.read<FilterProvider>().setCategoryLabel("Cars For Sale");
+                                context.read<FilteredAdsProvider>().getAsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
                                 context.push('/home/filteredHome');
                               },
@@ -172,6 +175,7 @@ class HomePageWidget extends StatelessWidget {
                                 );
                                 context.push('/home/filteredHome');
                                 context.read<FilterProvider>().setCategoryLabel("Jobs");
+                                context.read<FilteredAdsProvider>().getAsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
                               },
                               imagePath: "assets/icons/filter_search/search.png",
@@ -182,6 +186,7 @@ class HomePageWidget extends StatelessWidget {
                           HomePageFilterCard(
                               scrollController: homeProv.scrollController,
                               onTap: (){
+                                context.read<FilteredAdsProvider>().getAsCount(context, temp: true);
                                 context.read<FilterProvider>().categoryId = 0;
                                 context.read<FilterProvider>().subCategoryId = 3;
                                 context.read<FilterProvider>().setCategoryMetaFields(context);
@@ -194,6 +199,7 @@ class HomePageWidget extends StatelessWidget {
                                 );
                                 context.push('/home/filteredHome');
                                 context.read<FilterProvider>().setCategoryLabel("For Sale");
+                                context.read<FilteredAdsProvider>().getAsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
                               },
                               imagePath: "assets/icons/filter_search/check.png",
@@ -203,7 +209,9 @@ class HomePageWidget extends StatelessWidget {
                           //more
                           HomePageFilterCard(
                               scrollController: homeProv.scrollController,
-                              onTap: (){},
+                              onTap: (){
+                                context.go('/home/filterFromHome', extra: {'showDialog': true});
+                              },
                               imagePath: "assets/icons/filter_search/more.png",
                               title: "More",
                           )

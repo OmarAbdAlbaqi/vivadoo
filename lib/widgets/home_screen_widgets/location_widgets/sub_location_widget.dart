@@ -139,7 +139,7 @@ class SubLocationWidget extends StatelessWidget {
                                             String route = HiveStorageManager.hiveBox.get('route');
                                             context.read<LocationFilterProvider>().addToLocalRecent(subAreaList[index]);
                                             if(route == "SubLocationFilterFromFilter"){
-                                              locationFilterProvider.setTempLocation(subAreaList[index].label);
+                                              locationFilterProvider.setTempLocation("${subAreaList[index].label} - ${subAreaList[index].parentLabel}");
                                               context.read<LocationFilterProvider>().tempCity = subAreaList[index].link;
                                             }else{
                                               locationFilterProvider.setLocation(subAreaList[index].label);

@@ -3,8 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../custom_widget_provider/steps_bar_widget_provider.dart';
 class CategoryAndLocationProvider with ChangeNotifier{
-  String location = "";
-  String category = "";
+
   bool bottomSheetOnTop = false;
 
 
@@ -22,13 +21,4 @@ class CategoryAndLocationProvider with ChangeNotifier{
     });
   }
 
-  setLocation(String newLocation){
-    location = newLocation;
-    notifyListeners();
-  }
-
-  setCategory(String newCategory){
-    category = newCategory;
-    notifyListeners();
-  }
 }

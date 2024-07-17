@@ -47,7 +47,7 @@ class _NativeAdCardState extends State<NativeAdCard> with TickerProviderStateMix
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        print("on press on native ad");
+        context.read<AdDetailsProvider>().initialPage = 0;
         context.read<AdDetailsProvider>().getAdDetails(context, widget.adModel.id.toString());
         context.push('/homePageAdDetails', extra: {'isFavorite':false, 'adId':widget.adModel.id.toString(),'initialIndex':0});
       },

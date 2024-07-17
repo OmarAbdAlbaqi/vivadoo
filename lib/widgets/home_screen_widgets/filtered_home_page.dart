@@ -1,11 +1,14 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:vivadoo/providers/ads_provider/filtered_ads_provider.dart';
 import 'package:vivadoo/providers/filters/filter_provider.dart';
+import 'package:vivadoo/providers/general/home_page_provider.dart';
 import 'package:vivadoo/widgets/ad_cards/native_ad_card.dart';
 
 import '../../constants.dart';
@@ -26,7 +29,7 @@ class FilteredHomePage extends StatelessWidget {
       bottom: true,
       child: Material(
         color: Colors.white,
-        child: ListView(
+        child: Column(
           children: [
             Container(
               color: Colors.white,
@@ -417,97 +420,111 @@ class FilteredHomePage extends StatelessWidget {
                 ],
               ),
             ),
+            Selector<FilteredAdsProvider, bool>(
+                selector: (context, prov) => prov.radiusSliderVisible,
+                builder: (context, visible, _) {
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: double.infinity,
+                    height: visible && context
+                        .watch<LocationFilterProvider>()
+                        .location != "All Over Country" ? 120 : 0,
+                    color: const Color(0xFFffffff),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment
+                                .spaceBetween,
+                            children: [
+                              const Text("Choose distance",
+                                style: TextStyle(fontSize: 16,
+                                    fontWeight: FontWeight.w600),),
+                              Text("${context
+                                  .watch<FilteredAdsProvider>()
+                                  .radius} KM",
+                                style: const TextStyle(
+                                    color: Constants.orange,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500),)
+                            ],
+                          ),
+                        ),
+                        Slider(
+                          activeColor: Constants.orange,
+                          thumbColor: Colors.white,
+                          divisions: 950,
+                          min: 5,
+                          max: 100,
+                          value: double.parse(context
+                              .watch<FilteredAdsProvider>()
+                              .radius),
+                          onChanged: (value) {
+                            double myDouble = value;
+                            String myString = myDouble
+                                .toStringAsFixed(
+                                0); // Convert double to string with 0 decimal places
+                            String result = myString.split('.')[0];
+                            context.read<FilteredAdsProvider>()
+                                .setRadius(result);
+                          },
+                          onChangeEnd: (value) {
+                            context.read<FilteredAdsProvider>()
+                                .getFilteredAds(context);
+                          },
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 6),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment
+                                .spaceBetween,
+                            children: [
+                              Text("5 KM", style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),),
+                              Text("100 KM", style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),)
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+            ),
+
             Selector<FilteredAdsProvider, List<AdModel>>(
                 selector: (context, prov) => prov.filteredAdsList,
                 builder: (context, ads, _) {
-                  return Column(
-                    children: [
-                      Selector<FilteredAdsProvider, bool>(
-                          selector: (context, prov) => prov.radiusSliderVisible,
-                          builder: (context, visible, _) {
-                            return AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              width: double.infinity,
-                              height: visible && context
-                                  .watch<LocationFilterProvider>()
-                                  .location != "All Over Country" ? 120 : 0,
-                              color: const Color(0xFFffffff),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment
-                                    .spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .spaceBetween,
-                                      children: [
-                                        const Text("Choose distance",
-                                          style: TextStyle(fontSize: 16,
-                                              fontWeight: FontWeight.w600),),
-                                        Text("${context
-                                            .watch<FilteredAdsProvider>()
-                                            .radius} KM",
-                                          style: const TextStyle(
-                                              color: Constants.orange,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500),)
-                                      ],
-                                    ),
-                                  ),
-                                  Slider(
-                                    activeColor: Constants.orange,
-                                    thumbColor: Colors.white,
-                                    divisions: 950,
-                                    min: 5,
-                                    max: 100,
-                                    value: double.parse(context
-                                        .watch<FilteredAdsProvider>()
-                                        .radius),
-                                    onChanged: (value) {
-                                      double myDouble = value;
-                                      String myString = myDouble
-                                          .toStringAsFixed(
-                                          0); // Convert double to string with 0 decimal places
-                                      String result = myString.split('.')[0];
-                                      context.read<FilteredAdsProvider>()
-                                          .setRadius(result);
-                                    },
-                                    onChangeEnd: (value) {
-                                      context.read<FilteredAdsProvider>()
-                                          .getFilteredAds(context);
-                                    },
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 6),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .spaceBetween,
-                                      children: [
-                                        Text("5 KM", style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600),),
-                                        Text("100 KM", style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600),)
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
+                  return Expanded(
+                    child: SmartRefresher(
+                      onRefresh: ()async {
+                        await context.read<FilteredAdsProvider>().getFilteredAds(context);
+                        if(context.mounted){
+                          context.read<FilteredAdsProvider>().refreshControllerFilteredAds.refreshCompleted();
+                        }
+                      },
+                      header: WaterDropHeader(
+                        refresh: Container(
+                          padding: const EdgeInsets.only(top: 110, bottom: 20),
+                          alignment: Alignment.center,
+                          child: const CupertinoActivityIndicator(),
+                        ),
                       ),
-                      ListView.builder(
+                      enablePullUp: false,
+                      controller: context.watch<FilteredAdsProvider>().refreshControllerFilteredAds,
+                      child: ListView.builder(
+                        controller: context.watch<FilteredAdsProvider>().scrollControllerFiltered,
                           shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
+                          physics: const BouncingScrollPhysics(),
                           itemCount: ads.length,
                           itemBuilder: (context, index) {
-                            return ads.isEmpty
-                                ? const Center()
-                                : AnimationLimiter(
+                            return AnimationLimiter(
                               child: AnimationConfiguration.synchronized(
                                   duration: const Duration(milliseconds: 300),
                                   child: SlideAnimation(
@@ -524,24 +541,20 @@ class FilteredHomePage extends StatelessWidget {
                                         adModel: ads[index], index: index,))),
                             );
                           }),
-                    ],
+                    ),
                   );
                 }
             ),
-            Selector<FilteredAdsProvider, bool>(
-              selector: (context, prov) => prov.loading,
-              builder: (context, loading, _) {
-                return Visibility(
-                    visible: loading,
-                    child: Container(
-                      width: double.infinity,
-                      height: 40,
-                      alignment: Alignment.center,
-                      child: const CupertinoActivityIndicator(
-                      ),
-                    ));
-              },
-            ),
+
+            Visibility(
+                visible: context.watch<FilteredAdsProvider>().loading,
+                child: Container(
+                  width: double.infinity,
+                  height: 50,
+                  alignment: Alignment.center,
+                  child: const CupertinoActivityIndicator(
+                  ),
+                ))
           ],
         ),
       ),

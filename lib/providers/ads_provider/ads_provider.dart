@@ -14,7 +14,7 @@ class AdsProvider with ChangeNotifier{
   List<AdModel> adsList = [];
   String  page = "1";
   bool loading = false;
-
+  bool hasMore = false;
   setLoading (bool value){
     loading = value;
     notifyListeners();
@@ -35,6 +35,7 @@ class AdsProvider with ChangeNotifier{
       if(response.statusCode == 200){
         var extractedData = jsonDecode(response.body);
         List items = extractedData['items'];
+        hasMore = extractedData['hasMore'] == 1;
         List<AdModel> temp = adsList;
         temp.addAll(items.map((ad) => AdModel.fromJson(ad)).toList());
         adsList = temp;
@@ -69,9 +70,9 @@ class AdsProvider with ChangeNotifier{
       if(response.statusCode == 200){
         var extractedData = jsonDecode(response.body);
         List items = extractedData['items'];
+        hasMore = extractedData['hasMore'] == 1;
         adsList = items.map((ad) => AdModel.fromJson(ad)).toList();
         if(context.mounted){
-          print("shu meshan halaaaaaa ?");
           context.read<AdDetailsProvider>().setListOfAdDetails(adsList, clearList: true);
         }
       } else {

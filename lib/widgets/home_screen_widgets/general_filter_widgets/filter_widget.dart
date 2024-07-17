@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:provider/provider.dart';
 import 'package:vivadoo/providers/filters/filter_provider.dart';
+import 'package:vivadoo/utils/hive_manager.dart';
 import '../../../models/filters/category_model.dart';
 import '../../../providers/ads_provider/ad_details_provider.dart';
 import '../../../providers/ads_provider/filtered_ads_provider.dart';
@@ -15,12 +16,41 @@ import 'category_card.dart';
 import 'meta_fields_widget.dart';
 
 class FilterWidget extends StatelessWidget {
-  const FilterWidget({super.key});
+  const FilterWidget({super.key, this.showCategoryDialog});
+  final bool? showCategoryDialog;
 
-
+void showCatDialog (BuildContext context){
+  showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 12 , vertical: 100),
+          decoration: BoxDecoration(
+              color: const Color(0xFFffffff),
+              borderRadius: BorderRadius.circular(6)
+          ),
+          child: Selector<FilteredAdsProvider , List<CategoryModel>>(
+              selector: (ctx , prov) => prov.categoryList,
+              builder: (ctx , categoryList , _) {
+                return ListView.builder(
+                  itemCount:  categoryList.length ,
+                  itemBuilder: (ctx, int index) {
+                    return index == 0 ? const SizedBox(height: 25):categoryCard(ctx , categoryList[index] ,  index);
+                  },
+                );
+              }
+          ),
+        );
+      });
+}
 
   @override
   Widget build(BuildContext context) {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if(showCategoryDialog!= null && showCategoryDialog == true){
+      Future.delayed(const Duration(milliseconds: 400)).then((value) => showCatDialog(context));
+    }
+  });
     return Material(
       color: Colors.white,
       child: Stack(
@@ -39,28 +69,7 @@ class FilterWidget extends StatelessWidget {
                     return filterSelector(
                         "CATEGORY",
                         categoryLabel , (){
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext ctx) {
-                            return Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 12 , vertical: 100),
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFffffff),
-                                  borderRadius: BorderRadius.circular(6)
-                              ),
-                              child: Selector<FilteredAdsProvider , List<CategoryModel>>(
-                                  selector: (ctx , prov) => prov.categoryList,
-                                  builder: (ctx , categoryList , _) {
-                                    return ListView.builder(
-                                      itemCount:  categoryList.length ,
-                                      itemBuilder: (ctx, int index) {
-                                        return index == 0 ? const SizedBox(height: 25):categoryCard(ctx , categoryList[index] ,  index);
-                                      },
-                                    );
-                                  }
-                              ),
-                            );
-                          });
+                          showCatDialog(context);
                     });
                   },
                 ),
@@ -73,7 +82,9 @@ class FilterWidget extends StatelessWidget {
                     return filterSelector("LOCATION",
                         location.isEmpty ? context.watch<LocationFilterProvider>().location : location ,
                             (){
-                          context.go('/home/filteredHome/filter/locationFilterFromFilter');
+                      HiveStorageManager.hiveBox.get('route') == 'FilterFromHome' ?
+                      context.go('/home/filterFromHome/locationFilterFromFilterHome'):
+                      context.go('/home/filteredHome/filter/locationFilterFromFilter');
                         });
                   },
                 ),
@@ -138,8 +149,9 @@ class FilterWidget extends StatelessWidget {
                 onPressed: () async {
                   context.read<LocationFilterProvider>().setCity("");
                   await context.read<FilterProvider>().showAds(context);
-                  // context.read<AdDetailsProvider>().setListOfAdDetails(context.read<FilteredAdsProvider>().filteredAdsList, clearList: true);
-                  context.pop();
+                  if(context.mounted){
+                    context.pop();
+                  }
                 },
                 style: ButtonStyle(
                   minimumSize: MaterialStateProperty.all<Size?>(
@@ -158,9 +170,13 @@ class FilterWidget extends StatelessWidget {
                   backgroundColor: getColor(Colors.orange, Colors.white),
                   foregroundColor: getColor(Colors.white, Colors.orange),
                 ),
-                child: const Text(
-                  "Search",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                child: Consumer<FilteredAdsProvider>(
+                  builder: (context, prov, _) {
+                    return Text(
+                      "Search (${prov.tempAdsCount?.count ??  prov.adsCount?.count ?? 0.toString()})",
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    );
+                  }
                 ),
               ),
             ),
@@ -181,7 +197,6 @@ class FilterWidget extends StatelessWidget {
     return MaterialStateProperty.resolveWith(getColor);
   }
 }
-
 
 Widget filterSelector(String title , String category , Function onTap){
   return GestureDetector(
@@ -229,6 +244,7 @@ Widget adType(BuildContext context){
                 GestureDetector(
                   onTap: (){
                     filter.setAdType("Privates");
+                    context.read<FilterProvider>().showAdsCount(context);
                   },
                   child: Container(
                     color: Colors.transparent,
@@ -298,6 +314,7 @@ Widget searchOnlyInTitle(){
                 value: search,
                 onChanged: (value){
                   context.read<FilterProvider>().setSearchOnlyInTitle();
+                  context.read<FilterProvider>().showAdsCount(context);
                 })
           ],
         ),
@@ -322,6 +339,7 @@ Widget showOnlyAdsWithPhotos() {
                   value: search,
                   onChanged: (value){
                     context.read<FilterProvider>().setShowOnlyAdsWithPhotos();
+                    context.read<FilterProvider>().showAdsCount(context);
                   })
             ],
           ),
@@ -346,6 +364,7 @@ Widget showOnlyFeaturedAds(){
                   value: search,
                   onChanged: (value){
                     context.read<FilterProvider>().setShowOnlyFeaturedAds();
+                    context.read<FilterProvider>().showAdsCount(context);
                   })
             ],
           ),

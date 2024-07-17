@@ -30,7 +30,7 @@ Widget locationSearchResult (BuildContext context ){
                       String route = HiveStorageManager.hiveBox.get('route');
                       final filterProvider = context.read<LocationFilterProvider>();
                       if(route == "LocationFilterFromFilter" || route == "SubLocationFilterFromFilter"){
-                        filterProvider.setTempLocation(searchResult[index].label);
+                        filterProvider.setTempLocation("${searchResult[index].label} - ${searchResult[index].parentLabel}");
                       }else{
                         filterProvider.setCity(searchResult[index].link);
                         filterProvider.setLocation(searchResult[index].label);

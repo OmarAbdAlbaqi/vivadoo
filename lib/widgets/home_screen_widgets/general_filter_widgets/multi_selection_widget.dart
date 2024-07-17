@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
 import '../../../models/filters/meta_fields_model.dart';
+import '../../../providers/ads_provider/filtered_ads_provider.dart';
 import '../../../providers/filters/filter_provider.dart';
 
 
@@ -24,6 +25,7 @@ Widget multiSelectionWidget (BuildContext context , MetaFieldsModel metaFieldsMo
               itemBuilder: (context , index){
                 return GestureDetector(
                   onTap: (){
+                    context.read<FilterProvider>().showAdsCount(context);
                     filter.multiCheckSelection("[${metaFieldsModel.id}][$index]",metaFieldsModel.options[index], index);
                   },
                   child: Row(

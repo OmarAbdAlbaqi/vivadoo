@@ -11,6 +11,7 @@ Widget subCategoryCard (BuildContext context , SubCategoryModel subCategoryModel
       context.read<FilterProvider>().categoryId = subCategoryModel.parent;
       context.read<FilterProvider>().subCategoryId = subCategoryModel.id;
       context.read<FilterProvider>().setCategoryMetaFields(context);
+      context.read<FilterProvider>().showAdsCount(context);
       Navigator.pop(context);
     },
     child: Container(
@@ -23,7 +24,7 @@ Widget subCategoryCard (BuildContext context , SubCategoryModel subCategoryModel
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(subCategoryModel.name , style: const TextStyle(fontSize: 18 , fontWeight: FontWeight.w500 , color: Color(0xFF000000)),),
-          Text(subCategoryModel.id.toString(), style: const TextStyle(fontSize: 12 , fontWeight: FontWeight.w500 , color: Color(0xFF000000)),),
+          Text(context.read<FilteredAdsProvider>().adsCount!.categories[subCategoryModel.cat_link].toString(), style: const TextStyle(fontSize: 12 , fontWeight: FontWeight.w500 , color: Color(0xFF000000)),),
         ],
       ),
     ),

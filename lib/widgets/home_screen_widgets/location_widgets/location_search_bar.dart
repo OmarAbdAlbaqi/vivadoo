@@ -1,18 +1,38 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/filters/location_filter.dart';
 
+class Debounce {
+  final int milliseconds;
+  Timer? _timer;
+  Debounce({required this.milliseconds});
+  void run(VoidCallback  action) {
+    if (_timer?.isActive ?? false) {
+      _timer?.cancel();
+    }
+
+    _timer = Timer(Duration(milliseconds: milliseconds), action);
+  }
+  void dispose() => _timer?.cancel();
+}
+
 Widget locationSearchBar (BuildContext context) {
+
+  final _debounce = Debounce(milliseconds: 700);
+  void doSearch(String text) {
+    _debounce.run(() {
+      context.read<LocationFilterProvider>().searchArea();
+    });
+  }
   return TextFormField(
     controller: context.watch<LocationFilterProvider>().textEditingController,
-    onChanged: (value){
-      if(value.length >= 2){
-        context.read<LocationFilterProvider>().setToSearchText(value);
-        context.read<LocationFilterProvider>().searchArea();
-      }else{
-        context.read<LocationFilterProvider>().resetSearch();
-      }
+    onChanged: (value) {
+        doSearch(value);
+
+
     },
     decoration: InputDecoration(
         fillColor: Colors.white,
@@ -34,17 +54,18 @@ Widget locationSearchBar (BuildContext context) {
         prefixIcon: const Icon(Icons.search,
             size: 35, color: Color.fromRGBO(88, 89, 91, 0.6)),
         suffixIcon:  InkWell(
-          onTap: context.watch<LocationFilterProvider>().searchedResult.isNotEmpty ?
+          onTap: context.watch<LocationFilterProvider>().textEditingController.text.isNotEmpty ?
               () {
             context.read<LocationFilterProvider>().resetSearch();
             context.read<LocationFilterProvider>().clearText();
             FocusScope.of(context).unfocus();
           } :
               () {
+
           },
           child:
           Icon(
-              context.watch<LocationFilterProvider>().searchedResult.isNotEmpty ?Icons.close : Icons.mic_rounded,
+              context.watch<LocationFilterProvider>().textEditingController.text.isNotEmpty ?Icons.close : Icons.mic_rounded,
               size: 30, color: const Color.fromRGBO(88, 89, 91, 0.7)),
 
         )),

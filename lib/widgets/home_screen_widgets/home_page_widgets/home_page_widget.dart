@@ -1,19 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../constants.dart';
 import '../../../providers/ads_provider/filtered_ads_provider.dart';
-import '../../../providers/filters/filter_provider.dart';
-import '../../../widgets/home_screen_widgets/home_page_widgets/post_card.dart';
-import '../../../widgets/home_screen_widgets/home_page_widgets/search_result.dart';
+import '../../../providers/home_providers/filters/filter_provider.dart';
+import '../../ad_cards/ad_card_for_home_page.dart';
+import '../search_result_for_home_and_filtered-home.dart';
 import '../../../providers/ads_provider/ads_provider.dart';
 
 import '../../../models/ad_model.dart';
-import '../../../providers/general/home_page_provider.dart';
+import '../../../providers/home_providers/home_page_provider.dart';
 
 class HomePageWidget extends StatelessWidget {
   const HomePageWidget({super.key});
@@ -62,14 +61,9 @@ class HomePageWidget extends StatelessWidget {
                                   child: SlideAnimation(
                                     duration: const Duration(milliseconds: 500),
                                     verticalOffset: firstAnimate ? 120 : 0,
-                                    child: PostCard(
-                                      imageUrl: ads[index].thumb,
-                                      title: ads[index].title,
-                                      isFavorite: false,
-                                      price: ads[index].price,
-                                      favorite: (){},
-                                      adId: ads[index].id.toString(),
-                                      index:  index,
+                                    child: AdCardForHomePage(
+                                      adModel: ads[index],
+                                      index: index,
                                     ),
                                   ),
                                 );
@@ -128,7 +122,7 @@ class HomePageWidget extends StatelessWidget {
                                     },
                                     "add");
                                 context.read<FilterProvider>().setCategoryLabel("Real Estate");
-                                context.read<FilteredAdsProvider>().getAsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
+                                context.read<FilterProvider>().getAdsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
                                 context.push('/home/filteredHome');
                               },
@@ -151,7 +145,7 @@ class HomePageWidget extends StatelessWidget {
                                   "add",
                                 );
                                 context.read<FilterProvider>().setCategoryLabel("Cars For Sale");
-                                context.read<FilteredAdsProvider>().getAsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
+                                context.read<FilterProvider>().getAdsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
                                 context.push('/home/filteredHome');
                               },
@@ -175,7 +169,7 @@ class HomePageWidget extends StatelessWidget {
                                 );
                                 context.push('/home/filteredHome');
                                 context.read<FilterProvider>().setCategoryLabel("Jobs");
-                                context.read<FilteredAdsProvider>().getAsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
+                                context.read<FilterProvider>().getAdsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
                               },
                               imagePath: "assets/icons/filter_search/search.png",
@@ -186,7 +180,7 @@ class HomePageWidget extends StatelessWidget {
                           HomePageFilterCard(
                               scrollController: homeProv.scrollController,
                               onTap: (){
-                                context.read<FilteredAdsProvider>().getAsCount(context, temp: true);
+                                // context.read<FilteredAdsProvider>().getAdsCount(context, temp: true);
                                 context.read<FilterProvider>().categoryId = 0;
                                 context.read<FilterProvider>().subCategoryId = 3;
                                 context.read<FilterProvider>().setCategoryMetaFields(context);
@@ -199,7 +193,7 @@ class HomePageWidget extends StatelessWidget {
                                 );
                                 context.push('/home/filteredHome');
                                 context.read<FilterProvider>().setCategoryLabel("For Sale");
-                                context.read<FilteredAdsProvider>().getAsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
+                                context.read<FilterProvider>().getAdsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
                               },
                               imagePath: "assets/icons/filter_search/check.png",
@@ -222,6 +216,15 @@ class HomePageWidget extends StatelessWidget {
 
                 );
               },
+            ),
+
+            Visibility(
+              visible: context.watch<HomePageProvider>().searchedResult.isNotEmpty,
+              child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.blue.withOpacity(0.1),
+              ),
             ),
             searchResult(context),
           ],

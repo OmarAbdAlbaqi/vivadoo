@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:provider/provider.dart';
-import 'package:vivadoo/providers/filters/filter_provider.dart';
 import 'package:vivadoo/utils/hive_manager.dart';
+import '../../../models/filters/ads_count_model.dart';
 import '../../../models/filters/category_model.dart';
-import '../../../providers/ads_provider/ad_details_provider.dart';
 import '../../../providers/ads_provider/filtered_ads_provider.dart';
-import '../../../providers/filters/location_filter.dart';
 
 import '../../../constants.dart';
-import 'category_card.dart';
-import 'meta_fields_widget.dart';
+import '../../../providers/home_providers/filters/filter_provider.dart';
+import '../../../providers/home_providers/filters/location_filter.dart';
+import 'category_and_sub-category/category_card.dart';
+import 'meta_fields/meta_fields_widget.dart';
 
 class FilterWidget extends StatelessWidget {
   const FilterWidget({super.key, this.showCategoryDialog});
@@ -147,11 +147,19 @@ void showCatDialog (BuildContext context){
               alignment: Alignment.topCenter,
               child: ElevatedButton(
                 onPressed: () async {
-                  context.read<LocationFilterProvider>().setCity("");
+                  String route = HiveStorageManager.hiveBox.get('route');
                   await context.read<FilterProvider>().showAds(context);
-                  if(context.mounted){
-                    context.pop();
+                  if(route == "FilterFromHome"){
+                    if(context.mounted){
+                      context.pop();
+                      HiveStorageManager.hiveBox.put('route', 'FilteredHome');
+                    }
+                  }else{
+                    if(context.mounted){
+                      context.pop();
+                    }
                   }
+
                 },
                 style: ButtonStyle(
                   minimumSize: MaterialStateProperty.all<Size?>(
@@ -170,10 +178,11 @@ void showCatDialog (BuildContext context){
                   backgroundColor: getColor(Colors.orange, Colors.white),
                   foregroundColor: getColor(Colors.white, Colors.orange),
                 ),
-                child: Consumer<FilteredAdsProvider>(
+                child: Selector<FilterProvider, AdsCount>(
+                  selector: (context, prov) => prov.adsCount ?? AdsCount(count: 0, countCat: 0, categories: {}),
                   builder: (context, prov, _) {
                     return Text(
-                      "Search (${prov.tempAdsCount?.count ??  prov.adsCount?.count ?? 0.toString()})",
+                      "Search (${prov.count.toString()})",
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     );
                   }
@@ -185,16 +194,17 @@ void showCatDialog (BuildContext context){
       ),
     );
   }
-  MaterialStateProperty<Color> getColor(Color color, Color colorPressed) {
-    getColor(Set<MaterialState> states) {
-      if (states.contains(MaterialState.pressed)) {
+
+  WidgetStateProperty<Color> getColor(Color color, Color colorPressed) {
+    getColor(Set<WidgetState> states) {
+      if (states.contains(WidgetState.pressed)) {
         return colorPressed;
       } else {
         return color;
       }
     }
 
-    return MaterialStateProperty.resolveWith(getColor);
+    return WidgetStateProperty.resolveWith(getColor);
   }
 }
 
@@ -243,8 +253,8 @@ Widget adType(BuildContext context){
               children: [
                 GestureDetector(
                   onTap: (){
-                    filter.setAdType("Privates");
-                    context.read<FilterProvider>().showAdsCount(context);
+                    filter.setAdType(context,"Privates");
+                    // context.read<FilterProvider>().showAdsCount(context);
                   },
                   child: Container(
                     color: Colors.transparent,
@@ -268,7 +278,7 @@ Widget adType(BuildContext context){
                 SizedBox(width: MediaQuery.of(context).size.width / 4),
                 GestureDetector(
                   onTap: (){
-                    filter.setAdType("Professionals");
+                    filter.setAdType(context,"Professionals");
                   },
                   child: Container(
                     color: Colors.transparent,
@@ -313,8 +323,8 @@ Widget searchOnlyInTitle(){
             CupertinoSwitch(
                 value: search,
                 onChanged: (value){
-                  context.read<FilterProvider>().setSearchOnlyInTitle();
-                  context.read<FilterProvider>().showAdsCount(context);
+                  context.read<FilterProvider>().setSearchOnlyInTitle(context);
+                  // context.read<FilterProvider>().showAdsCount(context);
                 })
           ],
         ),
@@ -338,8 +348,8 @@ Widget showOnlyAdsWithPhotos() {
               CupertinoSwitch(
                   value: search,
                   onChanged: (value){
-                    context.read<FilterProvider>().setShowOnlyAdsWithPhotos();
-                    context.read<FilterProvider>().showAdsCount(context);
+                    context.read<FilterProvider>().setShowOnlyAdsWithPhotos(context);
+                    // context.read<FilterProvider>().showAdsCount(context);
                   })
             ],
           ),
@@ -364,7 +374,7 @@ Widget showOnlyFeaturedAds(){
                   value: search,
                   onChanged: (value){
                     context.read<FilterProvider>().setShowOnlyFeaturedAds();
-                    context.read<FilterProvider>().showAdsCount(context);
+                    // context.read<FilterProvider>().showAdsCount(context);
                   })
             ],
           ),
@@ -380,6 +390,7 @@ Widget makeCard(BuildContext context,Map<String , dynamic> make){
       context.read<FilterProvider>().cleanSelected();
       context.read<FilterProvider>().setMakeLabel(make['name']);
       context.read<FilterProvider>().setCategoryMetaFields(context , makeId: make['id'], method: "add");
+      context.read<FilterProvider>().showAdsCount(context);
       Navigator.pop(context);
     },
     child: Container(

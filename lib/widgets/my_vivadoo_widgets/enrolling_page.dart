@@ -2,8 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:vivadoo/providers/my_vivafoo_providers/general_provider.dart';
-import 'package:vivadoo/screens/auth/sign_up.dart';
+import '../../providers/my_vivadoo_providers/my_vivadoo_general_provider.dart';
 
 class Enrolling extends StatelessWidget {
   const Enrolling({super.key});
@@ -22,9 +21,9 @@ class Enrolling extends StatelessWidget {
               context.go('/myVivadoo/signIn');
             },
             style: ButtonStyle(
-              minimumSize: MaterialStateProperty.all<Size?>(
+              minimumSize: WidgetStateProperty.all<Size?>(
                   const Size(double.infinity, 45)),
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                   side: const BorderSide(
@@ -77,9 +76,9 @@ class Enrolling extends StatelessWidget {
               context.go('/myVivadoo/signUp');
             },
             style: ButtonStyle(
-              minimumSize: MaterialStateProperty.all<Size?>(
+              minimumSize: WidgetStateProperty.all<Size?>(
                   const Size(double.infinity, 45)),
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                   side: const BorderSide(
@@ -134,13 +133,10 @@ class Enrolling extends StatelessWidget {
                           style: const TextStyle(fontSize: 14 , fontWeight: FontWeight.w500 , color: Colors.deepPurpleAccent ,),
                           recognizer: TapGestureRecognizer()
                             ..onTap = (){
-                              print("qwertyuiop[");
+                              context.read<MyVivadooProvider>().changeValue(false);
+                              context.go('/myVivadoo/termsOfUse');
                             }
                       ),
-                      // TextSpan(
-                      //   text: "and land for sale and for rent throughout the RE/MAX Organization and by RE/MAX Affiliates, as well as various real estate related issues we think may interest you. Company information and information on the RE/MAX Organization and RE/MAX Affiliates is also,provided on this site. To insure a safe, non-offensive environment for all visitors to this website, we have established these “Terms of Use.” By accessing any areas of remax.com.e.g., you agree to be bound by the terms and conditions set forth below. If you do not agree to all the Terms of Use, please do not use this site.",
-                      //   style: TextStyle(fontSize: 14 , color: Colors.black.withOpacity(0.7)),
-                      // ),
                     ])),
           ),
         ),
@@ -148,15 +144,15 @@ class Enrolling extends StatelessWidget {
       ],
     );
   }
-  MaterialStateProperty<Color> getColor(Color color, Color colorPressed) {
-    getColor(Set<MaterialState> states) {
-      if (states.contains(MaterialState.pressed)) {
+  WidgetStateProperty<Color> getColor(Color color, Color colorPressed) {
+    getColor(Set<WidgetState> states) {
+      if (states.contains(WidgetState.pressed)) {
         return colorPressed;
       } else {
         return color;
       }
     }
 
-    return MaterialStateProperty.resolveWith(getColor);
+    return WidgetStateProperty.resolveWith(getColor);
   }
 }

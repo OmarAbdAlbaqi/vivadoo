@@ -5,8 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:vivadoo/main.dart';
 import 'package:vivadoo/models/ad_model.dart';
-import 'package:vivadoo/providers/ads_provider/ads_provider.dart';
-import 'package:vivadoo/utils/pop-ups/pop-ups.dart';
+import 'package:vivadoo/utils/pop-ups/pop_ups.dart';
 
 import '../../constants.dart';
 import '../../models/ad_details_model.dart';
@@ -51,8 +50,7 @@ class AdDetailsProvider with ChangeNotifier{
   }
 
   setListOfAdDetails(List<AdModel> ads,{bool clearList = false}){
-    print("setListOfAdDetails ha been called\nclear List = $clearList");
-
+    print("set list of ad details has been called");
     if(clearList == true){
       listOfAdDetails = [];
     }
@@ -61,7 +59,7 @@ class AdDetailsProvider with ChangeNotifier{
 
       listOfAdDetails.add(AdDetailsModel(images: [{"main":element.thumb}], id: element.id, title: element.title, priceFormatted: element.price, location: element.location));
     }
-
+    print(listOfAdDetails.length);
     notifyListeners();
   }
 

@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
@@ -7,10 +6,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:social_share/social_share.dart';
 import 'package:vivadoo/screens/ad_details/user_ads_screen.dart';
 import '../../models/ad_details_model.dart';
 import '../../providers/ads_provider/ad_details_provider.dart';
@@ -35,13 +33,14 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
   final Dio dio = Dio();
 
   _saveNetworkImage(String url , String fileName) async {
-    var response = await Dio().get(
-        url,
-        options: Options(responseType: ResponseType.bytes));
-    final result = await ImageGallerySaver.saveImage(
-        Uint8List.fromList(response.data),
-        quality: 100,
-        name: fileName);
+    // var response = await Dio().get(
+    //     url,
+    //     options: Options(responseType: ResponseType.bytes));
+    // final result = await ImageGallerySaver.saveImage(
+    //     Uint8List.fromList(response.data),
+    //     quality: 100,
+    //     name: fileName);
+    print("_saveNetworkImage");
   }
 
   @override
@@ -161,7 +160,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                     const SizedBox(width: 12),
                     GestureDetector(
                       onTap: () {
-                          SocialShare.shareOptions(widget.adDetailsModel.longLink ?? "");
+                        print("share link");
+                          // SocialShare.shareOptions(widget.adDetailsModel.longLink ?? "");
                       },
                       child: const Icon(Icons.share , color: Colors.white,),
                     ),
@@ -313,30 +313,33 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                                                               return List.generate(widget.adDetailsModel.images.length??0, (index) =>
                                                                   Dismissible(
                                                                       onDismissed: (value){
+
                                                                         Navigator.pop(context);
                                                                       },
-                                                                      behavior: HitTestBehavior.opaque,
+                                                                      behavior: HitTestBehavior.translucent,
                                                                       direction: DismissDirection.down,
-                                                                      key: const Key("i don't why this"),
+                                                                      key: UniqueKey(),
                                                                       child: InteractiveViewer(
                                                                         panEnabled: true,
                                                                         boundaryMargin: const EdgeInsets.all(100),
                                                                         minScale: 0.5,
                                                                         maxScale: 5,
-                                                                        child: CachedNetworkImage(
-                                                                          imageUrl: widget.adDetailsModel.images[index]['original'],
-                                                                          fit: BoxFit.contain,
-                                                                          placeholder: (context , _){
-                                                                            return Shimmer.fromColors(
-                                                                              baseColor: Colors.grey.withOpacity(0.6),
-                                                                              highlightColor: Colors.white.withOpacity(0.6),
-                                                                              child: Container(
-                                                                                width: double.infinity,
-                                                                                height: double.infinity,
-                                                                                color: Colors.white,
-                                                                              ),
-                                                                            );
-                                                                          },
+                                                                        child: PhotoView.customChild(
+                                                                          child: CachedNetworkImage(
+                                                                            imageUrl: widget.adDetailsModel.images[index]['original'],
+                                                                            fit: BoxFit.contain,
+                                                                            placeholder: (context , _){
+                                                                              return Shimmer.fromColors(
+                                                                                baseColor: Colors.grey.withOpacity(0.6),
+                                                                                highlightColor: Colors.white.withOpacity(0.6),
+                                                                                child: Container(
+                                                                                  width: double.infinity,
+                                                                                  height: double.infinity,
+                                                                                  color: Colors.white,
+                                                                                ),
+                                                                              );
+                                                                            },
+                                                                          ),
                                                                         ),
 
                                                                       )
@@ -690,14 +693,16 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                       ),
                       GestureDetector(
                         onTap: (){
-                          SocialShare.shareWhatsapp(widget.adDetailsModel.longLink??"");
+                          print("share link");
+                          // SocialShare.shareWhatsapp(widget.adDetailsModel.longLink??"");
                         },
                         child: Image.asset("assets/icons/post_details_icons/whatsapp.png" , width: 35,),
                       ),
 
                       GestureDetector(
                         onTap: () async {
-                          SocialShare.shareOptions(widget.adDetailsModel.longLink??"");
+                          print("share link");
+                          // SocialShare.shareOptions(widget.adDetailsModel.longLink??"");
                         },
                         child: const CircleAvatar(
                             radius: 18,

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:vivadoo/app_navigation.dart';
+import 'package:vivadoo/utils/app_navigation.dart';
 import 'package:vivadoo/utils/hive_manager.dart';
 import '../../constants.dart';
 import '../../main.dart';
-import '../../providers/custom_widget_provider/steps_bar_widget_provider.dart';
-import '../../providers/general/home_page_provider.dart';
+import '../../providers/post_new_ad_provider/steps_bar_widget_provider.dart';
+import '../../providers/home_providers/home_page_provider.dart';
 import '../../providers/general/nav_bar_provider.dart';
-import '../../providers/navigation_shell_provider.dart';
+import '../../providers/general/navigation_shell_provider.dart';
 import '../../widgets/home_screen_widgets/home_page_widgets/home_page_widget.dart';
 
 class HomePage extends StatelessWidget {
@@ -35,19 +35,7 @@ class HomePage extends StatelessWidget {
               }:() {
                 NavigationManager().goBranch(2);
                 context.read<NavBarProvider>().setCurrentPage(2);
-                int tempIndex = context.read<StepsBarWidgetProvider>().currentIndex;
-                switch(tempIndex){
-                  case 0 : HiveStorageManager.hiveBox.put('route', 'PostNewAd');
-                  break;
-                  case 1 : HiveStorageManager.hiveBox.put('route', 'Category And Location');
-                  break;
-                  case 2 : HiveStorageManager.hiveBox.put('route', 'NewAdDetails');
-                  break;
-                  case 3 : HiveStorageManager.hiveBox.put('route', 'PosterInformation');
-                  break;
-                }
-                // String page = HiveStorageManager.hiveBox.get('PostNewAdSavedPage') ?? "PostNewAd";
-                // HiveStorageManager.hiveBox.put('route', page);
+                context.read<StepsBarWidgetProvider>().setCurrentPostNewAdPage(context);
               },
               child: AnimatedContainer(
                 margin: EdgeInsets.only(

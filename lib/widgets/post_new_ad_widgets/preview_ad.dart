@@ -1,18 +1,12 @@
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:social_share/social_share.dart';
-import 'package:vivadoo/screens/ad_details/user_ads_screen.dart';
+// import 'package:social_share/social_share.dart';
 import '../../models/ad_details_model.dart';
 import '../../providers/ads_provider/ad_details_provider.dart';
 
@@ -141,7 +135,8 @@ class _PreviewAdState extends State<PreviewAd> with TickerProviderStateMixin{
                     const SizedBox(width: 12),
                     GestureDetector(
                       onTap: () {
-                          SocialShare.shareOptions(widget.adDetailsModel.longLink ?? "");
+                        print("share link");
+                          // SocialShare.shareOptions(widget.adDetailsModel.longLink ?? "");
                       },
                       child: const Icon(Icons.share , color: Colors.white,),
                     ),

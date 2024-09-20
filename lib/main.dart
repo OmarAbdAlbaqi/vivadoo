@@ -3,32 +3,36 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:vivadoo/firebase_options.dart';
-import 'package:vivadoo/providers/auth/forgot_password_provider.dart';
-import 'package:vivadoo/providers/auth/social_media_auth/apple_auth_provider.dart';
-import 'package:vivadoo/providers/auth/social_media_auth/facebook_auth_provider.dart';
-import 'package:vivadoo/providers/auth/social_media_auth/google_auth_provider.dart';
-import 'package:vivadoo/providers/post_new_ad_provider/ad_poster_information_provider.dart';
-import 'package:vivadoo/services/push_notifications.dart';
-import '../app_navigation.dart';
-import '../providers/auth/sign_in_provider.dart';
-import '../providers/auth/sign_up_provider.dart';
-import '../providers/auth/user_info_provider.dart';
-import '../providers/custom_widget_provider/steps_bar_widget_provider.dart';
-import '../providers/general/route_provider.dart';
-import '../providers/my_vivafoo_providers/general_provider.dart';
-import '../providers/post_new_ad_provider/add_photos_provider.dart';
-import '../providers/post_new_ad_provider/category_and_location_provider.dart';
-import '../providers/post_new_ad_provider/new_ad_details_provider.dart';
+import 'package:vivadoo/providers/favorite_providers/favorite_provider.dart';
+import 'package:vivadoo/providers/home_providers/filters/filter_provider.dart';
+import 'package:vivadoo/providers/home_providers/filters/location_filter.dart';
+import 'package:vivadoo/providers/home_providers/filters/range_filter_provider.dart';
+import '../providers/my_vivadoo_providers/my_vivadoo_profile_provider.dart';
+import '../providers/post_new_ad_provider/post_new_ad_provider.dart';
+import '../firebase_options.dart';
+import '../providers/my_vivadoo_providers/auth/change_password_provider.dart';
+import '../providers/my_vivadoo_providers/auth/edit_account_details_provider.dart';
+import '../providers/my_vivadoo_providers/auth/forgot_password_provider.dart';
+import '../providers/my_vivadoo_providers/auth/sign_in_provider.dart';
+import '../providers/my_vivadoo_providers/auth/sign_up_provider.dart';
+import '../providers/my_vivadoo_providers/auth/social_media_auth/apple_auth_provider.dart';
+import '../providers/my_vivadoo_providers/auth/social_media_auth/facebook_auth_provider.dart';
+import '../providers/my_vivadoo_providers/auth/social_media_auth/google_auth_provider.dart';
+import '../providers/my_vivadoo_providers/auth/user_info_provider.dart';
+import 'providers/post_new_ad_provider/pages_providers/ad_poster_information_provider.dart';
+import '../services/push_notifications.dart';
+import 'utils/app_navigation.dart';
+import 'providers/post_new_ad_provider/steps_bar_widget_provider.dart';
+import '../providers/my_vivadoo_providers/my_vivadoo_general_provider.dart';
+import 'providers/post_new_ad_provider/pages_providers/add_photos_provider.dart';
+import 'providers/post_new_ad_provider/pages_providers/category_and_location_provider.dart';
+import 'providers/post_new_ad_provider/pages_providers/new_ad_details_provider.dart';
 import '../utils/hive_manager.dart';
 import '../providers/ads_provider/ad_details_provider.dart';
 import '../providers/ads_provider/ads_provider.dart';
 import '../providers/ads_provider/filtered_ads_provider.dart';
 import '../providers/ads_provider/user_ads_screen_provider.dart';
-import '../providers/filters/filter_provider.dart';
-import '../providers/filters/location_filter.dart';
-import '../providers/general/home_page_provider.dart';
-import '../providers/general/loading_provider.dart';
+import 'providers/home_providers/home_page_provider.dart';
 import '../providers/general/nav_bar_provider.dart';
 
 import 'constants.dart';
@@ -64,9 +68,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => LocationFilterProvider()),
         ChangeNotifierProvider(create: (context) => AdDetailsProvider()),
         ChangeNotifierProvider(create: (context) => FilteredAdsProvider(context)),
-        ChangeNotifierProvider(create: (context) => LoadingProvider()),
         ChangeNotifierProvider(create: (context) => UserAdsScreenProvider()),
-        ChangeNotifierProvider(create: (context) => RouteProvider()),
         ChangeNotifierProvider(create: (context) => UserInfoProvider()),
         ChangeNotifierProvider(create: (context) => MyVivadooProvider()),
         ChangeNotifierProvider(create: (context) => SignInProvider()),
@@ -81,6 +83,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => MyFacebookAuthProvider()),
         ChangeNotifierProvider(create: (context) => AdPosterInformationProvider()),
         ChangeNotifierProvider(create: (context) => ForgotPasswordProvider()),
+        ChangeNotifierProvider(create: (context) => EditAccountDetailsProvider()),
+        ChangeNotifierProvider(create: (context) => ChangePasswordProvider()),
+        ChangeNotifierProvider(create: (context) => MyVivadooProfileProvider()),
+        ChangeNotifierProvider(create: (context) => PostNewAdProvider()),
+        ChangeNotifierProvider(create: (context) => RangeFilterProvider()),
+        ChangeNotifierProvider(create: (context) => FavoriteProvider()),
       ],
       child: ValueListenableBuilder(
           valueListenable: HiveStorageManager.hiveBox.listenable(),
@@ -93,14 +101,14 @@ class MyApp extends StatelessWidget {
                     WidgetsBinding.instance.addPostFrameCallback((_){
                       List<AdModel> adsList = context.read<AdsProvider>().adsList;
                       context.read<AdDetailsProvider>().setListOfAdDetails(adsList, clearList: true);
-                      context.read<FilterProvider>().resetFilter();
+                      context.read<FilterProvider>().resetFilter(context);
                       context.read<FilteredAdsProvider>().setFirstAnimation(false);
                     });
                   }
                   break;
                 }
                 case "MyVivadoo" : {
-                  if(hiveBox.get('prevRoute') == "SignIn" || hiveBox.get('prevRoute') == "SignUp" || hiveBox.get('prevRoute') == "ForgotPassword"){
+                  if(hiveBox.get('prevRoute') == "SignIn" || hiveBox.get('prevRoute') == "SignUp" || hiveBox.get('prevRoute') == "ForgotPassword" || hiveBox.get('prevRoute') == "TermsOfUse" ){
               WidgetsBinding.instance.addPostFrameCallback((_){
                 context.read<MyVivadooProvider>().changeValue(true);
               });

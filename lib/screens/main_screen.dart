@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
-import 'package:vivadoo/main.dart';
-import 'package:vivadoo/providers/custom_widget_provider/steps_bar_widget_provider.dart';
-import 'package:vivadoo/providers/general/home_page_provider.dart';
+import 'package:vivadoo/models/ad_model.dart';
+import 'package:vivadoo/models/new_ad_model/new_ad_model.dart';
+import 'package:vivadoo/providers/post_new_ad_provider/steps_bar_widget_provider.dart';
+import 'package:vivadoo/providers/home_providers/home_page_provider.dart';
 import 'package:vivadoo/providers/general/nav_bar_provider.dart';
-import 'package:vivadoo/screens/nav_bar_pages/home_page.dart';
-import 'package:vivadoo/screens/nav_bar_pages/messages.dart';
-import 'package:vivadoo/screens/nav_bar_pages/my_vivadoo.dart';
-import 'package:vivadoo/screens/nav_bar_pages/post_new_ad.dart';
-import 'package:vivadoo/screens/nav_bar_pages/saved.dart';
+import 'package:vivadoo/providers/post_new_ad_provider/post_new_ad_provider.dart';
 import 'package:vivadoo/utils/hive_manager.dart';
 
-import '../app_navigation.dart';
-import '../providers/navigation_shell_provider.dart';
+import '../providers/favorite_providers/favorite_provider.dart';
+import '../providers/general/navigation_shell_provider.dart';
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key, required this.navigationShell});
 
@@ -41,7 +37,7 @@ class _MainScreenState extends State<MainScreen> {
       "imageUrl" : "assets/icons/nav_bar_icons/camera.png",
     },
     {
-      "title" : "Saved",
+      "title" : "Favorite",
       "imageUrl" : "assets/icons/nav_bar_icons/heart.png",
     },
     {
@@ -52,31 +48,18 @@ class _MainScreenState extends State<MainScreen> {
   double containerHeight = 100;
 
 
-
-  void _goToBranch (int index){
-    widget.navigationShell.goBranch(index,
-      initialLocation: index == widget.navigationShell.currentIndex,
-    );
-
-
-
-    switch(index){
-      case 0 : HiveStorageManager.hiveBox.put('route', 'Home');
-      case 1 : HiveStorageManager.hiveBox.put('route', 'MyVivadoo');
-      case 2 : HiveStorageManager.hiveBox.put('route', 'PostNewAd');
-      case 3 : HiveStorageManager.hiveBox.put('route', 'Saved');
-      case 4 : HiveStorageManager.hiveBox.put('route', 'Messages');
-    }
-    context.read<NavBarProvider>().setCurrentPage(index);
-
-    // pageController.animateToPage(index, duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
-  }
-
 @override
   void initState() {
+    if(HiveStorageManager.hiveBox.get('adInProgress') == true && HiveStorageManager.hiveBox.get('adInProgress') != null){
+      context.read<PostNewAdProvider>().adInProgress = true;
+      print(context.read<PostNewAdProvider>().getAd().toString());
+    }else{
+      context.read<PostNewAdProvider>().adInProgress = false;
+    }
+    print(HiveStorageManager.getFavoriteAds().values.toList().cast<AdModel>().toList());
   pageController = PageController(initialPage: 0);
   Future.delayed(const Duration(milliseconds: 800)).then((value) => setState(() {
-    containerHeight = 75;
+    containerHeight = 60;
   }));
   pageController.addListener(() {
     context.read<HomePageProvider>().onPageChanged(pageController.page ?? 0);
@@ -94,64 +77,67 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      List<AdModel> ads = HiveStorageManager.getFavoriteAds().values.toList().cast<AdModel>();
+      context.read<FavoriteProvider>().setFavoriteAds(ads);
+    });
     return Scaffold(
-
       body:
-      // PageView(
-      //   controller: pageController,
-      //   onPageChanged: (index) {
-      //     context.read<NavBarProvider>().setCurrentPage(index);
-      //   },
-      //   children: screens,
-      // ),
       SizedBox.expand(
         child: widget.navigationShell
       ),
       bottomNavigationBar: ValueListenableBuilder(
           valueListenable: HiveStorageManager.hiveBox.listenable(),
         builder: (context, hiveBox, widget) {
-          return Visibility(
-            visible: hiveBox.get('route') == "Home" || hiveBox.get('route') == "MyVivadoo" || hiveBox.get('route') == "PostNewAd" || hiveBox.get('route') == "Saved" || hiveBox.get('route') == "Messages" || hiveBox.get('route') == "Category And Location"  || hiveBox.get('route') == "NewAdDetails"  || hiveBox.get('route') == "PosterInformation" || hiveBox.get('route') == "MyVivadooProfile",
-            child: Selector<NavBarProvider , int>(
-              selector: (context , prov) => prov.currentPage,
-              builder: (context , currentPage , _) {
-                return AnimatedContainer(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  duration: const Duration(milliseconds: 500),
-                  height: containerHeight,
-                  child:
-                  Selector<NavBarProvider , int>(
-                    selector: (context , prov)=> prov.currentPage,
+          return Stack(
+            children: [
+              SafeArea(
+                bottom: hiveBox.get('route') == "Home" || hiveBox.get('route') == "MyVivadoo" || hiveBox.get('route') == "PostNewAd" || hiveBox.get('route') == "Saved" || hiveBox.get('route') == "Messages" || hiveBox.get('route') == "Category And Location"  || hiveBox.get('route') == "NewAdDetails"  || hiveBox.get('route') == "PosterInformation" || hiveBox.get('route') == "MyVivadooProfile" ? true : false,
+                top: false,
+                right: false,
+                left: false,
+                child: Visibility(
+                  visible: hiveBox.get('route') == "Home" || hiveBox.get('route') == "MyVivadoo" || hiveBox.get('route') == "PostNewAd" || hiveBox.get('route') == "Saved" || hiveBox.get('route') == "Messages" || hiveBox.get('route') == "Category And Location"  || hiveBox.get('route') == "NewAdDetails"  || hiveBox.get('route') == "PosterInformation" || hiveBox.get('route') == "MyVivadooProfile",
+                  child: Selector<NavBarProvider , int>(
+                    selector: (context , prov) => prov.currentPage,
                     builder: (context , currentPage , _) {
-                      return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                          itemCount: 5,
-                          itemBuilder: (context , index){
-                            return NavBarItem(index: index , onTap: (){
-                              NavigationManager().goBranch(index);
-                              switch(index){
-                                case 0 : HiveStorageManager.hiveBox.put('route', 'Home');
-                                break;
-                                case 1 : HiveStorageManager.hiveBox.put('route', 'MyVivadoo');
-                                break;
-                                case 2 : context.read<StepsBarWidgetProvider>().setCurrentPostNewAdPage(context);
-                                break;
-                                case 3 : HiveStorageManager.hiveBox.put('route', 'Saved');
-                                break;
-                                case 4 : HiveStorageManager.hiveBox.put('route', 'Messages');
-                                break;
-                              }
-                              context.read<NavBarProvider>().setCurrentPage(index);
-                            },
-                            title: navBarItems[index]['title'] ?? "",
-                              imageUrl: navBarItems[index]['imageUrl'] ?? "",
-                            );
-                          });
+                      return AnimatedContainer(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        duration: const Duration(milliseconds: 500),
+                        height: containerHeight,
+                        child:
+                        ListView.builder(
+                          
+                          padding: EdgeInsets.zero,
+                          scrollDirection: Axis.horizontal,
+                            itemCount: 5,
+                            itemBuilder: (context , index){
+                              return NavBarItem(index: index , onTap: (){
+                                NavigationManager().goBranch(index);
+                                switch(index){
+                                  case 0 : context.read<HomePageProvider>().onNavigateToHomePage(context);
+                                  break;
+                                  case 1 : HiveStorageManager.hiveBox.put('route', 'MyVivadoo');
+                                  break;
+                                  case 2 : context.read<StepsBarWidgetProvider>().setCurrentPostNewAdPage(context);
+                                  break;
+                                  case 3 : context.read<FavoriteProvider>().onNavigateToFavoritePage(context);
+                                  break;
+                                  case 4 : HiveStorageManager.hiveBox.put('route', 'Messages');
+                                  break;
+                                }
+                                context.read<NavBarProvider>().setCurrentPage(index);
+                              },
+                              title: navBarItems[index]['title'] ?? "",
+                                imageUrl: navBarItems[index]['imageUrl'] ?? "",
+                              );
+                            }),
+                      );
                     }
                   ),
-                );
-              }
-            ),
+                ),
+              ),
+            ],
           );
         }
       ),
@@ -224,21 +210,16 @@ class _NavBarItemState extends State<NavBarItem> with TickerProviderStateMixin{
             return Container(
               color: Colors.transparent,
               width: MediaQuery.of(context).size.width / 5,
-              height: 52,
+              // height: 40,
               alignment: Alignment.center,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   Align(
                     alignment: Alignment(0.0 , firstRun? _animation.value: animation2.value),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        SizedBox(
-                          height: 30,
-                          child: Image.asset(widget.imageUrl, color: widget.index == currentPage ? Colors.red : Colors.orange,),
-                        ),
-                      ],
+                    child: SizedBox(
+                      height: 30,
+                      child: Image.asset(widget.imageUrl, color: widget.index == currentPage ? Colors.red : Colors.orange,),
                     ),
                   ),
                   Visibility(

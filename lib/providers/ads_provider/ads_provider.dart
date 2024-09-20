@@ -5,11 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:vivadoo/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:vivadoo/providers/ads_provider/ad_details_provider.dart';
-import 'package:vivadoo/providers/ads_provider/filtered_ads_provider.dart';
-import 'package:vivadoo/providers/filters/filter_provider.dart';
 
 import '../../models/ad_model.dart';
-import '../../utils/pop-ups/pop-ups.dart';
+import '../../utils/pop-ups/pop_ups.dart';
+import '../home_providers/filters/filter_provider.dart';
 class AdsProvider with ChangeNotifier{
   List<AdModel> adsList = [];
   String  page = "1";
@@ -77,7 +76,6 @@ class AdsProvider with ChangeNotifier{
         }
       } else {
         if(context.mounted){
-          //TODO change to aPIError
           PopUps.somethingWentWrong(context);
         }
       }

@@ -1,23 +1,47 @@
-class AdModel{
+import 'package:hive_flutter/adapters.dart';
+part "ad_model.g.dart";
+
+@HiveType(typeId: 3)
+class AdModel extends HiveObject{
+  @HiveField(0)
   int id;
+  @HiveField(1)
   String long_link;
+  @HiveField(2)
   String title;
+  @HiveField(3)
   String thumb;
+  @HiveField(4)
   String category;
+  @HiveField(5)
   String location;
+  @HiveField(6)
   String date;
+  @HiveField(7)
   String price;
+  @HiveField(8)
   int photos;
+  @HiveField(9)
   bool contactByMail;
+  @HiveField(10)
   bool hasChat;
+  @HiveField(11)
   bool contactByPhone;
+  @HiveField(12)
   String contactPhone;
+  @HiveField(13)
   bool isMobile;
+  @HiveField(14)
   bool isJob;
+  @HiveField(15)
   int userIsPro;
+  @HiveField(16)
   Map<String, dynamic> userPro;
+  @HiveField(17)
   String externalLink;
+  @HiveField(18)
   String typeAd;
+  @HiveField(19)
   bool adFeatured;
 
   AdModel({
@@ -69,6 +93,6 @@ class AdModel{
 
   @override
   String toString() {
-    return 'AdModel{id: $id, long_link: $long_link, title: $title, thumb: $thumb, category: $category, location: $location, date: $date, price: $price, photos: $photos, contactByMail: $contactByMail, hasChat: $hasChat, contactByPhone: $contactByPhone, contactPhone: $contactPhone, isMobile: $isMobile, isJob: $isJob, externalLink: $externalLink, typeAd: $typeAd, adFeatured: $adFeatured}';
+    return 'AdModel{title: $title}';
   }
 }

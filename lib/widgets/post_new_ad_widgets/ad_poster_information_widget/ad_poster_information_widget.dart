@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vivadoo/providers/post_new_ad_provider/ad_poster_information_provider.dart';
+import 'package:vivadoo/providers/post_new_ad_provider/pages_providers/ad_poster_information_provider.dart';
 import 'package:vivadoo/widgets/post_new_ad_widgets/ad_details_input.dart';
 class AdPosterInformationWidget extends StatelessWidget {
   const AdPosterInformationWidget({super.key});
@@ -20,6 +20,9 @@ class AdPosterInformationWidget extends StatelessWidget {
                     title: 'Name',
                     keyboard: TextInputType.name,
                     obscure: false,
+                    onChanged: (value){
+                      prov.storeNameInHive(context,value);
+                    },
                     validator: (value){
                       if(value != null  && value.isEmpty){
                         return "Please enter a valid name";
@@ -35,6 +38,9 @@ class AdPosterInformationWidget extends StatelessWidget {
                     title: 'Email Address',
                     keyboard: TextInputType.emailAddress,
                     obscure: false,
+                    onChanged: (value){
+                      prov.storeEmailInHive(context,value);
+                    },
                     validator: (value){
                       if(value != null  && value.isEmpty){
                         return "Please enter a valid email";
@@ -50,6 +56,9 @@ class AdPosterInformationWidget extends StatelessWidget {
                     title: 'Phone Number',
                     keyboard: TextInputType.phone,
                     obscure: false,
+                    onChanged: (value){
+                      prov.storePhoneInHive(context,value);
+                    },
                     validator: (value){
                       if(value != null  && value.isEmpty){
                         return "Please enter a valid phone number";

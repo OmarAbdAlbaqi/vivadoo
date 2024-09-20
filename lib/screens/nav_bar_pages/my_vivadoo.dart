@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vivadoo/providers/auth/user_info_provider.dart';
+import 'package:vivadoo/providers/my_vivadoo_providers/auth/user_info_provider.dart';
 
 import '../../utils/hive_manager.dart';
 import '../../widgets/my_vivadoo_widgets/enrolling_page.dart';
-import '../../widgets/my_vivadoo_widgets/my_vivadoo_profile.dart';
+import '../../widgets/my_vivadoo_widgets/my_vivadoo_profile_widgets/my_vivadoo_profile.dart';
 
 
 class MyVivadoo extends StatelessWidget {
@@ -14,8 +14,9 @@ class MyVivadoo extends StatelessWidget {
     return ValueListenableBuilder<bool>(
         valueListenable: HiveStorageManager.signedInNotifier,
         builder: (context, signedIn, _) {
-          print(signedIn);
           if (signedIn) {
+            print("getting user data ads list");
+            context.read<UserInfoProvider>().getUserAds(context);
             return const MyVivadooProfile();
           }
           return const Enrolling();

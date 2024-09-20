@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:vivadoo/providers/ads_provider/user_ads_screen_provider.dart';
 
-import '../../widgets/ad_cards/full_width_card_standard.dart';
+import '../../widgets/ad_cards/full_width_ad_card.dart';
 class UserAdsScreen extends StatelessWidget {
   const UserAdsScreen({super.key});
 

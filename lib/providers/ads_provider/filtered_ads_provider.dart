@@ -1,25 +1,21 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:vivadoo/models/filters/ads_count_model.dart';
 import 'package:vivadoo/models/filters/meta_fields_model.dart';
-import 'package:vivadoo/models/filters/sub_category_model.dart';
-import 'package:vivadoo/providers/filters/filter_provider.dart';
 
 import '../../constants.dart';
 import '../../models/ad_model.dart';
 import '../../models/filters/category_model.dart';
-import '../../utils/pop-ups/pop-ups.dart';
+import '../../utils/pop-ups/pop_ups.dart';
+import '../home_providers/filters/filter_provider.dart';
 import 'ad_details_provider.dart';
 class FilteredAdsProvider with ChangeNotifier{
   List<AdModel> filteredAdsList = [];
   List<CategoryModel> categoryList = [];
-  AdsCount? adsCount;
-  AdsCount? tempAdsCount;
+
   String radius = "5";
   bool radiusSliderVisible = false;
   bool loading = false;
@@ -83,11 +79,13 @@ class FilteredAdsProvider with ChangeNotifier{
     setLoading(true);
     filteredAdsList = [];
     final params = context.read<FilterProvider>().filterParams;
+    print(params);
     Uri url = Uri.https(
         Constants.authority,
         Constants.adsPath,
         params
     );
+    print(url);
     try {
       http.Response response = await http.get(url).timeout(const Duration(seconds: 10));
       if(response.statusCode == 200){
@@ -115,44 +113,6 @@ class FilteredAdsProvider with ChangeNotifier{
     notifyListeners();
   }
 
-
-
-  Future<void> getAsCount(BuildContext context, {bool? temp, Map<String, dynamic>? extraParams}) async {
-    Map<String , dynamic> params = {
-      "governorate":"buy-and-sell-in-lebanon",
-      'ads_count' : '1'
-    };
-    if(extraParams != null){
-      params.addAll(extraParams);
-    }
-    print(extraParams);
-    Uri url = Uri.https(
-        Constants.authority,
-        Constants.adsPath,
-        params
-    );
-    try {
-      http.Response response = await http.get(url).timeout(const Duration(seconds: 10));
-      if(response.statusCode == 200){
-        var extractedData = jsonDecode(response.body);
-        if(temp != null && temp == true){
-          tempAdsCount = AdsCount(count: extractedData['count'], countCat: extractedData['count_cat'], categories: adsCount?.categories ?? {});
-          print(tempAdsCount?.count ?? 0);
-        }else{
-          adsCount = AdsCount.fromJson(extractedData);
-          print(adsCount?.count ?? 0);
-        }
-
-      } else {
-        if(context.mounted){
-          PopUps.apiError(context, response.reasonPhrase!);
-        }
-      }
-    } catch (e){
-      print("Error: $e");
-    }
-    notifyListeners();
-  }
   
   Future<void> getMoreFilteredAds (BuildContext context, {Map<String, dynamic>? moreParams}) async {
     setLoading(true);

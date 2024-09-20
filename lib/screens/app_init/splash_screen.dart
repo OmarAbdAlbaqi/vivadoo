@@ -2,15 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vivadoo/main.dart';
 import 'package:vivadoo/providers/ads_provider/ads_provider.dart';
 import 'package:vivadoo/providers/ads_provider/filtered_ads_provider.dart';
-import 'package:vivadoo/providers/auth/user_info_provider.dart';
-import 'package:vivadoo/providers/general/home_page_provider.dart';
-import 'package:vivadoo/screens/main_screen.dart';
-
-import '../../providers/filters/filter_provider.dart';
-import '../../providers/filters/location_filter.dart';
+import '../../providers/home_providers/filters/filter_provider.dart';
+import '../../providers/home_providers/filters/location_filter.dart';
+import '../../providers/my_vivadoo_providers/auth/user_info_provider.dart';
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -38,7 +34,10 @@ class _SplashScreenState extends State<SplashScreen> {
     context.read<LocationFilterProvider>().getAreaList();
     context.read<AdsProvider>().refreshAds(context).then((_) => getPage());
     context.read<FilteredAdsProvider>().getMetaFields();
-    context.read<FilteredAdsProvider>().getAsCount(context);
+    context.read<FilterProvider>().getAdsCount(context, extraParams: {
+      "governorate": "buy-and-sell-in-lebanon",
+
+    });
     super.initState();
   }
 

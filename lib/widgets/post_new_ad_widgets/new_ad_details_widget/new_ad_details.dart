@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vivadoo/providers/filters/filter_provider.dart';
 import '../../../models/filters/meta_fields_model.dart';
 import '../../../providers/ads_provider/filtered_ads_provider.dart';
-import '../../../providers/custom_widget_provider/steps_bar_widget_provider.dart';
-import '../../../providers/post_new_ad_provider/new_ad_details_provider.dart';
+import '../../../providers/home_providers/filters/filter_provider.dart';
+import '../../../providers/post_new_ad_provider/steps_bar_widget_provider.dart';
+import '../../../providers/post_new_ad_provider/pages_providers/new_ad_details_provider.dart';
 
-import '../../home_screen_widgets/general_filter_widgets/meta_fields_widget.dart';
-import '../../home_screen_widgets/general_filter_widgets/multi_selection_widget.dart';
-import '../../home_screen_widgets/general_filter_widgets/range_field_widget.dart';
-import '../../home_screen_widgets/general_filter_widgets/unique_selection_widget.dart';
+import '../../home_screen_widgets/general_filter_widgets/meta_fields/meta_fields_widget.dart';
+import '../../home_screen_widgets/general_filter_widgets/meta_fields/sub_widgets_for_meta_fields/multi_selection_widget.dart';
+import '../../home_screen_widgets/general_filter_widgets/meta_fields/sub_widgets_for_meta_fields/range_field_widget.dart';
+import '../../home_screen_widgets/general_filter_widgets/meta_fields/sub_widgets_for_meta_fields/unique_selection_widget.dart';
 import '../ad_details_input.dart';
 import '../location_and_category_widget/category_location_widget.dart';
 
@@ -337,7 +337,9 @@ class _NewAdDetailsState extends State<NewAdDetails> {
               AdDetailsInput(
                 title: "Ad Title",
                 keyboard: TextInputType.name,
-                onChanged: (value) {},
+                onChanged: (value) {
+                  prov.storeTitleInHive(context,value);
+                },
                 obscure: false,
                 validator: (value) {
                   if (true) {
@@ -353,7 +355,9 @@ class _NewAdDetailsState extends State<NewAdDetails> {
               AdDetailsInput(
                   title: "Ad Price",
                   keyboard: TextInputType.number,
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    prov.storePriceInHive(context,value);
+                  },
                   obscure: false,
                   validator: (value) {
                     if (true) {
@@ -387,7 +391,9 @@ class _NewAdDetailsState extends State<NewAdDetails> {
                   }
                 },
                 obscureText: false,
-                onChanged: (value) {},
+                onChanged: (value) {
+                  prov.storeDescriptionInHive(context,value);
+                },
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
                   errorBorder: OutlineInputBorder(

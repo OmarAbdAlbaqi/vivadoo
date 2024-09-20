@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
-import 'package:vivadoo/app_navigation.dart';
 import 'package:vivadoo/models/filters/sub_area_model.dart';
-import 'package:vivadoo/providers/ads_provider/ads_provider.dart';
-import 'package:vivadoo/providers/ads_provider/filtered_ads_provider.dart';
-import 'package:vivadoo/providers/filters/filter_provider.dart';
-import 'package:vivadoo/providers/filters/location_filter.dart';
 import 'package:vivadoo/widgets/home_screen_widgets/location_widgets/location_search_bar.dart';
 
 import '../../../models/filters/area_model.dart';
+import '../../../providers/home_providers/filters/filter_provider.dart';
+import '../../../providers/home_providers/filters/location_filter.dart';
 import '../../../utils/hive_manager.dart';
 import 'location_search_result_widget.dart';
 
@@ -61,8 +57,9 @@ class SubLocationWidget extends StatelessWidget {
                                 String route = HiveStorageManager.hiveBox.get('route');
                                 int index = context.read<LocationFilterProvider>().selectedArea;
                                 if(route == "SubLocationFilterFromFilter"){
-                                  locationFilterProvider.tempCity = areaList[index].link;
+                                  locationFilterProvider.city = areaList[index].link;
                                   context.read<LocationFilterProvider>().setTempLocation("All Over ${areaList[context.read<LocationFilterProvider>().selectedArea].label}");
+                                  context.read<FilterProvider>().showAdsCount(context);
                                 }else{
                                   locationFilterProvider.setCity(areaList[index].link);
                                   context.read<LocationFilterProvider>().setLocation("All Over ${areaList[context.read<LocationFilterProvider>().selectedArea].label}");
@@ -140,7 +137,8 @@ class SubLocationWidget extends StatelessWidget {
                                             context.read<LocationFilterProvider>().addToLocalRecent(subAreaList[index]);
                                             if(route == "SubLocationFilterFromFilter"){
                                               locationFilterProvider.setTempLocation("${subAreaList[index].label} - ${subAreaList[index].parentLabel}");
-                                              context.read<LocationFilterProvider>().tempCity = subAreaList[index].link;
+                                              context.read<LocationFilterProvider>().city = subAreaList[index].link;
+                                              context.read<FilterProvider>().showAdsCount(context);
                                             }else{
                                               locationFilterProvider.setLocation(subAreaList[index].label);
                                               locationFilterProvider.setCity(subAreaList[index].link);

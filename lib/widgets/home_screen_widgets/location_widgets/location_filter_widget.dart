@@ -1,20 +1,20 @@
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers.dart';
-import 'package:vivadoo/providers/filters/filter_provider.dart';
 import 'package:vivadoo/utils/hive_manager.dart';
 import '../../../models/filters/hive/local_area_model.dart';
-import '../../../providers/ads_provider/filtered_ads_provider.dart';
-import '../../../providers/filters/location_filter.dart';
+import '../../../providers/home_providers/filters/filter_provider.dart';
+import '../../../providers/home_providers/filters/location_filter.dart';
 import '../../../widgets/home_screen_widgets/location_widgets/location_search_bar.dart';
 
 import '../../../models/filters/area_model.dart';
 import '../../../models/filters/hive/recent_locations_box.dart';
 import 'location_search_result_widget.dart';
+
+
 
 class LocationFilterWidget extends StatelessWidget {
   const LocationFilterWidget({super.key});
@@ -30,7 +30,7 @@ class LocationFilterWidget extends StatelessWidget {
         },
         child: Column(
           children: [
-            //search bar
+            // search bar
             Container(
               margin: const EdgeInsets.all(6),
               width: double.infinity,
@@ -56,6 +56,8 @@ class LocationFilterWidget extends StatelessWidget {
                 children: [
                   ListView(
                     children: [
+
+
                       GestureDetector(
                         onTap: () {
                           //TODO search near me
@@ -82,6 +84,8 @@ class LocationFilterWidget extends StatelessWidget {
                           ),
                         ),
                       ),
+
+
                       Divider(
                         height: 0,
                         indent: 55,
@@ -95,6 +99,9 @@ class LocationFilterWidget extends StatelessWidget {
                           final filteredProvider = context.read<LocationFilterProvider>();
                           if(route == "LocationFilterFromFilter"){
                             filteredProvider.setTempLocation("All Over Country");
+                            filteredProvider.setCity("all-cities");
+                            print(filteredProvider.city);
+                            context.read<FilterProvider>().showAdsCount(context);
                           }else{
                             filteredProvider.setCity("all-cities");
                             filteredProvider.setLocation("All Over Country");
@@ -133,22 +140,19 @@ class LocationFilterWidget extends StatelessWidget {
 
                       Visibility(
                         visible: RecentLocationBox.getLocalRecentLocations().listenable().value.isNotEmpty,
-                        child: Selector<LocationFilterProvider , double>(
-                            selector: (context , prov) => prov.recentValue,
+                        child: Selector<LocationFilterProvider , bool>(
+                            selector: (context , prov) => prov.stickRecentLocation,
                             builder: (context , value , _){
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 25),
                                 child: StickyHeader(
                                     callback: (value) {
-                                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                                        value > -1 ?
-                                        context.read<LocationFilterProvider>().setRecentLocationValue(value): null;
-                                      });
+                                      context.read<LocationFilterProvider>().setRecentLocationValue(value);
                                     },
                                     header: Container(
                                       margin: const EdgeInsets.only( bottom: 6 ),
                                       padding: const EdgeInsets.only(left: 20),
-                                      color: value <= 0 ? const Color.fromRGBO(237, 237, 237, 1) : Colors.transparent,
+                                      color: value ? const Color.fromRGBO(237, 237, 237, 1) : Colors.transparent,
                                       width: double.infinity,
                                       height: 45,
                                       alignment: Alignment.centerLeft,
@@ -160,7 +164,7 @@ class LocationFilterWidget extends StatelessWidget {
                                             alignment: Alignment.bottomCenter,
                                             child: Divider(
                                               height: 0,
-                                              color: value > 0 ? Colors.grey.withOpacity(0.5) : Colors.transparent,
+                                              color: value? Colors.grey.withOpacity(0.5) : Colors.transparent,
                                             ),
                                           )
                                         ],
@@ -181,7 +185,8 @@ class LocationFilterWidget extends StatelessWidget {
                                                 String route = HiveStorageManager.hiveBox.get('route');
                                                 if(route == "LocationFilterFromFilter"){
                                                   locationFilterProvider.setTempLocation("${items[index].label} - ${items[index].parentLabel}");
-                                                  locationFilterProvider.tempCity = items[index].link;
+                                                  locationFilterProvider.city = items[index].link;
+                                                  context.read<FilterProvider>().showAdsCount(context);
                                                 }else{
                                                   locationFilterProvider.setLocation(items[index].label);
                                                   locationFilterProvider.setCity(items[index].link);
@@ -225,18 +230,16 @@ class LocationFilterWidget extends StatelessWidget {
                       ),
 
                       //select region
-                      Selector<LocationFilterProvider , double>(
-                          selector: (context , prov) => prov.regionsValue,
-                          builder: (context , value , _){
+                      Selector<LocationFilterProvider , bool>(
+                          selector: (context , prov) => prov.stickSelectRegion,
+                          builder: (context , stick , _){
                             return StickyHeader(
                               callback: (value) {
-                                WidgetsBinding.instance.addPostFrameCallback((_) {
                                   context.read<LocationFilterProvider>().setRegionsValue(value);
-                                });
                               },
                               header: Container(
                                 padding: const EdgeInsets.only(left: 20),
-                                color: value <= 0 ? const Color.fromRGBO(237, 237, 237, 1) : Colors.transparent,
+                                color: stick  ? const Color.fromRGBO(237, 237, 237, 1) : Colors.transparent,
                                 width: double.infinity,
                                 height: 50,
                                 alignment: Alignment.centerLeft,
@@ -248,7 +251,7 @@ class LocationFilterWidget extends StatelessWidget {
                                       alignment: Alignment.bottomCenter,
                                       child: Divider(
                                         height: 0,
-                                        color: value > 0 ? Colors.grey.withOpacity(0.5) : Colors.transparent,
+                                        color: stick ? Colors.grey.withOpacity(0.5) : Colors.transparent,
                                       ),
                                     )
                                   ],

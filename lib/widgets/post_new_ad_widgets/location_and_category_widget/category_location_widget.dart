@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
-import 'package:vivadoo/providers/post_new_ad_provider/category_and_location_provider.dart';
+import 'package:vivadoo/providers/post_new_ad_provider/pages_providers/category_and_location_provider.dart';
 
 import '../../../constants.dart';
 import '../../../models/filters/area_model.dart';
@@ -12,10 +11,9 @@ import '../../../models/filters/hive/local_area_model.dart';
 import '../../../models/filters/hive/recent_locations_box.dart';
 import '../../../models/filters/sub_area_model.dart';
 import '../../../providers/ads_provider/filtered_ads_provider.dart';
-import '../../../providers/custom_widget_provider/steps_bar_widget_provider.dart';
-import '../../../providers/filters/filter_provider.dart';
-import '../../../providers/filters/location_filter.dart';
-import '../../home_screen_widgets/general_filter_widgets/category_card.dart';
+import '../../../providers/home_providers/filters/location_filter.dart';
+import '../../../providers/post_new_ad_provider/steps_bar_widget_provider.dart';
+import '../../home_screen_widgets/general_filter_widgets/category_and_sub-category/category_card.dart';
 import '../../home_screen_widgets/location_widgets/location_search_bar.dart';
 import '../../home_screen_widgets/location_widgets/location_search_result_widget.dart';
 final GlobalKey<ScaffoldState> scaffoldKeyCateAndLocation = GlobalKey<ScaffoldState>();
@@ -30,11 +28,14 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
 
   late ScrollController scrollController;
 
+
+  // PersistentBottomSheetController? _bottomSheetController;
   @override
   void initState() {
+    // _bottomSheetController = context.watch<CategoryAndLocationProvider>().bottomSheetController;
     scrollController = ScrollController()..addListener(() {
       if(scrollController.position.pixels < -60){
-          _bottomSheetController?.close();
+        context.read<CategoryAndLocationProvider>().bottomSheetController?.close();
       }
     });
     final newTabController = TabController(length: 2, vsync: this);
@@ -42,14 +43,14 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
     super.initState();
   }
 
-  PersistentBottomSheetController? _bottomSheetController;
+
   void _showBottomSheetLocation() {
     context.read<StepsBarWidgetProvider>().setIsBottomSheetOpen(true);
-    _bottomSheetController = scaffoldKeyCateAndLocation.currentState?.showBottomSheet(
+    context.read<CategoryAndLocationProvider>().bottomSheetController = scaffoldKeyCateAndLocation.currentState?.showBottomSheet(
           (context) => bottomSheetContentLocation(context)
     );
 
-    _bottomSheetController?.closed.whenComplete(() {
+    context.read<CategoryAndLocationProvider>().bottomSheetController?.closed.whenComplete(() {
       context.read<CategoryAndLocationProvider>().tabController.index = 0;
       context.read<StepsBarWidgetProvider>().setIsBottomSheetOpen(false);
     });
@@ -57,11 +58,11 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
 
   void _showBottomSheetCategories() {
     context.read<StepsBarWidgetProvider>().setIsBottomSheetOpen(true);
-    _bottomSheetController = scaffoldKeyCateAndLocation.currentState?.showBottomSheet(
+    context.read<CategoryAndLocationProvider>().bottomSheetController = scaffoldKeyCateAndLocation.currentState?.showBottomSheet(
             (context) => bottomSheetContentCategories(context)
     );
 
-    _bottomSheetController?.closed.whenComplete(() {
+    context.read<CategoryAndLocationProvider>().bottomSheetController?.closed.whenComplete(() {
       context.read<CategoryAndLocationProvider>().tabController.index = 0;
       context.read<StepsBarWidgetProvider>().setIsBottomSheetOpen(false);
     });
@@ -109,13 +110,13 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
                     ]
                 ),
                 alignment: Alignment.centerLeft,
-                child: Selector<LocationFilterProvider, String>(
-                    selector: (context, prov) => prov.tempLocation,
-                    builder: (context, tempLocation, _) {
+                child: Selector<CategoryAndLocationProvider, String>(
+                    selector: (context, prov) => prov.locationLabel,
+                    builder: (context, locationLabel, _) {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          tempLocation.isNotEmpty ? Text(tempLocation, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),) :const Text("Select Location", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500 , color: Color.fromRGBO(150, 150, 150, 1)),),
+                          locationLabel.isNotEmpty ? Text(locationLabel, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),) :const Text("Select Location", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500 , color: Color.fromRGBO(150, 150, 150, 1)),),
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration:  BoxDecoration(
@@ -175,15 +176,17 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
                     ]
                 ),
                 alignment: Alignment.centerLeft,
-                child: Selector<FilterProvider , String>(
+                child: Selector<CategoryAndLocationProvider , String>(
                     selector: (context , prov) => prov.categoryLabel,
                     builder: (context , categoryLabel , _) {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          categoryLabel.isNotEmpty ? SizedBox(
+                          categoryLabel.isNotEmpty ?
+                          SizedBox(
                               width: MediaQuery.of(context).size.width - 120,
-                              child: Text(categoryLabel, overflow: TextOverflow.ellipsis ,style: const TextStyle(fontSize: 16, overflow: TextOverflow.ellipsis,fontWeight: FontWeight.w500),)) :const Text("Select Category", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500 , color: Color.fromRGBO(150, 150, 150, 1)),),
+                              child: Text(categoryLabel, overflow: TextOverflow.ellipsis ,style: const TextStyle(fontSize: 16, overflow: TextOverflow.ellipsis,fontWeight: FontWeight.w500),)) :
+                          const Text("Select Category", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500 , color: Color.fromRGBO(150, 150, 150, 1)),),
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration:  BoxDecoration(
@@ -207,182 +210,274 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
                 ),
               ),
             ),
-
-
           ],
         ),
       ),
     );
   }
+
   Widget bottomSheetContentLocation(BuildContext context){
-    return Container(
-      width: double.infinity,
-      height: MediaQuery.of(context).size.height * 0.8,
-      color: Colors.white,
-      child: GestureDetector(
-        onTap: (){
-          FocusScope.of(context).unfocus();
-          context.read<LocationFilterProvider>().resetSearch();
-        },
-        child: Column(
-          children: [
-            //search bar
-            Container(
-              margin: const EdgeInsets.all(6),
-              width: double.infinity,
-              height: 50,
-              decoration: BoxDecoration(
-                color: const Color.fromRGBO(250, 250, 250, 1),
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    offset: const Offset(0.0, 0.5),
-                    blurRadius: 2,
-                    spreadRadius: -1,
+    return Consumer<CategoryAndLocationProvider>(
+      builder: (context, prov, child) {
+        return Container(
+          width: double.infinity,
+          height: (MediaQuery.of(context).size.height * 0.8) - 17,
+          color: Colors.white,
+          child: GestureDetector(
+            onTap: (){
+              FocusScope.of(context).unfocus();
+              context.read<LocationFilterProvider>().resetSearch();
+            },
+            child: Column(
+              children: [
+
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 13),
+                  width: 80,
+                  height: 4,
+                  decoration: const BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.horizontal(left: Radius.circular(4), right: Radius.circular(4)),
                   ),
-                ],
-              ),
-              child: locationSearchBar(context),
-            ),
+                ),
 
-            Expanded(
-              child: Stack(
-                children: [
-                  TabBarView(
-                      controller: context.watch<CategoryAndLocationProvider>().tabController,
-                      physics: context.watch<CategoryAndLocationProvider>().tabController.index == 1 ? const BouncingScrollPhysics(): const NeverScrollableScrollPhysics(),
-                      children: [
-                        ListView(
-                          controller: context.watch<CategoryAndLocationProvider>().tabController.index == 1 ? null:scrollController,
-                          physics: const BouncingScrollPhysics(),
+                //search bar
+                Container(
+                  margin: const EdgeInsets.all(6),
+                  width: double.infinity,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(250, 250, 250, 1),
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        offset: const Offset(0.0, 0.5),
+                        blurRadius: 2,
+                        spreadRadius: -1,
+                      ),
+                    ],
+                  ),
+                  child: locationSearchBar(context),
+                ),
+
+                Expanded(
+                  child: Stack(
+                    children: [
+                      TabBarView(
+                          controller: prov.tabController,
+                          physics: prov.tabController.index == 1 ? const BouncingScrollPhysics(): const NeverScrollableScrollPhysics(),
                           children: [
-                            //near me
-                            GestureDetector(
-                              onTap: () {
-                                //TODO search near me
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.only(left: 20),
-                                height: 60,
-                                width: double.infinity,
-                                color: Colors.transparent,
-                                child: const Row(
-                                  children: [
-                                    Icon(
-                                      Icons.my_location,
-                                      size: 25,
-                                      color: Color.fromRGBO(152, 152, 156, 1),
+                            ListView(
+                              controller: prov.tabController.index == 1 ? null:scrollController,
+                              physics: const BouncingScrollPhysics(),
+                              children: [
+                                //near me
+                                GestureDetector(
+                                  onTap: () {
+                                    //TODO search near me
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.only(left: 20),
+                                    height: 60,
+                                    width: double.infinity,
+                                    color: Colors.transparent,
+                                    child: const Row(
+                                      children: [
+                                        Icon(
+                                          Icons.my_location,
+                                          size: 25,
+                                          color: Color.fromRGBO(152, 152, 156, 1),
+                                        ),
+                                        SizedBox(width: 12),
+                                        Text(
+                                          "Near Me",
+                                          style: TextStyle(
+                                              fontSize: 16, fontWeight: FontWeight.w400),
+                                        )
+                                      ],
                                     ),
-                                    SizedBox(width: 12),
-                                    Text(
-                                      "Near Me",
-                                      style: TextStyle(
-                                          fontSize: 16, fontWeight: FontWeight.w400),
-                                    )
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                            Divider(
-                              height: 0,
-                              indent: 55,
-                              color: Colors.grey.withOpacity(0.5),
-                            ),
+                                Divider(
+                                  height: 0,
+                                  indent: 55,
+                                  color: Colors.grey.withOpacity(0.5),
+                                ),
 
-                            //all over country
-                            GestureDetector(
-                              onTap: () {
-                                context.read<LocationFilterProvider>().setTempLocation("All Over Country");
-                                context.read<LocationFilterProvider>().tempCity = "";
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.only(left: 20),
-                                height: 60,
-                                width: double.infinity,
-                                color: Colors.transparent,
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      "assets/icons/filter_sorting/lebanon.png",
-                                      height: 25,
-                                      color: const Color.fromRGBO(133, 133, 133, 1),
+                                //all over country
+                                GestureDetector(
+                                  onTap: () {
+                                    prov.setLocationLabel("All Over Country");
+                                    prov.locationLink = "all-cities";
+                                    prov.bottomSheetController?.close();
+                                    prov.storeLocationInHive(context,"all-cities");
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.only(left: 20),
+                                    height: 60,
+                                    width: double.infinity,
+                                    color: Colors.transparent,
+                                    child: Row(
+                                      children: [
+                                        Image.asset(
+                                          "assets/icons/filter_sorting/lebanon.png",
+                                          height: 25,
+                                          color: const Color.fromRGBO(133, 133, 133, 1),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        const Text(
+                                          "All Over Country",
+                                          style: TextStyle(
+                                              fontSize: 16, fontWeight: FontWeight.w400),
+                                        )
+                                      ],
                                     ),
-                                    const SizedBox(width: 12),
-                                    const Text(
-                                      "All Over Country",
-                                      style: TextStyle(
-                                          fontSize: 16, fontWeight: FontWeight.w400),
-                                    )
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                            Divider (
-                              height: 0,
-                              indent: 55,
-                              color: Colors.grey.withOpacity(0.5),
-                            ),
+                                Divider (
+                                  height: 0,
+                                  indent: 55,
+                                  color: Colors.grey.withOpacity(0.5),
+                                ),
 
-                            const SizedBox(height: 20,),
+                                const SizedBox(height: 20,),
 
-                            //recent location
-                            Visibility(
-                              visible: RecentLocationBox.getLocalRecentLocations().listenable().value.isNotEmpty,
-                              child: Selector<LocationFilterProvider , double>(
-                                  selector: (context , prov) => prov.recentValue,
-                                  builder: (context , value , _){
-                                    return Padding(
-                                      padding: const EdgeInsets.only(bottom: 25),
-                                      child: StickyHeader(
-                                          callback: (value) {
-                                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                                              value > -1 ?
-                                              context.read<LocationFilterProvider>().setRecentLocationValue(value): null;
-                                            });
-                                          },
-                                          header: Container(
-                                            margin: const EdgeInsets.only( bottom: 6 ),
-                                            padding: const EdgeInsets.only(left: 20),
-                                            color: value <= 0 ? const Color.fromRGBO(237, 237, 237, 1) : Colors.transparent,
-                                            width: double.infinity,
-                                            height: 45,
-                                            alignment: Alignment.centerLeft,
-                                            child: Stack(
-                                              alignment: Alignment.centerLeft,
-                                              children: [
-                                                const Text("Recent Location"),
-                                                Align(
-                                                  alignment: Alignment.bottomCenter,
-                                                  child: Divider(
-                                                    height: 0,
-                                                    color: value > 0 ? Colors.grey.withOpacity(0.5) : Colors.transparent,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
+                                //recent location
+                                Visibility(
+                                  visible: RecentLocationBox.getLocalRecentLocations().listenable().value.isNotEmpty,
+                                  child: Selector<LocationFilterProvider , bool>(
+                                      selector: (context , prov) => prov.stickRecentLocation,
+                                      builder: (context , value , _){
+                                        return Padding(
+                                          padding: const EdgeInsets.only(bottom: 25),
+                                          child: StickyHeader(
+                                              callback: (value) {
+                                                context.read<LocationFilterProvider>().setRecentLocationValue(value);
+                                              },
+                                              header: Container(
+                                                margin: const EdgeInsets.only( bottom: 6 ),
+                                                padding: const EdgeInsets.only(left: 20),
+                                                color: value  ? const Color.fromRGBO(237, 237, 237, 1) : Colors.transparent,
+                                                width: double.infinity,
+                                                height: 45,
+                                                alignment: Alignment.centerLeft,
+                                                child: Stack(
+                                                  alignment: Alignment.centerLeft,
+                                                  children: [
+                                                    const Text("Recent Location"),
+                                                    Align(
+                                                      alignment: Alignment.bottomCenter,
+                                                      child: Divider(
+                                                        height: 0,
+                                                        color: value ? Colors.grey.withOpacity(0.5) : Colors.transparent,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                              content: ValueListenableBuilder<Box<LocalAreaModel>>(
+                                                valueListenable: RecentLocationBox.getLocalRecentLocations().listenable(),
+                                                builder: (context , recentLocation , _){
+                                                  List<LocalAreaModel> items = recentLocation.values.toList().cast<LocalAreaModel>();
+                                                  return ListView.builder(
+                                                    physics: const NeverScrollableScrollPhysics(),
+                                                    shrinkWrap: true,
+                                                    itemCount: items.length,
+                                                    itemBuilder: (context , index){
+                                                      return  InkWell(
+                                                        onTap: (){
+                                                          prov.setLocationLabel("${items[index].label} - ${items[index].parentLabel}");
+                                                          prov.locationLink = items[index].link;
+                                                          prov.storeLocationInHive(context,items[index].link);
+                                                          prov.bottomSheetController?.close();
+                                                        },
+                                                        child: Container(
+                                                          margin: const EdgeInsets.only(left: 20),
+                                                          height: 40,
+                                                          width: double.infinity,
+                                                          decoration: BoxDecoration(
+                                                            border: Border(
+                                                              bottom: BorderSide(color: Colors.grey.withOpacity(0.5)),
+                                                            ),
+                                                          ),
+                                                          alignment: Alignment.centerLeft,
+                                                          child: Row(
+                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            children: [
+                                                              Column(
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                children: [
+                                                                  Text(items[index].label , style: const TextStyle(fontSize: 14 , fontWeight: FontWeight.w500),),
+                                                                  Text(items[index].parentLabel , style: const TextStyle(fontSize: 12 , fontWeight: FontWeight.w400),),
+                                                                ],
+                                                              ),
+                                                              const Icon(Icons.keyboard_arrow_right , color: Color.fromRGBO(152, 152, 156, 1),)
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              )
                                           ),
-                                          content: ValueListenableBuilder<Box<LocalAreaModel>>(
-                                            valueListenable: RecentLocationBox.getLocalRecentLocations().listenable(),
-                                            builder: (context , recentLocation , _){
-                                              List<LocalAreaModel> items = recentLocation.values.toList().cast<LocalAreaModel>();
+                                        );
+                                      }),
+                                ),
+
+                                //select region
+                                Selector<LocationFilterProvider , bool>(
+                                    selector: (context , prov) => prov.stickSelectRegion,
+                                    builder: (context , value , _){
+                                      return StickyHeader(
+                                        callback: (value) {
+                                          context.read<LocationFilterProvider>().setRegionsValue(value);
+                                        },
+                                        header: Container(
+                                          padding: const EdgeInsets.only(left: 20),
+                                          color: value ? const Color.fromRGBO(237, 237, 237, 1) : Colors.transparent,
+                                          width: double.infinity,
+                                          height: 50,
+                                          alignment: Alignment.centerLeft,
+                                          child: Stack(
+                                            alignment: Alignment.centerLeft,
+                                            children: [
+                                              const Text("Select Region"),
+                                              Align(
+                                                alignment: Alignment.bottomCenter,
+                                                child: Divider(
+                                                  height: 0,
+                                                  color: value? Colors.grey.withOpacity(0.5) : Colors.transparent,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+
+                                        content: Selector<LocationFilterProvider , List<AreaModel>>(
+                                            selector: (context , prov) => prov.areaList,
+                                            builder: (context , areaList , _) {
                                               return ListView.builder(
                                                 physics: const NeverScrollableScrollPhysics(),
+                                                padding: EdgeInsets.zero,
                                                 shrinkWrap: true,
-                                                itemCount: items.length,
+                                                itemCount: areaList.length,
                                                 itemBuilder: (context , index){
-                                                  return  InkWell(
+                                                  return InkWell(
                                                     onTap: (){
-                                                      context.read<LocationFilterProvider>().setTempLocation("${items[index].label} - ${items[index].parentLabel}");
-                                                      context.read<LocationFilterProvider>().tempCity = items[index].link;
-                                                      Navigator.pop(context);
+                                                      context.read<LocationFilterProvider>().getSubAreaList(areaList[index].code.toString());
+                                                      context.read<LocationFilterProvider>().setSelectedArea(index);
+                                                      context.read<CategoryAndLocationProvider>().tabController.animateTo(1);
                                                     },
                                                     child: Container(
                                                       margin: const EdgeInsets.only(left: 20),
-                                                      height: 40,
+                                                      padding: const EdgeInsets.only(right: 10),
+                                                      height: 45,
                                                       width: double.infinity,
                                                       decoration: BoxDecoration(
+                                                        color: Colors.transparent,
                                                         border: Border(
                                                           bottom: BorderSide(color: Colors.grey.withOpacity(0.5)),
                                                         ),
@@ -395,8 +490,8 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
                                                             crossAxisAlignment: CrossAxisAlignment.start,
                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                             children: [
-                                                              Text(items[index].label , style: const TextStyle(fontSize: 14 , fontWeight: FontWeight.w500),),
-                                                              Text(items[index].parentLabel , style: const TextStyle(fontSize: 12 , fontWeight: FontWeight.w400),),
+                                                              Text(areaList[index].label , style: const TextStyle(fontSize: 14 , fontWeight: FontWeight.w500),),
+                                                              Text(areaList[index].parentLabel , style: const TextStyle(fontSize: 12 , fontWeight: FontWeight.w400),),
                                                             ],
                                                           ),
                                                           const Icon(Icons.keyboard_arrow_right , color: Color.fromRGBO(152, 152, 156, 1),)
@@ -406,272 +501,192 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
                                                   );
                                                 },
                                               );
-                                            },
-                                          )
-                                      ),
-                                    );
-                                  }),
+                                            }
+                                        ),
+                                      );
+                                    }),
+                                const SizedBox(height: 25),
+                              ],
                             ),
-
-                            //select region
-                            Selector<LocationFilterProvider , double>(
-                                selector: (context , prov) => prov.regionsValue,
-                                builder: (context , value , _){
-                                  return StickyHeader(
-                                    callback: (value) {
-                                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                                        context.read<LocationFilterProvider>().setRegionsValue(value);
-                                      });
-                                    },
-                                    header: Container(
-                                      padding: const EdgeInsets.only(left: 20),
-                                      color: value <= 0 ? const Color.fromRGBO(237, 237, 237, 1) : Colors.transparent,
-                                      width: double.infinity,
-                                      height: 50,
-                                      alignment: Alignment.centerLeft,
-                                      child: Stack(
-                                        alignment: Alignment.centerLeft,
-                                        children: [
-                                          const Text("Select Region"),
-                                          Align(
-                                            alignment: Alignment.bottomCenter,
-                                            child: Divider(
-                                              height: 0,
-                                              color: value > 0 ? Colors.grey.withOpacity(0.5) : Colors.transparent,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-
-                                    content: Selector<LocationFilterProvider , List<AreaModel>>(
-                                        selector: (context , prov) => prov.areaList,
-                                        builder: (context , areaList , _) {
-                                          return ListView.builder(
-                                            physics: const NeverScrollableScrollPhysics(),
-                                            padding: EdgeInsets.zero,
-                                            shrinkWrap: true,
-                                            itemCount: areaList.length,
-                                            itemBuilder: (context , index){
-                                              return InkWell(
-                                                onTap: (){
-                                                  context.read<LocationFilterProvider>().getSubAreaList(areaList[index].code.toString());
-                                                  context.read<LocationFilterProvider>().setSelectedArea(index);
-                                                  context.read<CategoryAndLocationProvider>().tabController.animateTo(1);
-                                                },
-                                                child: Container(
-                                                  margin: const EdgeInsets.only(left: 20),
-                                                  padding: const EdgeInsets.only(right: 10),
-                                                  height: 45,
-                                                  width: double.infinity,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.transparent,
-                                                    border: Border(
-                                                      bottom: BorderSide(color: Colors.grey.withOpacity(0.5)),
-                                                    ),
-                                                  ),
-                                                  alignment: Alignment.centerLeft,
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            SizedBox(
+                              width: double.infinity,
+                              height: MediaQuery.of(context).size.height * 0.8,
+                              child: Selector<LocationFilterProvider, bool>(
+                                        selector: (context, prov) => prov.loading,
+                                        builder: (context, loading, _){
+                                          if(loading){
+                                            return const Center(
+                                              child: SizedBox(
+                                                width: 25,
+                                                height: 25,
+                                                child: CircularProgressIndicator(),
+                                              ),
+                                            );
+                                          }
+                                          return GestureDetector(
+                                            onTap: (){
+                                              FocusScope.of(context).unfocus();
+                                              context.read<LocationFilterProvider>().resetSearch();
+                                            },
+                                            child: Column(
+                                              children: [
+                                                Expanded(
+                                                  child: Stack(
                                                     children: [
-                                                      Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                      ListView(
+                                                        controller: scrollController,
                                                         children: [
-                                                          Text(areaList[index].label , style: const TextStyle(fontSize: 14 , fontWeight: FontWeight.w500),),
-                                                          Text(areaList[index].parentLabel , style: const TextStyle(fontSize: 12 , fontWeight: FontWeight.w400),),
+                                                          //all over area
+                                                          Selector<LocationFilterProvider , List<AreaModel>>(
+                                                              selector: (context , prov) => prov.areaList,
+                                                              builder: (context , areaList , _) {
+                                                                return GestureDetector(
+                                                                  onTap: () {
+                                                                    prov.setLocationLabel("All Over ${areaList[context.read<LocationFilterProvider>().selectedArea].label}");
+                                                                    int index = context.read<LocationFilterProvider>().selectedArea;
+                                                                    prov.locationLink = areaList[index].link;
+                                                                    prov.storeLocationInHive(context,areaList[index].link);
+                                                                    context.read<CategoryAndLocationProvider>().tabController.animateTo(0);
+                                                                    Future.delayed(const Duration(milliseconds: 300)).then((value) =>  context.read<CategoryAndLocationProvider>().bottomSheetController?.close());
+                                                                    },
+                                                                  child: Container(
+                                                                    margin: const EdgeInsets.only(left: 20),
+                                                                    height: 50,
+                                                                    width: double.infinity,
+                                                                    decoration: BoxDecoration(
+                                                                      border: Border(
+                                                                        bottom: BorderSide(
+                                                                          color: Colors.grey.withOpacity(0.5),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    alignment: Alignment.centerLeft,
+                                                                    child: Text(
+                                                                      "All Over ${areaList[context.watch<LocationFilterProvider>().selectedArea].label}",
+                                                                      style: const TextStyle(
+                                                                          fontSize: 16, fontWeight: FontWeight.w400),
+                                                                    ),
+
+                                                                  ),
+                                                                );
+                                                              }
+                                                          ),
+                                                          const SizedBox(height: 25),
+
+
+                                                          Selector<LocationFilterProvider , double>(
+                                                              selector: (context , prov) => prov.subAreaValue,
+                                                              builder: (context , value , _){
+                                                                return StickyHeader(
+                                                                  callback: (value) {
+                                                                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                                      context.read<LocationFilterProvider>().setSubAreaValue(value);
+                                                                    });
+                                                                  },
+                                                                  header: Container(
+                                                                    padding: const EdgeInsets.only(left: 20),
+                                                                    color: value <= 0 ? const Color.fromRGBO(237, 237, 237, 1) : Colors.transparent,
+                                                                    width: double.infinity,
+                                                                    height: 50,
+                                                                    alignment: Alignment.centerLeft,
+                                                                    child: Stack(
+                                                                      alignment: Alignment.centerLeft,
+                                                                      children: [
+                                                                        const Text("Select Region"),
+                                                                        Align(
+                                                                          alignment: Alignment.bottomCenter,
+                                                                          child: Divider(
+                                                                            height: 0,
+                                                                            color: value > 0 ? Colors.grey.withOpacity(0.5) : Colors.transparent,
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  content: Selector<LocationFilterProvider , List<SubAreaModel>>(
+                                                                      selector: (context , prov) => prov.subAreaList,
+                                                                      builder: (context , subAreaList , _) {
+                                                                        return ListView.builder(
+                                                                          physics: const NeverScrollableScrollPhysics(),
+                                                                          padding: EdgeInsets.zero,
+                                                                          shrinkWrap: true,
+                                                                          itemCount: subAreaList.length,
+                                                                          itemBuilder: (context , index){
+                                                                            return InkWell(
+                                                                              onTap: (){
+                                                                                prov.setLocationLabel("${subAreaList[index].label} - ${subAreaList[index].parentLabel}");
+                                                                                prov.locationLink = subAreaList[index].link;
+                                                                                prov.storeLocationInHive(context,subAreaList[index].link);
+                                                                                context.read<LocationFilterProvider>().cleanSubArea();
+                                                                                context.read<CategoryAndLocationProvider>().tabController.animateTo(0);
+                                                                                Future.delayed(const Duration(milliseconds: 300)).then((value) =>  Navigator.pop(context));
+                                                                              },
+                                                                              child: Container(
+                                                                                margin: const EdgeInsets.only(left: 20),
+                                                                                padding: const EdgeInsets.only(right: 10),
+                                                                                height: 45,
+                                                                                width: double.infinity,
+                                                                                decoration: BoxDecoration(
+                                                                                  color: Colors.transparent,
+                                                                                  border: Border(
+                                                                                    bottom: BorderSide(color: Colors.grey.withOpacity(0.5)),
+                                                                                  ),
+                                                                                ),
+                                                                                alignment: Alignment.centerLeft,
+                                                                                child: Row(
+                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                  children: [
+                                                                                    Column(
+                                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                                                      children: [
+                                                                                        Text(subAreaList[index].label , style: const TextStyle(fontSize: 14 , fontWeight: FontWeight.w500),),
+                                                                                        Text(subAreaList[index].parentLabel , style: const TextStyle(fontSize: 12 , fontWeight: FontWeight.w400),),
+                                                                                      ],
+                                                                                    ),
+                                                                                    const Icon(Icons.keyboard_arrow_right , color: Color.fromRGBO(152, 152, 156, 1),)
+                                                                                  ],
+                                                                                ),
+                                                                              ),
+                                                                            );
+                                                                          },
+                                                                        );
+                                                                      }
+                                                                  ),
+                                                                );
+                                                              }),
+                                                          const SizedBox(height: 25),
                                                         ],
                                                       ),
-                                                      const Icon(Icons.keyboard_arrow_right , color: Color.fromRGBO(152, 152, 156, 1),)
                                                     ],
                                                   ),
                                                 ),
-                                              );
-                                            },
-                                          );
-                                        }
-                                    ),
-                                  );
-                                }),
-                            const SizedBox(height: 25),
-                          ],
-                        ),
-                        SizedBox(
-                          width: double.infinity,
-                          height: MediaQuery.of(context).size.height * 0.8,
-                          child: Selector<LocationFilterProvider, bool>(
-                                    selector: (context, prov) => prov.loading,
-                                    builder: (context, loading, _){
-                                      if(loading){
-                                        return const Center(
-                                          child: SizedBox(
-                                            width: 25,
-                                            height: 25,
-                                            child: CircularProgressIndicator(),
-                                          ),
-                                        );
-                                      }
-                                      return GestureDetector(
-                                        onTap: (){
-                                          FocusScope.of(context).unfocus();
-                                          context.read<LocationFilterProvider>().resetSearch();
-                                        },
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                              child: Stack(
-                                                children: [
-                                                  ListView(
-                                                    controller: scrollController,
-                                                    children: [
-                                                      //all over area
-                                                      Selector<LocationFilterProvider , List<AreaModel>>(
-                                                          selector: (context , prov) => prov.areaList,
-                                                          builder: (context , areaList , _) {
-                                                            return GestureDetector(
-                                                              onTap: () {
-                                                                final locationFilterProvider = context.read<LocationFilterProvider>();
-                                                                int index = context.read<LocationFilterProvider>().selectedArea;
-                                                                locationFilterProvider.tempCity = areaList[index].link;
-                                                                context.read<LocationFilterProvider>().setTempLocation("All Over ${areaList[context.read<LocationFilterProvider>().selectedArea].label}");
-                                                                context.read<CategoryAndLocationProvider>().tabController.animateTo(0);
-                                                                Future.delayed(const Duration(milliseconds: 300)).then((value) =>  _bottomSheetController?.close());
-                                                                },
-                                                              child: Container(
-                                                                margin: const EdgeInsets.only(left: 20),
-                                                                height: 50,
-                                                                width: double.infinity,
-                                                                decoration: BoxDecoration(
-                                                                  border: Border(
-                                                                    bottom: BorderSide(
-                                                                      color: Colors.grey.withOpacity(0.5),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                                alignment: Alignment.centerLeft,
-                                                                child: Text(
-                                                                  "All Over ${areaList[context.watch<LocationFilterProvider>().selectedArea].label}",
-                                                                  style: const TextStyle(
-                                                                      fontSize: 16, fontWeight: FontWeight.w400),
-                                                                ),
 
-                                                              ),
-                                                            );
-                                                          }
-                                                      ),
-                                                      const SizedBox(height: 25),
-                                                      Selector<LocationFilterProvider , double>(
-                                                          selector: (context , prov) => prov.subAreaValue,
-                                                          builder: (context , value , _){
-                                                            return StickyHeader(
-                                                              callback: (value) {
-                                                                WidgetsBinding.instance.addPostFrameCallback((_) {
-                                                                  context.read<LocationFilterProvider>().setSubAreaValue(value);
-                                                                });
-                                                              },
-                                                              header: Container(
-                                                                padding: const EdgeInsets.only(left: 20),
-                                                                color: value <= 0 ? const Color.fromRGBO(237, 237, 237, 1) : Colors.transparent,
-                                                                width: double.infinity,
-                                                                height: 50,
-                                                                alignment: Alignment.centerLeft,
-                                                                child: Stack(
-                                                                  alignment: Alignment.centerLeft,
-                                                                  children: [
-                                                                    const Text("Select Region"),
-                                                                    Align(
-                                                                      alignment: Alignment.bottomCenter,
-                                                                      child: Divider(
-                                                                        height: 0,
-                                                                        color: value > 0 ? Colors.grey.withOpacity(0.5) : Colors.transparent,
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              content: Selector<LocationFilterProvider , List<SubAreaModel>>(
-                                                                  selector: (context , prov) => prov.subAreaList,
-                                                                  builder: (context , subAreaList , _) {
-                                                                    return ListView.builder(
-                                                                      physics: const NeverScrollableScrollPhysics(),
-                                                                      padding: EdgeInsets.zero,
-                                                                      shrinkWrap: true,
-                                                                      itemCount: subAreaList.length,
-                                                                      itemBuilder: (context , index){
-                                                                        return InkWell(
-                                                                          onTap: (){
-                                                                            final locationFilterProvider = context.read<LocationFilterProvider>();
-                                                                            locationFilterProvider.setTempLocation("${subAreaList[index].label} - ${subAreaList[index].parentLabel}");
-                                                                            context.read<LocationFilterProvider>().tempCity = subAreaList[index].link;
-                                                                            context.read<LocationFilterProvider>().cleanSubArea();
-                                                                            context.read<CategoryAndLocationProvider>().tabController.animateTo(0);
-                                                                            Future.delayed(const Duration(milliseconds: 300)).then((value) =>  Navigator.pop(context));
-                                                                          },
-                                                                          child: Container(
-                                                                            margin: const EdgeInsets.only(left: 20),
-                                                                            padding: const EdgeInsets.only(right: 10),
-                                                                            height: 45,
-                                                                            width: double.infinity,
-                                                                            decoration: BoxDecoration(
-                                                                              color: Colors.transparent,
-                                                                              border: Border(
-                                                                                bottom: BorderSide(color: Colors.grey.withOpacity(0.5)),
-                                                                              ),
-                                                                            ),
-                                                                            alignment: Alignment.centerLeft,
-                                                                            child: Row(
-                                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                              children: [
-                                                                                Column(
-                                                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                                                  children: [
-                                                                                    Text(subAreaList[index].label , style: const TextStyle(fontSize: 14 , fontWeight: FontWeight.w500),),
-                                                                                    Text(subAreaList[index].parentLabel , style: const TextStyle(fontSize: 12 , fontWeight: FontWeight.w400),),
-                                                                                  ],
-                                                                                ),
-                                                                                const Icon(Icons.keyboard_arrow_right , color: Color.fromRGBO(152, 152, 156, 1),)
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                    );
-                                                                  }
-                                                              ),
-                                                            );
-                                                          }),
-                                                      const SizedBox(height: 25),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
+                                              ],
                                             ),
+                                          );
+                                          },
+                              )
 
-                                          ],
-                                        ),
-                                      );
-                                      },
-                          )
-
-                        ),
-                      ]
+                            ),
+                          ]
+                      ),
+                      locationSearchResult(context),
+                    ],
                   ),
-                  locationSearchResult(context),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
-
 
   Widget bottomSheetContentCategories(BuildContext context){
     return Container(
       width: double.infinity,
-      height: MediaQuery.of(context).size.height * 0.8,
+      height: (MediaQuery.of(context).size.height * 0.8) - 17,
       color: Colors.white,
       child: Column(
         children: [
@@ -688,7 +703,7 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
               selector: (ctx , prov) => prov.categoryList,
               builder: (ctx , categoryList , _) {
                 return SizedBox(
-                  height: (MediaQuery.of(context).size.height * 0.8) - 40,
+                  height: (MediaQuery.of(context).size.height * 0.8) - 57,
                   child: ListView.builder(
                     physics: context.watch<CategoryAndLocationProvider>().bottomSheetOnTop ? const NeverScrollableScrollPhysics() : const BouncingScrollPhysics(),
                     controller: scrollController,

@@ -1,16 +1,13 @@
 import 'dart:io';
 
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:vivadoo/providers/post_new_ad_provider/add_photos_provider.dart';
+import 'package:vivadoo/providers/post_new_ad_provider/pages_providers/add_photos_provider.dart';
 
-import '../../../constants.dart';
 import '../../../providers/ads_provider/ad_details_provider.dart';
+import '../../../utils/pop-ups/pop_ups.dart';
 class AddPhotosWidget extends StatelessWidget {
   const AddPhotosWidget({super.key});
 
@@ -33,7 +30,7 @@ class AddPhotosWidget extends StatelessWidget {
                     visible: prov.selectMode,
                     child: GestureDetector(
                       onTap: (){
-                        prov.removeAllSelectedImages();
+                        prov.removeAllSelectedImages(context);
                       },
                       child: Container(
                         width: 80,
@@ -58,7 +55,8 @@ class AddPhotosWidget extends StatelessWidget {
                     itemCount: 9,
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount( mainAxisSpacing: 8, crossAxisSpacing: 8, crossAxisCount: 3, childAspectRatio: 0.9),
                     itemBuilder: (context, index){
-                      return prov.imageList.length -1 >= index ? GestureDetector(
+                      return prov.imageList.length -1 >= index ?
+                      GestureDetector(
                         onTap: ()  {
                           prov.selectMode ? prov.setSelectMode(prov.imageList[index]):
                           showCupertinoModalPopup(
@@ -194,14 +192,10 @@ class AddPhotosWidget extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ): GestureDetector(
+                      ):
+                      GestureDetector(
                           onTap: () async {
-                            final List<XFile> images = await ImagePicker().pickMultiImage();
-                            if (images.isNotEmpty) {
-                              if(context.mounted){
-                                context.read<AddPhotosProvider>().setImageList(images);
-                              }
-                            }
+                            await PopUps.selectPhotoPickType(context);
                           },
                           child: Container(
                             alignment: Alignment.center,

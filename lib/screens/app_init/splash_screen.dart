@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
     context.read<UserInfoProvider>().getUserInfo();
     context.read<FilteredAdsProvider>().getCategories();
     context.read<LocationFilterProvider>().getAreaList();
-    context.read<AdsProvider>().refreshAds(context).then((_) => getPage());
+    context.read<AdsProvider>().getAds(context).then((_) => getPage());
     context.read<FilteredAdsProvider>().getMetaFields();
     context.read<FilterProvider>().getAdsCount(context, extraParams: {
       "governorate": "buy-and-sell-in-lebanon",
@@ -48,8 +48,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Splash screen"),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: SizedBox(
+          width: 100,
+          height: 100,
+          child: Image.asset("assets/images/vivadoo.png"),
+        ),
+      ),
     );
   }
 }

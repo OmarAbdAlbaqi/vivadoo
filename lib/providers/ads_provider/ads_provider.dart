@@ -57,8 +57,9 @@ class AdsProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> refreshAds (BuildContext context) async {
+  Future<void> getAds (BuildContext context) async {
    Map<String, dynamic> params = context.read<FilterProvider>().filterParams;
+
     Uri url = Uri.https(
         Constants.authority,
         Constants.adsPath,
@@ -76,7 +77,7 @@ class AdsProvider with ChangeNotifier{
         }
       } else {
         if(context.mounted){
-          PopUps.somethingWentWrong(context);
+          PopUps.apiError(context, response.reasonPhrase.toString());
         }
       }
     } catch (e) {

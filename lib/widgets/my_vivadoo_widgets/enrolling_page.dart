@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/my_vivadoo_providers/my_vivadoo_general_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class Enrolling extends StatelessWidget {
   const Enrolling({super.key});
@@ -37,9 +39,9 @@ class Enrolling extends StatelessWidget {
               backgroundColor: getColor(Colors.orange, Colors.white),
               foregroundColor: getColor(Colors.white, Colors.orange),
             ),
-            child: const Text(
-              "Sign In",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            child: Text(
+              AppLocalizations.of(context)!.sign_in,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
         ),
@@ -55,7 +57,7 @@ class Enrolling extends StatelessWidget {
               width:
               (MediaQuery.of(context).size.width / 2) - 35,
             ),
-            const Text("OR"),
+            Text(AppLocalizations.of(context)!.or),
             Container(
               color: Colors.grey.withOpacity(0.5),
               height: 1,
@@ -92,9 +94,9 @@ class Enrolling extends StatelessWidget {
               backgroundColor: getColor(Colors.white, Colors.orange),
               foregroundColor: getColor(Colors.orange, Colors.white),
             ),
-            child: const Text(
-              "Register",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            child: Text(
+              AppLocalizations.of(context)!.register,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
         ),
@@ -111,7 +113,7 @@ class Enrolling extends StatelessWidget {
               width: 160,
               color: Colors.transparent,
               padding: const EdgeInsets.symmetric(horizontal: 20 , vertical: 8),
-              child: const Text("Forgot Password", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),),
+              child: Text(AppLocalizations.of(context)!.forgot_password, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),),
             ),
           ),
         ),
@@ -125,11 +127,11 @@ class Enrolling extends StatelessWidget {
                 text: TextSpan(
                     children: [
                       TextSpan(
-                        text: "By Logging in, You agree to our ",
+                        text: AppLocalizations.of(context)!.by_logging_in_you_agree_to_our,
                         style:TextStyle(fontSize: 14 , color: Colors.black.withOpacity(0.7)),
                       ),
                       TextSpan(
-                          text: " TERMS OF USE ",
+                          text: AppLocalizations.of(context)!.terms_of_use,
                           style: const TextStyle(fontSize: 14 , fontWeight: FontWeight.w500 , color: Colors.deepPurpleAccent ,),
                           recognizer: TapGestureRecognizer()
                             ..onTap = (){

@@ -10,98 +10,101 @@ class AdPosterInformationWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AdPosterInformationProvider>(
       builder: (context, prov, _) {
-        return Material(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 40, left: 20, right: 20),
-            child: Column(
-              children: [
-                AdDetailsInput(
-                    title: 'Name',
-                    keyboard: TextInputType.name,
-                    obscure: false,
-                    onChanged: (value){
-                      prov.storeNameInHive(context,value);
-                    },
-                    validator: (value){
-                      if(value != null  && value.isEmpty){
-                        return "Please enter a valid name";
-                      }else{
-                        return null;
-                      }
-                    },
-                    hint: 'Name',
-                    textCapitalization: TextCapitalization.words,
-                    controller: prov.nameController,
-                ),
-                AdDetailsInput(
-                    title: 'Email Address',
-                    keyboard: TextInputType.emailAddress,
-                    obscure: false,
-                    onChanged: (value){
-                      prov.storeEmailInHive(context,value);
-                    },
-                    validator: (value){
-                      if(value != null  && value.isEmpty){
-                        return "Please enter a valid email";
-                      }else{
-                        return null;
-                      }
-                    },
-                    hint: 'Email',
-                    textCapitalization: TextCapitalization.none,
-                    controller: prov.emailController,
-                ),
-                AdDetailsInput(
-                    title: 'Phone Number',
-                    keyboard: TextInputType.phone,
-                    obscure: false,
-                    onChanged: (value){
-                      prov.storePhoneInHive(context,value);
-                    },
-                    validator: (value){
-                      if(value != null  && value.isEmpty){
-                        return "Please enter a valid phone number";
-                      }else{
-                        return null;
-                      }
-                    },
-                    hint: 'Phone Number',
-                    textCapitalization: TextCapitalization.none,
-                    controller: prov.phoneController,
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  width: double.infinity,
-                  color: Colors.transparent,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      const Text("Hide my phone number"),
-                      CupertinoSwitch(
-                          value: prov.hideMyPhoneNumber,
-                          onChanged: (value){
-                            prov.toggleHidePhoneNumber();
-                          })
-                    ],
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Material(
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 40, left: 20, right: 20),
+              child: Column(
+                children: [
+                  AdDetailsInput(
+                      title: 'Name',
+                      keyboard: TextInputType.name,
+                      obscure: false,
+                      onChanged: (value){
+                        prov.storeNameInHive(context,value);
+                      },
+                      validator: (value){
+                        if(value != null  && value.isEmpty){
+                          return "Please enter a valid name";
+                        }else{
+                          return null;
+                        }
+                      },
+                      hint: 'Name',
+                      textCapitalization: TextCapitalization.words,
+                      controller: prov.nameController,
                   ),
-                ),
-                Container(
-                  width: double.infinity,
-                  color: Colors.transparent,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      const Text("Enable chat for this ad"),
-                      CupertinoSwitch(
-                          value: prov.enableChatForThisAd,
-                          onChanged: (value){
-                            prov.toggleEnableChatForThisAd();
-                          })
-                    ],
+                  AdDetailsInput(
+                      title: 'Email Address',
+                      keyboard: TextInputType.emailAddress,
+                      obscure: false,
+                      onChanged: (value){
+                        prov.storeEmailInHive(context,value);
+                      },
+                      validator: (value){
+                        if(value != null  && value.isEmpty){
+                          return "Please enter a valid email";
+                        }else{
+                          return null;
+                        }
+                      },
+                      hint: 'Email',
+                      textCapitalization: TextCapitalization.none,
+                      controller: prov.emailController,
                   ),
-                ),
-              ],
+                  AdDetailsInput(
+                      title: 'Phone Number',
+                      keyboard: TextInputType.phone,
+                      obscure: false,
+                      onChanged: (value){
+                        prov.storePhoneInHive(context,value);
+                      },
+                      validator: (value){
+                        if(value != null  && value.isEmpty){
+                          return "Please enter a valid phone number";
+                        }else{
+                          return null;
+                        }
+                      },
+                      hint: 'Phone Number',
+                      textCapitalization: TextCapitalization.none,
+                      controller: prov.phoneController,
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    width: double.infinity,
+                    color: Colors.transparent,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Text("Hide my phone number"),
+                        CupertinoSwitch(
+                            value: prov.hideMyPhoneNumber,
+                            onChanged: (value){
+                              prov.toggleHidePhoneNumber();
+                            })
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    color: Colors.transparent,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Text("Enable chat for this ad"),
+                        CupertinoSwitch(
+                            value: prov.enableChatForThisAd,
+                            onChanged: (value){
+                              prov.toggleEnableChatForThisAd();
+                            })
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );

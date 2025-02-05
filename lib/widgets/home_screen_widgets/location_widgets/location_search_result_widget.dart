@@ -33,7 +33,10 @@ Widget locationSearchResult (BuildContext context ){
                   if(route == "LocationFilterFromFilter" || route == "SubLocationFilterFromFilter"){
                     filterProvider.setTempLocation("${searchResult[index].label} - ${searchResult[index].parentLabel}");
                     filterProvider.city = searchResult[index].link;
-                    context.read<FilterProvider>().showAdsCount(context);
+                    if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
+                      context.read<FilterProvider>().showAdsCount(context);
+                    }
+
                     if(route == "LocationFilterFromFilter"){
                       context.pop();
                     }

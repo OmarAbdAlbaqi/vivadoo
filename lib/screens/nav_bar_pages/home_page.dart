@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:vivadoo/utils/app_navigation.dart';
-import 'package:vivadoo/utils/hive_manager.dart';
 import '../../constants.dart';
-import '../../main.dart';
 import '../../providers/post_new_ad_provider/steps_bar_widget_provider.dart';
 import '../../providers/home_providers/home_page_provider.dart';
 import '../../providers/general/nav_bar_provider.dart';
 import '../../providers/general/navigation_shell_provider.dart';
 import '../../widgets/home_screen_widgets/home_page_widgets/home_page_widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -61,7 +59,7 @@ class HomePage extends StatelessWidget {
                     AnimatedOpacity(
                         duration: const Duration(milliseconds: 500),
                         opacity: offset >= 150 ? 0 : 1,
-                        child: const Text("Post my Ad", style: TextStyle(
+                        child:  Text(AppLocalizations.of(context)!.post_my_ad, style: const TextStyle(
                             fontSize: 14,
                             color: Colors.white,
                             fontWeight: FontWeight.w700),))

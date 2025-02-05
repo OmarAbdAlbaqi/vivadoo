@@ -3,8 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:vivadoo/providers/post_new_ad_provider/post_new_ad_provider.dart';
+import 'package:vivadoo/widgets/post_new_ad_widgets/photos_widget/verification_code_form.dart';
 import '../../providers/my_vivadoo_providers/my_vivadoo_general_provider.dart';
 import '../../constants.dart';
+import '../../providers/post_new_ad_provider/pages_providers/ad_poster_information_provider.dart';
 import '../../providers/post_new_ad_provider/pages_providers/add_photos_provider.dart';
 import '../hive_manager.dart';
 
@@ -240,6 +242,63 @@ class PopUps {
                     alignment: Alignment.center,
                     child: const Text("OK" , style: TextStyle(fontWeight: FontWeight.w500 , color: Color(0xFF000000)),),
                   ),
+                ),
+              ],
+            ),
+          ),
+        );
+      });
+
+  static Future verifyPhoneNumber (BuildContext context ) => showDialog(
+    barrierDismissible: false,
+      context: context,
+      builder: (BuildContext ctx){
+      final String phone = context.read<AdPosterInformationProvider>().phoneController.text;
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            width: 200,
+            height: 300,
+            decoration: BoxDecoration(
+              color: const Color(0xFFffffff),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 9),
+                GestureDetector(
+                  onTap: ()=> Navigator.pop(ctx),
+                  child: const Padding(
+                    padding: EdgeInsets.only(left: 9 , right: 9 , bottom: 9),
+                    child: Icon(Icons.close , color: Colors.red,),
+                  ),
+                ),
+                const Center(child: Icon(Icons.message_outlined , color: Colors.green,size: 40,)),
+                Text("Your phone number is not verified!\nWe have sent a verification code to this phone number \"$phone\"" ,textAlign: TextAlign.center, style: const TextStyle(fontSize: 14 , color: Colors.black , fontWeight: FontWeight.w500),),
+                const SizedBox(height: 30,),
+                const VerificationCodeForm(),
+                const Spacer(),
+                const Divider(height: 0),
+                Selector<PostNewAdProvider , bool>(
+                  selector: (context , prov) => prov.postNewAdLoading,
+                  builder: (context , loading , _) {
+                    return GestureDetector(
+                      onTap: loading ? (){} :() {
+                         context.read<PostNewAdProvider>().verifyPhoneNumber(ctx);
+                        // context.read<PostNewAdProvider>().loadingTestFunction(ctx);
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        width: double.infinity,
+                        height: 50,
+                        alignment: Alignment.center,
+                        child: loading ? const SizedBox(width: 25,height: 25,child: CircularProgressIndicator(color: Constants.orange,),):const Text("Verify" , style: TextStyle(fontWeight: FontWeight.w600 , color: Color(0xFF000000)),),
+                      ),
+                    );
+                  }
                 ),
               ],
             ),

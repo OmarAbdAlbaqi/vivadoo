@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../../../providers/my_vivadoo_providers/auth/edit_account_details_provider.dart';
 import 'auth_input.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class EditAccountDetails extends StatelessWidget {
   const EditAccountDetails({super.key});
 
@@ -24,9 +26,9 @@ class EditAccountDetails extends StatelessWidget {
                     children: [
                       Column(
                         children: [
-                          const Padding(
-                              padding: EdgeInsets.only(top: 15),
-                              child: Text("Update your personal information")
+                           Padding(
+                              padding: const EdgeInsets.only(top: 15),
+                              child: Text(AppLocalizations.of(context)!.update_your_personal_information)
                           ),
                           const SizedBox(height: 16),
                           AuthInput(
@@ -35,14 +37,14 @@ class EditAccountDetails extends StatelessWidget {
                             textCapitalization: TextCapitalization.words,
                             validator: (value) {
                               if (value!.isEmpty || value.length < 3) {
-                                return 'Please enter a valid name';
+                                return AppLocalizations.of(context)!.please_enter_a_valid_name;
                               } else {
                                 return null;
                               }
                             },
-                            hint: 'First Name',
+                            hint: AppLocalizations.of(context)!.first_name,
                             obscure: false,
-                            title: 'First Name',
+                            title: AppLocalizations.of(context)!.first_name,
                             keyboard: TextInputType.text,
                           ),
                           const SizedBox(height: 8),
@@ -52,14 +54,14 @@ class EditAccountDetails extends StatelessWidget {
                             textCapitalization: TextCapitalization.words,
                             validator: (value) {
                               if (value!.isEmpty || value.length < 4) {
-                                return 'Please enter a valid last name';
+                                return AppLocalizations.of(context)!.please_enter_a_valid_last_name;
                               } else {
                                 return null;
                               }
                             },
-                            hint: 'Last Name',
+                            hint: AppLocalizations.of(context)!.last_name,
                             obscure: false,
-                            title: 'Last Name',
+                            title: AppLocalizations.of(context)!.last_name,
                             keyboard: TextInputType.text,
                           ),
                           const SizedBox(height: 8),
@@ -69,14 +71,14 @@ class EditAccountDetails extends StatelessWidget {
                             textCapitalization: TextCapitalization.none,
                             validator: (value) {
                               if (value!.isEmpty || value.length < 8) {
-                                return 'Please enter a valid phone number';
+                                return AppLocalizations.of(context)!.please_enter_a_valid_phone_number;
                               } else {
                                 return null;
                               }
                             },
-                            hint: 'Phone Number',
+                            hint: AppLocalizations.of(context)!.phone_number,
                             obscure: false,
-                            title: 'Phone Number',
+                            title: AppLocalizations.of(context)!.phone_number,
                             keyboard: TextInputType.phone,
                           ),
                           const SizedBox(height: 8),
@@ -92,7 +94,7 @@ class EditAccountDetails extends StatelessWidget {
                                 height: 30,
                                 alignment: Alignment.centerLeft,
                                 color: Colors.transparent,
-                                child: const Text("Change Password", style: TextStyle(color: Colors.indigoAccent),),
+                                child: Text(AppLocalizations.of(context)!.change_password, style: const TextStyle(color: Colors.indigoAccent),),
                               ),
                             ),
                           ),
@@ -125,9 +127,9 @@ class EditAccountDetails extends StatelessWidget {
                             backgroundColor: getColor(Colors.orange, Colors.white),
                             foregroundColor: getColor(Colors.white, Colors.orange),
                           ),
-                          child: const Text(
-                            "Submit",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                          child: Text(
+                            AppLocalizations.of(context)!.submit,
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                         ),
                       ),

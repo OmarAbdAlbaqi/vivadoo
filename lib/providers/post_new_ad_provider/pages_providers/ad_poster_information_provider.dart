@@ -13,15 +13,21 @@ class AdPosterInformationProvider with ChangeNotifier{
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   bool hideMyPhoneNumber = false;
-  bool enableChatForThisAd = false;
+  bool enableChatForThisAd = true;
 
   toggleHidePhoneNumber(){
     hideMyPhoneNumber =! hideMyPhoneNumber;
+    if(hideMyPhoneNumber == true && enableChatForThisAd == false){
+      enableChatForThisAd = true;
+    }
     notifyListeners();
   }
 
   toggleEnableChatForThisAd(){
     enableChatForThisAd =! enableChatForThisAd;
+    if(hideMyPhoneNumber == true && enableChatForThisAd == false){
+      hideMyPhoneNumber = false;
+    }
     notifyListeners();
   }
 

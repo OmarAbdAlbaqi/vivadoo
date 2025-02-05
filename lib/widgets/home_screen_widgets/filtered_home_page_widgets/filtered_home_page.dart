@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:vivadoo/providers/ads_provider/filtered_ads_provider.dart';
 import 'package:vivadoo/providers/home_providers/home_page_provider.dart';
+import 'package:vivadoo/providers/home_providers/home_search_provider.dart';
 import 'package:vivadoo/widgets/ad_cards/native_ad_card.dart';
 
 import '../../../constants.dart';
@@ -15,6 +16,8 @@ import '../../../providers/home_providers/filters/filter_provider.dart';
 import '../../../providers/home_providers/filters/location_filter.dart';
 import '../../ad_cards/full_width_ad_card.dart';
 import '../search_result_for_home_and_filtered-home.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class FilteredHomePage extends StatelessWidget {
   const FilteredHomePage({super.key});
@@ -91,7 +94,7 @@ class FilteredHomePage extends StatelessWidget {
                                 height: 20,
                               ),
                               const SizedBox(width: 8),
-                              const Text("Filters"),
+                              Text(AppLocalizations.of(context)!.filters),
                               const SizedBox(width: 8),
                               CircleAvatar(
                                 radius: 13,
@@ -119,7 +122,7 @@ class FilteredHomePage extends StatelessWidget {
                         child: Selector<LocationFilterProvider, String>(
                             selector: (context, prov) => prov.location,
                             builder: (context, location, _) {
-                              bool locationExist = location != "All Over Country";
+                              bool locationExist = location != AppLocalizations.of(context)!.all_over_country;
                               return Container(
                                 margin: const EdgeInsets.symmetric(vertical: 3),
                                 padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -187,7 +190,7 @@ class FilteredHomePage extends StatelessWidget {
                       Visibility(
                         visible: context
                             .watch<LocationFilterProvider>()
-                            .location != "All Over Country",
+                            .location != AppLocalizations.of(context)!.all_over_country,
                         child: GestureDetector(
                           onTap: () {
                             context.read<FilteredAdsProvider>()
@@ -196,7 +199,7 @@ class FilteredHomePage extends StatelessWidget {
                           child: Selector<LocationFilterProvider, String>(
                               selector: (context, prov) => prov.location,
                               builder: (context, location, _) {
-                                bool locationExist = location != "All Over Country";
+                                bool locationExist = location != AppLocalizations.of(context)!.all_over_country;
                                 return Container(
                                     margin: const EdgeInsets.symmetric(vertical: 4),
                                     padding: const EdgeInsets.symmetric(
@@ -243,7 +246,7 @@ class FilteredHomePage extends StatelessWidget {
                                     child: Selector<FilteredAdsProvider, String>(
                                       selector: (context, prov) => prov.radius,
                                       builder: (context, radius, _) {
-                                        return Text("$radius KM",
+                                        return Text("$radius ${AppLocalizations.of(context)!.km}",
                                           style: const TextStyle(
                                               color: Color(0xFFffffff),
                                               fontWeight: FontWeight.w500),);
@@ -270,7 +273,7 @@ class FilteredHomePage extends StatelessWidget {
                                         height: 20,
                                       ),
                                       const SizedBox(width: 8),
-                                      const Text("Sort"),
+                                      Text(AppLocalizations.of(context)!.sort),
                                     ],
                                   ),
 
@@ -287,7 +290,8 @@ class FilteredHomePage extends StatelessWidget {
                                           height: 45,
                                           child: Stack(
                                             children: [
-                                              Center(child: Text("Most Recent",
+                                              Center(child:
+                                              Text(AppLocalizations.of(context)!.most_recent,
                                                 style: TextStyle(fontSize: 14,
                                                     color: sorting ==
                                                         Sorting.mostRecent ? Colors
@@ -319,7 +323,7 @@ class FilteredHomePage extends StatelessWidget {
                                                   padding: const EdgeInsets.only(
                                                       bottom: 4),
                                                   alignment: Alignment.center,
-                                                  child: Text("Price(Low to High)",
+                                                  child: Text(AppLocalizations.of(context)!.price_low_to_high,
                                                     style: TextStyle(fontSize: 14,
                                                         color: sorting ==
                                                             Sorting.priceL2H
@@ -346,7 +350,7 @@ class FilteredHomePage extends StatelessWidget {
                                       value: "priceh2l",
                                       child: Container(
                                           alignment: AlignmentDirectional.center,
-                                          child: Text("Price(High to Low)",
+                                          child: Text(AppLocalizations.of(context)!.price_high_to_low,
                                             style: TextStyle(fontSize: 14,
                                                 color: sorting == Sorting.priceH2L
                                                     ? Colors.red
@@ -431,7 +435,7 @@ class FilteredHomePage extends StatelessWidget {
                         width: double.infinity,
                         height: visible && context
                             .watch<LocationFilterProvider>()
-                            .location != "All Over Country" ? 120 : 0,
+                            .location != AppLocalizations.of(context)!.all_over_country ? 120 : 0,
                         color: const Color(0xFFffffff),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -443,12 +447,12 @@ class FilteredHomePage extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment
                                     .spaceBetween,
                                 children: [
-                                  const Text("Choose distance",
-                                    style: TextStyle(fontSize: 16,
+                                  Text(AppLocalizations.of(context)!.choose_distance,
+                                    style: const TextStyle(fontSize: 16,
                                         fontWeight: FontWeight.w600),),
                                   Text("${context
                                       .watch<FilteredAdsProvider>()
-                                      .radius} KM",
+                                      .radius} ${AppLocalizations.of(context)!.km}",
                                     style: const TextStyle(
                                         color: Constants.orange,
                                         fontSize: 16,
@@ -479,17 +483,17 @@ class FilteredHomePage extends StatelessWidget {
                                     .getFilteredAds(context);
                               },
                             ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(
+                             Padding(
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 6),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment
                                     .spaceBetween,
                                 children: [
-                                  Text("5 KM", style: TextStyle(
+                                  Text("5 ${AppLocalizations.of(context)!.km}", style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600),),
-                                  Text("100 KM", style: TextStyle(
+                                  Text("100 ${AppLocalizations.of(context)!.km}", style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600),)
                                 ],
@@ -562,13 +566,23 @@ class FilteredHomePage extends StatelessWidget {
                     ))
               ],
             ),
-            Visibility(
-              visible: context.watch<HomePageProvider>().searchedResult.isNotEmpty,
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                color: Colors.blue.withOpacity(0.1),
-              ),
+            Consumer<HomeSearchProvider>(
+                builder: (context, search, _) {
+                  return Visibility(
+                    visible: search.searchedResult.isNotEmpty || search.searchFocusNode.hasFocus,
+                    child: GestureDetector(
+                      onTap: (){
+                        search.searchedResult.clear();
+                        search.searchFocusNode.unfocus();
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: Colors.blue.withOpacity(0.1),
+                      ),
+                    ),
+                  );
+                }
             ),
             searchResult(context),
           ],

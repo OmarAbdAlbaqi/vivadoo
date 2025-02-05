@@ -7,6 +7,8 @@ import 'package:vivadoo/providers/favorite_providers/favorite_provider.dart';
 import 'package:vivadoo/providers/home_providers/filters/filter_provider.dart';
 import 'package:vivadoo/providers/home_providers/filters/location_filter.dart';
 import 'package:vivadoo/providers/home_providers/filters/range_filter_provider.dart';
+import 'package:vivadoo/providers/home_providers/home_search_provider.dart';
+import 'package:vivadoo/utils/app_navigation.dart';
 import '../providers/my_vivadoo_providers/my_vivadoo_profile_provider.dart';
 import '../providers/post_new_ad_provider/post_new_ad_provider.dart';
 import '../firebase_options.dart';
@@ -19,9 +21,9 @@ import '../providers/my_vivadoo_providers/auth/social_media_auth/apple_auth_prov
 import '../providers/my_vivadoo_providers/auth/social_media_auth/facebook_auth_provider.dart';
 import '../providers/my_vivadoo_providers/auth/social_media_auth/google_auth_provider.dart';
 import '../providers/my_vivadoo_providers/auth/user_info_provider.dart';
+import 'constants.dart';
 import 'providers/post_new_ad_provider/pages_providers/ad_poster_information_provider.dart';
 import '../services/push_notifications.dart';
-import 'utils/app_navigation.dart';
 import 'providers/post_new_ad_provider/steps_bar_widget_provider.dart';
 import '../providers/my_vivadoo_providers/my_vivadoo_general_provider.dart';
 import 'providers/post_new_ad_provider/pages_providers/add_photos_provider.dart';
@@ -34,8 +36,7 @@ import '../providers/ads_provider/filtered_ads_provider.dart';
 import '../providers/ads_provider/user_ads_screen_provider.dart';
 import 'providers/home_providers/home_page_provider.dart';
 import '../providers/general/nav_bar_provider.dart';
-
-import 'constants.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'models/ad_model.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -47,6 +48,7 @@ appInit() async {
   await FirebaseAPI().initNotifications();
 }
 
+
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await HiveStorageManager.openHiveBox();
@@ -56,8 +58,27 @@ main() async {
 }
 
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
    const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+  static void setLocale(BuildContext context, Locale newLocale){
+    _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
+    state?.setLocale(newLocale);
+  }
+}
+
+class _MyAppState extends State<MyApp> {
+  Locale? _locale;
+
+  setLocale(Locale locale){
+    setState(() {
+      _locale = locale;
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -89,6 +110,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => PostNewAdProvider()),
         ChangeNotifierProvider(create: (context) => RangeFilterProvider()),
         ChangeNotifierProvider(create: (context) => FavoriteProvider()),
+        ChangeNotifierProvider(create: (context) => HomeSearchProvider()),
       ],
       child: ValueListenableBuilder(
           valueListenable: HiveStorageManager.hiveBox.listenable(),
@@ -137,7 +159,8 @@ class MyApp extends StatelessWidget {
               }
               hiveBox.put('popped', false);
             }
-          return MaterialApp.router(
+          return
+            MaterialApp.router(
             routerDelegate: AppNavigation.router.routerDelegate,
             routeInformationParser: AppNavigation.router.routeInformationParser,
             routeInformationProvider: AppNavigation.router.routeInformationProvider,
@@ -157,9 +180,13 @@ class MyApp extends StatelessWidget {
                 )
               )
             ),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: _locale,
           );
         }
       ),
     );
   }
 }
+// context.read<LocationFilterProvider>().location = AppLocalizations.of(context).all_over_country;

@@ -4,15 +4,19 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:vivadoo/providers/home_providers/home_search_provider.dart';
 import '../../../constants.dart';
 import '../../../providers/ads_provider/filtered_ads_provider.dart';
 import '../../../providers/home_providers/filters/filter_provider.dart';
+import '../../../providers/home_providers/filters/location_filter.dart';
 import '../../ad_cards/ad_card_for_home_page.dart';
 import '../search_result_for_home_and_filtered-home.dart';
 import '../../../providers/ads_provider/ads_provider.dart';
 
 import '../../../models/ad_model.dart';
 import '../../../providers/home_providers/home_page_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class HomePageWidget extends StatelessWidget {
   const HomePageWidget({super.key});
@@ -27,7 +31,7 @@ class HomePageWidget extends StatelessWidget {
             //home page ads
             SmartRefresher(
               onRefresh: ()async {
-                await context.read<AdsProvider>().refreshAds(context);
+                await context.read<AdsProvider>().getAds(context);
                 homeProv.refreshController.refreshCompleted();
               },
               header: WaterDropHeader(
@@ -112,6 +116,7 @@ class HomePageWidget extends StatelessWidget {
                           HomePageFilterCard(
                               scrollController: homeProv.scrollController,
                               onTap: (){
+                                context.read<LocationFilterProvider>().location = AppLocalizations.of(context)!.all_over_country;
                                 context.read<FilterProvider>().categoryId = 0;
                                 context.read<FilterProvider>().subCategoryId = 2;
                                 context.read<FilterProvider>().setCategoryMetaFields(context);
@@ -127,12 +132,13 @@ class HomePageWidget extends StatelessWidget {
                                 context.push('/home/filteredHome');
                               },
                               imagePath: "assets/icons/filter_search/house.png",
-                              title: "Property"),
+                              title: AppLocalizations.of(context)!.property),
 
                           //cars
                           HomePageFilterCard(
                               scrollController: homeProv.scrollController,
                               onTap: (){
+                                context.read<LocationFilterProvider>().location = AppLocalizations.of(context)!.all_over_country;
                                 context.read<FilterProvider>().categoryId = 1;
                                 context.read<FilterProvider>().subCategoryId = 10;
                                 context.read<FilterProvider>().setCategoryMetaFields(context);
@@ -150,13 +156,14 @@ class HomePageWidget extends StatelessWidget {
                                 context.push('/home/filteredHome');
                               },
                               imagePath: "assets/icons/filter_search/car.png",
-                              title: "Cars",
+                              title: AppLocalizations.of(context)!.cars,
                           ),
 
                           //job
                           HomePageFilterCard(
                               scrollController: homeProv.scrollController,
                               onTap: (){
+                                context.read<LocationFilterProvider>().location = AppLocalizations.of(context)!.all_over_country;
                                 context.read<FilterProvider>().categoryId = 0;
                                 context.read<FilterProvider>().subCategoryId = 4;
                                 context.read<FilterProvider>().setCategoryMetaFields(context);
@@ -173,14 +180,14 @@ class HomePageWidget extends StatelessWidget {
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
                               },
                               imagePath: "assets/icons/filter_search/search.png",
-                              title: "Jobs",
+                              title: AppLocalizations.of(context)!.jobs,
                           ),
 
                           //for sale
                           HomePageFilterCard(
                               scrollController: homeProv.scrollController,
                               onTap: (){
-                                // context.read<FilteredAdsProvider>().getAdsCount(context, temp: true);
+                                context.read<LocationFilterProvider>().location = AppLocalizations.of(context)!.all_over_country;
                                 context.read<FilterProvider>().categoryId = 0;
                                 context.read<FilterProvider>().subCategoryId = 3;
                                 context.read<FilterProvider>().setCategoryMetaFields(context);
@@ -197,17 +204,18 @@ class HomePageWidget extends StatelessWidget {
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
                               },
                               imagePath: "assets/icons/filter_search/check.png",
-                              title: "For Sales",
+                              title: AppLocalizations.of(context)!.for_sales,
                           ),
 
                           //more
                           HomePageFilterCard(
                               scrollController: homeProv.scrollController,
                               onTap: (){
+                                context.read<LocationFilterProvider>().location = AppLocalizations.of(context)!.all_over_country;
                                 context.go('/home/filterFromHome', extra: {'showDialog': true});
                               },
                               imagePath: "assets/icons/filter_search/more.png",
-                              title: "More",
+                              title: AppLocalizations.of(context)!.more,
                           )
                         ],
                       ),
@@ -218,13 +226,24 @@ class HomePageWidget extends StatelessWidget {
               },
             ),
 
-            Visibility(
-              visible: context.watch<HomePageProvider>().searchedResult.isNotEmpty,
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                color: Colors.blue.withOpacity(0.1),
-              ),
+            Consumer<HomeSearchProvider>(
+              builder: (context, search, _) {
+                return Visibility(
+                  visible: search.searchedResult.isNotEmpty || search.searchFocusNode.hasFocus,
+                  child: GestureDetector(
+                    onTap: (){
+                      search.searchedResult.clear();
+                      search.searchFocusNode.unfocus();
+
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      color: Colors.blue.withOpacity(0.1),
+                    ),
+                  ),
+                );
+              }
             ),
             searchResult(context),
           ],

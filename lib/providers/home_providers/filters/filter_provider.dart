@@ -133,7 +133,10 @@ class FilterProvider with ChangeNotifier {
       rangeMetaFieldId = null;
     }
     print(filterParams);
-    showAdsCount(context);
+    if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
+      showAdsCount(context);
+    }
+
     notifyListeners();
   }
 
@@ -165,7 +168,9 @@ class FilterProvider with ChangeNotifier {
       adType.remove(value);
     }
     print(filterParams);
-    showAdsCount(context);
+    if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
+      showAdsCount(context);
+    }
     notifyListeners();
   }
 
@@ -177,7 +182,9 @@ class FilterProvider with ChangeNotifier {
       filterParams.remove("ot");
     }
     print(filterParams);
-    showAdsCount(context);
+    if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
+      showAdsCount(context);
+    }
     notifyListeners();
   }
 
@@ -189,7 +196,9 @@ class FilterProvider with ChangeNotifier {
       filterParams.remove("op");
     }
     print(filterParams);
-    showAdsCount(context);
+    if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
+      showAdsCount(context);
+    }
     notifyListeners();
   }
 
@@ -206,7 +215,9 @@ class FilterProvider with ChangeNotifier {
       temp.addAll({"mtfs$key": value});
     }
     filterParams = temp;
-    showAdsCount(context);
+    if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
+      showAdsCount(context);
+    }
     print(filterParams);
     notifyListeners();
   }
@@ -275,14 +286,15 @@ class FilterProvider with ChangeNotifier {
       // }
     }
     print(filterParams);
-    showAdsCount(context);
+    if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
+      showAdsCount(context);
+    }
     notifyListeners();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
 
   showAdsCount(BuildContext context) async {
-
     //set the current sub category
     List<CategoryModel> categoryList = context.read<FilteredAdsProvider>().categoryList;
     SubCategoryModel? subCategoryModel;
@@ -362,10 +374,6 @@ class FilterProvider with ChangeNotifier {
     oldMakesKeys = [];
   }
 
-
-
-
-
   setFilterParams(Map<String, dynamic> value, String method, {String? keyToRemove}) {
     switch (method) {
       case "add":
@@ -388,14 +396,10 @@ class FilterProvider with ChangeNotifier {
     }
   }
 
-
-
-
   setSorting(Sorting newSorting) {
     sorting = newSorting;
     notifyListeners();
   }
-
 
   showAds(BuildContext context) async {
     String route = HiveStorageManager.hiveBox.get('route');
@@ -412,19 +416,9 @@ class FilterProvider with ChangeNotifier {
       subCategoryModel = categoryList.firstWhere((element) => element.id == categoryId).subCategoryModel.firstWhere((element) => element.id == subCategoryId);
     }
 
-
-    //set the default params
-    // Map<String, dynamic> tempFilterParams = {};
-
-    print(context.read<LocationFilterProvider>().city);
     //set city
     filterParams.addAll(
         {"city": context.read<LocationFilterProvider>().city});
-
-    //set meta fields data
-    // tempFilterParams.addAll(filterParams);
-
-    //add category and sub category to params
     filterParams.addAll({
       "category": subCategoryModel?.cat_link_parent,
       "subCategory": subCategoryModel?.cat_link,

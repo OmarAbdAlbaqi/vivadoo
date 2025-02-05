@@ -8,6 +8,7 @@ import '../../../providers/my_vivadoo_providers/my_vivadoo_general_provider.dart
 import '../../../constants.dart';
 import '../../../providers/my_vivadoo_providers/auth/sign_in_provider.dart';
 import 'auth_input.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class SignIn extends StatelessWidget {
@@ -34,9 +35,9 @@ class SignIn extends StatelessWidget {
                           padding: const EdgeInsets.only(left: 20 , right: 20 , top: 20),
                           child: Column(
                             children: [
-                              const Padding(
+                               Padding(
                                   padding: EdgeInsets.only(top: 15),
-                                  child: Text("Please use your credentials to sign in your account")
+                                  child: Text(AppLocalizations.of(context)!.please_use_your_credentials_to_sign_in_your_account)
                               ),
                               const SizedBox(height: 16),
                               AuthInput(
@@ -47,14 +48,14 @@ class SignIn extends StatelessWidget {
                                   if (value!.isEmpty ||
                                       !RegExp(r'(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
                                           .hasMatch(value)) {
-                                    return 'Please enter a valid email';
+                                    return AppLocalizations.of(context)!.please_enter_a_valid_email;
                                   } else {
                                     return null;
                                   }
                                 },
-                                hint: 'Email Address',
+                                hint: AppLocalizations.of(context)!.email_address,
                                 obscure: false,
-                                title: 'Email Address',
+                                title: AppLocalizations.of(context)!.email_address,
                                 keyboard: TextInputType.emailAddress,
                               ),
                               const SizedBox(height: 8),
@@ -79,14 +80,14 @@ class SignIn extends StatelessWidget {
                                   // !RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[_.\-@#%&*!~]).{8,}$')
                                   //     .hasMatch(value)
                                   ) {
-                                    return 'Please enter a valid password';
+                                    return AppLocalizations.of(context)!.please_enter_a_valid_password;
                                   } else {
                                     return null;
                                   }
                                 },
-                                hint: 'Password',
+                                hint: AppLocalizations.of(context)!.password,
                                 obscure: signIn.visible,
-                                title: 'Password',
+                                title: AppLocalizations.of(context)!.password,
                                 keyboard: TextInputType.visiblePassword,
                                 onChanged: (value) {
                                 },
@@ -105,7 +106,7 @@ class SignIn extends StatelessWidget {
                                       width:
                                       (MediaQuery.of(context).size.width / 2) - 35,
                                     ),
-                                    const Text("OR"),
+                                    Text(AppLocalizations.of(context)!.or),
                                     Container(
                                       color: Colors.grey.withOpacity(0.5),
                                       height: 1,
@@ -156,9 +157,9 @@ class SignIn extends StatelessWidget {
                                       width: 22,
                                       height: 22,
                                     ),
-                                    const Text(
-                                      "Continue With Google",
-                                      style: TextStyle(
+                                     Text(
+                                      AppLocalizations.of(context)!.continue_with_google,
+                                      style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight:
                                           FontWeight.w700),
@@ -199,20 +200,20 @@ class SignIn extends StatelessWidget {
                                   backgroundColor: context.read<MyVivadooProvider>().getColor(
                                       const Color.fromRGBO(66, 103, 178, 1), Colors.white),
                                 ),
-                                child: const Row(
+                                child: Row(
                                   mainAxisAlignment:
                                   MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Icon(
+                                    const Icon(
                                         Icons.facebook_outlined),
                                     Text(
-                                      "Continue With Facebook",
-                                      style: TextStyle(
+                                      AppLocalizations.of(context)!.continue_with_facebook,
+                                      style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight:
                                           FontWeight.w700),
                                     ),
-                                    Center(),
+                                    const Center(),
                                   ],
                                 ),
                               ),
@@ -253,20 +254,20 @@ class SignIn extends StatelessWidget {
                                           backgroundColor: context.read<MyVivadooProvider>().getColor(
                                               Colors.black, Colors.white),
                                         ),
-                                        child: const Row(
+                                        child: Row(
                                           mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Icon(
+                                            const Icon(
                                                 Icons.apple_rounded, color: Colors.white),
                                             Text(
-                                              "Continue With Apple",
-                                              style: TextStyle(
+                                              AppLocalizations.of(context)!.continue_with_apple,
+                                              style: const TextStyle(
                                                   fontSize: 14,
                                                   fontWeight:
                                                   FontWeight.w700),
                                             ),
-                                            Center(),
+                                            const Center(),
                                           ],
                                         ),
                                       ),
@@ -316,9 +317,9 @@ class SignIn extends StatelessWidget {
                                   height: 20,
                                   child: CircularProgressIndicator(),
                                 )
-                                : const Text(
-                              'Sign in',
-                              style: TextStyle(
+                                : Text(
+                              AppLocalizations.of(context)!.sign_in,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color:  Colors.white,

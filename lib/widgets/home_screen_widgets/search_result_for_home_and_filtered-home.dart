@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:vivadoo/providers/home_providers/home_search_provider.dart';
 import 'package:vivadoo/utils/hive_manager.dart';
 import '../../providers/ads_provider/filtered_ads_provider.dart';
 import '../../providers/home_providers/filters/filter_provider.dart';
 import '../../providers/home_providers/home_page_provider.dart';
 
 Widget searchResult (BuildContext context){
-  return Selector<HomePageProvider , List<String>>(
-      selector: (context , prov) => prov.searchedResult,
+  return Consumer<HomeSearchProvider>(
+      // selector: (context , prov) => prov.searchedResult,
       builder: (context , searchResult , _){
         return Visibility(
             visible: true,
@@ -18,20 +19,20 @@ Widget searchResult (BuildContext context){
               margin: const EdgeInsets.only(left: 12 , right: 12),
               alignment: Alignment.centerLeft,
               width: double.infinity,
-              height: searchResult.isNotEmpty? searchResult.length  > 6 ? 240 : searchResult.length * 45 : 0,
+              height: searchResult.searchedResult.isNotEmpty? searchResult.searchedResult.length  > 6 ? 240 : searchResult.searchedResult.length * 45 : 0,
               decoration: BoxDecoration(
                 color: const Color(0xFFffffff),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: ListView.separated(
-                itemCount: searchResult.length,
+                itemCount: searchResult.searchedResult.length,
                 itemBuilder: (context , index){
                   return GestureDetector(
                     onTap: () async {
                       context.read<FilterProvider>().clearFilter(context);
-                      context.read<HomePageProvider>().resetSearch();
-                      context.read<HomePageProvider>().textEditingController.text = searchResult[index];
-                      context.read<FilterProvider>().setFilterParams({"keywords" : searchResult[index]}, "add");
+                      searchResult.resetSearch();
+                      searchResult.textEditingController.text = searchResult.searchedResult[index];
+                      context.read<FilterProvider>().setFilterParams({"keywords" : searchResult.searchedResult[index]}, "add");
                       context.read<FilteredAdsProvider>().getFilteredAds(context);
                       if(HiveStorageManager.hiveBox.get('route') != "FilteredHome"){
                         context.push('/home/filteredHome');
@@ -48,7 +49,7 @@ Widget searchResult (BuildContext context){
                             width: 40,
                             child: Icon(Icons.search , color: Colors.grey.withOpacity(0.4), size: 18,),
                           ),
-                          Text(searchResult[index]),
+                          Text(searchResult.searchedResult[index]),
                         ],
                       ),
                     ),

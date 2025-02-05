@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:vivadoo/providers/ads_provider/ad_details_provider.dart';
@@ -12,13 +11,11 @@ import 'package:vivadoo/utils/hive_manager.dart';
 
 import '../../models/ad_model.dart';
 import '../ads_provider/ads_provider.dart';
-import '../ads_provider/filtered_ads_provider.dart';
 class HomePageProvider with ChangeNotifier{
   bool isScrollingUp = false;
   double offset = 0.0;
-  List<String> searchedResult = [];
+
   bool homePageLoading = false;
-  TextEditingController textEditingController = TextEditingController();
   ScrollPhysics physics = const BouncingScrollPhysics();
 
   late ScrollController scrollController;
@@ -64,37 +61,9 @@ class HomePageProvider with ChangeNotifier{
       }
       notifyListeners();
   }
-
-  resetSearch(){
-    searchedResult = [];
-    notifyListeners();
-  }
   
   setHomePageLoading(bool value){
     homePageLoading = value;
-    notifyListeners();
-  }
-  
-  autoCompleteSearch () async {
-    Uri url = Uri.parse("https://www.vivadoo.com/autocomplete.php?query=${textEditingController.text}&lang=en");
-    if(textEditingController.text.length > 2){
-      try {
-        http.Response response = await http.get(url).timeout(const Duration(seconds: 10));
-        if(response.statusCode == 200){
-          var extractedData = jsonDecode(response.body);
-          List items = extractedData['items'];
-          searchedResult = items.map((e) => e['value'].toString()).toList();
-          print(searchedResult);
-
-        }else{
-          print(response.reasonPhrase);
-        }
-      }catch (err) {
-        print("Error: $err");
-      }
-    }else{
-      resetSearch();
-    }
     notifyListeners();
   }
 
@@ -115,7 +84,5 @@ class HomePageProvider with ChangeNotifier{
     context.read<AdDetailsProvider>().setListOfAdDetails(ads, clearList: true);
     HiveStorageManager.hiveBox.put('route', 'Home');
   }
-
-
 
 }

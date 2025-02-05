@@ -34,6 +34,7 @@ class HiveStorageManager {
     }
     return;
   }
+
   static Box<UserInfoModel> getUserInfoModel() =>
       Hive.box<UserInfoModel>("userInfo");
 
@@ -45,5 +46,10 @@ class HiveStorageManager {
 
   static String getCurrentRoute() =>
       hiveBox.get('route');
+
+  static String getCurrentLocal() =>
+      hiveBox.get('locale') ?? "ar";
+
+  // static String getUserStatus() =>
 
 }

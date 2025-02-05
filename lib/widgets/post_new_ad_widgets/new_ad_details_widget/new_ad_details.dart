@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../models/filters/meta_fields_model.dart';
 import '../../../providers/ads_provider/filtered_ads_provider.dart';
 import '../../../providers/home_providers/filters/filter_provider.dart';
+import '../../../providers/post_new_ad_provider/post_new_ad_provider.dart';
 import '../../../providers/post_new_ad_provider/steps_bar_widget_provider.dart';
 import '../../../providers/post_new_ad_provider/pages_providers/new_ad_details_provider.dart';
 
@@ -25,7 +26,7 @@ class _NewAdDetailsState extends State<NewAdDetails> {
 
   void _showBottomSheetLocation(Widget child) {
     context.read<StepsBarWidgetProvider>().setIsBottomSheetOpen(true);
-    _bottomSheetController = scaffoldKeyCateAndLocation.currentState
+    _bottomSheetController = scaffoldKeyPostNewAd.currentState
         ?.showBottomSheet((ctx) => child);
 
     _bottomSheetController?.closed.whenComplete(() {
@@ -50,7 +51,8 @@ class _NewAdDetailsState extends State<NewAdDetails> {
                 categoryMetaFields[i].range[0]['min'].toDouble(),
                 categoryMetaFields[i].range[0]['max'].toDouble()));
           });
-          return _showBottomSheetLocation(Container(
+          return _showBottomSheetLocation(
+              Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height * 0.78,
             decoration: const BoxDecoration(
@@ -326,106 +328,129 @@ class _NewAdDetailsState extends State<NewAdDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<NewAdDetailsProvider>(builder: (context, prov, _) {
+    return Consumer<NewAdDetailsProvider>(
+        builder: (context, prov, _) {
       return GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Material(
           color: Colors.white,
           child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.zero,
             children: [
-              AdDetailsInput(
-                title: "Ad Title",
-                keyboard: TextInputType.name,
-                onChanged: (value) {
-                  prov.storeTitleInHive(context,value);
-                },
-                obscure: false,
-                validator: (value) {
-                  if (true) {
-                    return "";
-                  } else {
-                    return "";
-                  }
-                },
-                hint: "Ad Title",
-                textCapitalization: TextCapitalization.sentences,
-                controller: prov.adTitleController,
-              ),
-              AdDetailsInput(
-                  title: "Ad Price",
-                  keyboard: TextInputType.number,
-                  onChanged: (value) {
-                    prov.storePriceInHive(context,value);
-                  },
-                  obscure: false,
-                  validator: (value) {
-                    if (true) {
-                      return "";
-                    } else {
-                      return "";
-                    }
-                  },
-                  hint: "Ad Price",
-                  textCapitalization: TextCapitalization.none,
-                  controller: prov.adPriceController),
-              const SizedBox(height: 8),
-              const Text(
-                "Ad Description",
-                style: TextStyle(
-                    fontFamily: 'Uber Move',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black),
-              ),
-              const SizedBox(height: 6),
-              TextFormField(
-                maxLines: null,
-                controller: prov.adDescriptionController,
-                textCapitalization: TextCapitalization.sentences,
-                validator: (value) {
-                  if (true) {
-                    return "";
-                  } else {
-                    return "";
-                  }
-                },
-                obscureText: false,
-                onChanged: (value) {
-                  prov.storeDescriptionInHive(context,value);
-                },
-                keyboardType: TextInputType.multiline,
-                decoration: InputDecoration(
-                  errorBorder: OutlineInputBorder(
-                      borderRadius: const BorderRadius.all(Radius.circular(8)),
-                      borderSide: BorderSide(
-                        width: 1,
-                        color: Colors.red.withOpacity(0.6),
-                      )),
-                  focusedErrorBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    borderSide: BorderSide(
-                      width: 1.2,
-                      color: Colors.red,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    AdDetailsInput(
+                      title: "Ad Title",
+                      keyboard: TextInputType.name,
+                      onChanged: (value) {
+                        prov.storeTitleInHive(context,value);
+                      },
+                      obscure: false,
+                      validator: (value) {
+                        if (true) {
+                          return "";
+                        } else {
+                          return "";
+                        }
+                      },
+                      hint: "Ad Title",
+                      textCapitalization: TextCapitalization.sentences,
+                      controller: prov.adTitleController,
                     ),
-                  ),
-                  hintText: "Description",
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.black.withOpacity(0.5), width: 0.5),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-                  enabledBorder: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.transparent, width: 0),
-                      borderRadius: BorderRadius.circular(8)),
-                  fillColor: const Color.fromARGB(255, 245, 246, 247),
-                  filled: true,
+                    AdDetailsInput(
+                        title: "Ad Price",
+                        keyboard: TextInputType.number,
+                        onChanged: (value) {
+                          prov.storePriceInHive(context,value);
+                        },
+                        suffixIcon: GestureDetector(
+                          onTap: ()=>context.read<NewAdDetailsProvider>().changeCurrency(),
+                          child: context.watch<NewAdDetailsProvider>().currencyIsLbp ?
+                          Container(
+                              color: Colors.transparent,
+                              width: 50,
+                              alignment: const Alignment(0, 0),
+                              child: const Text("LBP")) :
+                          Container(
+                              color: Colors.transparent,
+                              width: 50,
+                              alignment: const Alignment(0, 0),
+                              child: const Text("USD")),
+                        ),
+                        obscure: false,
+                        validator: (value) {
+                          if (true) {
+                            return "";
+                          } else {
+                            return "";
+                          }
+                        },
+                        hint: "Ad Price",
+                        textCapitalization: TextCapitalization.none,
+                        controller: prov.adPriceController),
+                    const SizedBox(height: 8),
+                    const SizedBox(height: 8),
+                    const Text(
+                      "Ad Description",
+                      style: TextStyle(
+                          fontFamily: 'Uber Move',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black),
+                    ),
+                    const SizedBox(height: 6),
+                    TextFormField(
+                      maxLines: null,
+                      controller: prov.adDescriptionController,
+                      textCapitalization: TextCapitalization.sentences,
+                      validator: (value) {
+                        if (true) {
+                          return "";
+                        } else {
+                          return "";
+                        }
+                      },
+                      obscureText: false,
+                      onChanged: (value) {
+                        prov.storeDescriptionInHive(context,value);
+                      },
+                      keyboardType: TextInputType.multiline,
+                      decoration: InputDecoration(
+                        errorBorder: OutlineInputBorder(
+                            borderRadius: const BorderRadius.all(Radius.circular(8)),
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: Colors.red.withOpacity(0.6),
+                            )),
+                        focusedErrorBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide(
+                            width: 1.2,
+                            color: Colors.red,
+                          ),
+                        ),
+                        hintText: "Description",
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.black.withOpacity(0.5), width: 0.5),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding:
+                        const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide:
+                            const BorderSide(color: Colors.transparent, width: 0),
+                            borderRadius: BorderRadius.circular(8)),
+                        fillColor: const Color.fromARGB(255, 245, 246, 247),
+                        filled: true,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                 ),
               ),
-              const SizedBox(height: 12),
               metaFieldsWidget(),
             ],
           ),

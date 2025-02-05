@@ -66,7 +66,12 @@ class AdDetailsInput extends StatelessWidget {
                 color: Colors.red,
               ),
             ),
+
             suffixIcon: suffixIcon,
+            suffixIconConstraints: const BoxConstraints(
+              minHeight: 50,
+              minWidth: 50,
+            ),
             prefixIcon: prefixIcon,
             hintText: hint,
             focusedBorder: OutlineInputBorder(

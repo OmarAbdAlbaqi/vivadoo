@@ -17,5 +17,6 @@ class Constants{
   static const String uploadPhotoPath = "en/classifieds/api-secure/upload-image";
   static const String postNewAdPath = "en/classifieds/api-secure/postad";
   static const String checkEmailActivePath = "en/classifieds/api-secure/username";
+  static const String sendCodePath = "en/classifieds/api-secure/send-code";
 
 }

@@ -47,6 +47,9 @@ class SignUpProvider with ChangeNotifier{
       'phone' : phoneNumberController.text,
       'password' : passwordController.text,
     };
+    // var headers = {
+    //   'Content-Type': 'application/json'
+    // };
     print(userInfo);
     try {
       http.Response response = await http.post(url, body: userInfo).timeout(const Duration(seconds: 10));
@@ -56,9 +59,10 @@ class SignUpProvider with ChangeNotifier{
         var extractedData = jsonDecode(response.body);
         bool success = extractedData['success'] == 1;
         if(success){
+          print(extractedData.toString());
         }else{
           if(context.mounted){
-            PopUps.apiError(context, extractedData);
+            PopUps.apiError(context, extractedData.toString());
           }
         }
       }else{

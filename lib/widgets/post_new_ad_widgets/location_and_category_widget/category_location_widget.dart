@@ -12,11 +12,12 @@ import '../../../models/filters/hive/recent_locations_box.dart';
 import '../../../models/filters/sub_area_model.dart';
 import '../../../providers/ads_provider/filtered_ads_provider.dart';
 import '../../../providers/home_providers/filters/location_filter.dart';
+import '../../../providers/post_new_ad_provider/post_new_ad_provider.dart';
 import '../../../providers/post_new_ad_provider/steps_bar_widget_provider.dart';
 import '../../home_screen_widgets/general_filter_widgets/category_and_sub-category/category_card.dart';
 import '../../home_screen_widgets/location_widgets/location_search_bar.dart';
 import '../../home_screen_widgets/location_widgets/location_search_result_widget.dart';
-final GlobalKey<ScaffoldState> scaffoldKeyCateAndLocation = GlobalKey<ScaffoldState>();
+
 class CategoryAndLocationWidget extends StatefulWidget {
    const CategoryAndLocationWidget({super.key});
 
@@ -46,7 +47,7 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
 
   void _showBottomSheetLocation() {
     context.read<StepsBarWidgetProvider>().setIsBottomSheetOpen(true);
-    context.read<CategoryAndLocationProvider>().bottomSheetController = scaffoldKeyCateAndLocation.currentState?.showBottomSheet(
+    context.read<CategoryAndLocationProvider>().bottomSheetController = scaffoldKeyPostNewAd.currentState?.showBottomSheet(
           (context) => bottomSheetContentLocation(context)
     );
 
@@ -58,7 +59,7 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
 
   void _showBottomSheetCategories() {
     context.read<StepsBarWidgetProvider>().setIsBottomSheetOpen(true);
-    context.read<CategoryAndLocationProvider>().bottomSheetController = scaffoldKeyCateAndLocation.currentState?.showBottomSheet(
+    context.read<CategoryAndLocationProvider>().bottomSheetController = scaffoldKeyPostNewAd.currentState?.showBottomSheet(
             (context) => bottomSheetContentCategories(context)
     );
 
@@ -72,144 +73,158 @@ class _CategoryAndLocationWidgetState extends State<CategoryAndLocationWidget> w
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 40, left: 20, right: 20),
+      child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(right: 8),
-                  child: Icon(Icons.info, color: Color.fromRGBO(150, 150, 150, 0.8),size: 30,),
-                ),
-                SizedBox(
-                    width: MediaQuery.of(context).size.width - 80,
-                    child: const Text("Select the location of your item, people using search by city will find your ad more easily")),
-              ],
+            const SizedBox(height: 60),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(right: 8),
+                    child: Icon(Icons.info, color: Color.fromRGBO(150, 150, 150, 0.8),size: 30,),
+                  ),
+                  SizedBox(
+                      width: MediaQuery.of(context).size.width - 80,
+                      child: const Text("Select the location of your item, people using search by city will find your ad more easily")),
+                ],
+              ),
             ),
             const SizedBox(height: 20),
-            GestureDetector(
-              onTap: _showBottomSheetLocation,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                width: double.infinity,
-                height: 55,
-                decoration: BoxDecoration(
-                    color: const Color.fromRGBO(245, 246, 247, 1),
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: const [
-                      BoxShadow(
-                          offset: Offset(-3, 3),
-                          blurRadius: 4,
-                          spreadRadius: -2,
-                          color: Colors.black12
-                      ),
-                    ]
-                ),
-                alignment: Alignment.centerLeft,
-                child: Selector<CategoryAndLocationProvider, String>(
-                    selector: (context, prov) => prov.locationLabel,
-                    builder: (context, locationLabel, _) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          locationLabel.isNotEmpty ? Text(locationLabel, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),) :const Text("Select Location", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500 , color: Color.fromRGBO(150, 150, 150, 1)),),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration:  BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Constants.orange.withOpacity(0.2),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Constants.orange.withOpacity(0.2),
-                                      spreadRadius: -3,
-                                      blurStyle: BlurStyle.normal,
-                                      blurRadius: 6
-                                  ),
-                                ]
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: GestureDetector(
+                onTap: _showBottomSheetLocation,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  width: double.infinity,
+                  height: 55,
+                  decoration: BoxDecoration(
+                      color: const Color.fromRGBO(245, 246, 247, 1),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: const [
+                        BoxShadow(
+                            offset: Offset(-3, 3),
+                            blurRadius: 4,
+                            spreadRadius: -2,
+                            color: Colors.black12
+                        ),
+                      ]
+                  ),
+                  alignment: Alignment.centerLeft,
+                  child: Selector<CategoryAndLocationProvider, String>(
+                      selector: (context, prov) => prov.locationLabel,
+                      builder: (context, locationLabel, _) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            locationLabel.isNotEmpty ? Text(locationLabel, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),) :const Text("Select Location", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500 , color: Color.fromRGBO(150, 150, 150, 1)),),
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration:  BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Constants.orange.withOpacity(0.2),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Constants.orange.withOpacity(0.2),
+                                        spreadRadius: -3,
+                                        blurStyle: BlurStyle.normal,
+                                        blurRadius: 6
+                                    ),
+                                  ]
+                              ),
+                              child: const Icon(Icons.arrow_forward),
                             ),
-                            child: const Icon(Icons.arrow_forward),
-                          ),
 
-                        ],
-                      );
-                    }
+                          ],
+                        );
+                      }
+                  ),
                 ),
               ),
             ),
 
             const SizedBox(height: 60),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(right: 8),
-                  child: Icon(Icons.info, color: Color.fromRGBO(150, 150, 150, 0.8),size: 30,),
-                ),
-                SizedBox(
-                    width: MediaQuery.of(context).size.width - 80,
-                    child: const Text("You will have a 50% more chance of being contacted if your ad is in the right category.")),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(right: 8),
+                    child: Icon(Icons.info, color: Color.fromRGBO(150, 150, 150, 0.8),size: 30,),
+                  ),
+                  SizedBox(
+                      width: MediaQuery.of(context).size.width - 80,
+                      child: const Text("You will have a 50% more chance of being contacted if your ad is in the right category.")),
+                ],
+              ),
             ),
             const SizedBox(height: 20),
-            GestureDetector(
-              onTap: _showBottomSheetCategories,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                width: double.infinity,
-                height: 55,
-                decoration: BoxDecoration(
-                    color: const Color.fromRGBO(245, 246, 247, 1),
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: const [
-                      BoxShadow(
-                          offset: Offset(-3, 3),
-                          blurRadius: 4,
-                          spreadRadius: -2,
-                          color: Colors.black12
-                      ),
-                    ]
-                ),
-                alignment: Alignment.centerLeft,
-                child: Selector<CategoryAndLocationProvider , String>(
-                    selector: (context , prov) => prov.categoryLabel,
-                    builder: (context , categoryLabel , _) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          categoryLabel.isNotEmpty ?
-                          SizedBox(
-                              width: MediaQuery.of(context).size.width - 120,
-                              child: Text(categoryLabel, overflow: TextOverflow.ellipsis ,style: const TextStyle(fontSize: 16, overflow: TextOverflow.ellipsis,fontWeight: FontWeight.w500),)) :
-                          const Text("Select Category", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500 , color: Color.fromRGBO(150, 150, 150, 1)),),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration:  BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Constants.orange.withOpacity(0.2),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Constants.orange.withOpacity(0.2),
-                                      spreadRadius: -3,
-                                      blurStyle: BlurStyle.normal,
-                                      blurRadius: 6
-                                  ),
-                                ]
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: GestureDetector(
+                onTap: _showBottomSheetCategories,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  width: double.infinity,
+                  height: 55,
+                  decoration: BoxDecoration(
+                      color: const Color.fromRGBO(245, 246, 247, 1),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: const [
+                        BoxShadow(
+                            offset: Offset(-3, 3),
+                            blurRadius: 4,
+                            spreadRadius: -2,
+                            color: Colors.black12
+                        ),
+                      ]
+                  ),
+                  alignment: Alignment.centerLeft,
+                  child: Selector<CategoryAndLocationProvider , String>(
+                      selector: (context , prov) => prov.categoryLabel,
+                      builder: (context , categoryLabel , _) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            categoryLabel.isNotEmpty ?
+                            SizedBox(
+                                width: MediaQuery.of(context).size.width - 120,
+                                child: Text(categoryLabel, overflow: TextOverflow.ellipsis ,style: const TextStyle(fontSize: 16, overflow: TextOverflow.ellipsis,fontWeight: FontWeight.w500),)) :
+                            const Text("Select Category", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500 , color: Color.fromRGBO(150, 150, 150, 1)),),
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration:  BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Constants.orange.withOpacity(0.2),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Constants.orange.withOpacity(0.2),
+                                        spreadRadius: -3,
+                                        blurStyle: BlurStyle.normal,
+                                        blurRadius: 6
+                                    ),
+                                  ]
+                              ),
+                              child: const Icon(Icons.arrow_forward),
                             ),
-                            child: const Icon(Icons.arrow_forward),
-                          ),
 
-                        ],
-                      );
-                    }
+                          ],
+                        );
+                      }
+                  ),
                 ),
               ),
             ),
+
+            const SizedBox(height: 40),
           ],
         ),
       ),

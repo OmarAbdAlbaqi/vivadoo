@@ -62,7 +62,6 @@ class AddPhotosProvider with ChangeNotifier{
     notifyListeners();
   }
 
-
   removeAllSelectedImages(BuildContext context) {
     for (var element in selected) {
       if (imageList.contains(element)) {

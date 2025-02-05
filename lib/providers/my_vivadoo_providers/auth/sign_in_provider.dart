@@ -53,9 +53,10 @@ class SignInProvider with ChangeNotifier{
       Constants.authority,
       Constants.signInPath,
     );
-    String? deviceId = await _getId();
 
+    String? deviceId = await _getId();
     String firebaseToken = box.get('firebaseToken');
+
     Map<String, dynamic> userInfo = {
       'username' : emailController.text,
       'password' : passwordController.text,
@@ -80,7 +81,7 @@ class SignInProvider with ChangeNotifier{
           }
         }else{
           if(context.mounted){
-            PopUps.apiError(context, extractedData);
+            PopUps.apiError(context, extractedData.toString());
           }
         }
       }else{

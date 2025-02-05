@@ -48,7 +48,6 @@ class CustomMyVivadooScaffold extends StatelessWidget {
               ),
               leadingWidth: double.infinity,
             ),
-
             body: child,
           );
         }

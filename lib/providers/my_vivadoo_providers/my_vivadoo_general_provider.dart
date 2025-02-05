@@ -7,15 +7,15 @@ class MyVivadooProvider with ChangeNotifier{
    Timer? timer;
 
 
-  MaterialStateProperty<Color> getColor(Color color, Color colorPressed) {
-    getColor(Set<MaterialState> states) {
-      if (states.contains(MaterialState.pressed)) {
+  WidgetStateProperty<Color> getColor(Color color, Color colorPressed) {
+    getColor(Set<WidgetState> states) {
+      if (states.contains(WidgetState.pressed)) {
         return colorPressed;
       } else {
         return color;
       }
     }
-    return MaterialStateProperty.resolveWith(getColor);
+    return WidgetStateProperty.resolveWith(getColor);
   }
   void changeValue(bool increase) {
     final double startValue = increase ? 150.0 : 350.0;

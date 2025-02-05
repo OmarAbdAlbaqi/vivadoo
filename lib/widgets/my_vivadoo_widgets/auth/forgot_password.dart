@@ -5,6 +5,8 @@ import '../../../constants.dart';
 import '../../../providers/my_vivadoo_providers/auth/forgot_password_provider.dart';
 import '../../../providers/my_vivadoo_providers/my_vivadoo_general_provider.dart';
 import 'auth_input.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class ForgotPasswordWidget extends StatelessWidget {
   const ForgotPasswordWidget({super.key});
 
@@ -26,9 +28,9 @@ class ForgotPasswordWidget extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 20 , right: 20 , top: 20),
                     child: Column(
                       children: [
-                        const Padding(
+                       Padding(
                             padding: EdgeInsets.only(top: 15),
-                            child: Text("Please enter your email address to reset your password")
+                            child: Text(AppLocalizations.of(context)!.please_enter_your_email_address_to_reset_your_password)
                         ),
                         const SizedBox(height: 16),
                         AuthInput(
@@ -44,9 +46,9 @@ class ForgotPasswordWidget extends StatelessWidget {
                               return null;
                             }
                           },
-                          hint: 'Email Address',
+                          hint: AppLocalizations.of(context)!.email_address,
                           obscure: false,
-                          title: 'Email Address',
+                          title: AppLocalizations.of(context)!.email_address,
                           keyboard: TextInputType.emailAddress,
                         ),
                         const SizedBox(height: 8),
@@ -85,9 +87,9 @@ class ForgotPasswordWidget extends StatelessWidget {
                             backgroundColor: context.read<MyVivadooProvider>().getColor(Constants.orange, Colors.white),
                             foregroundColor: context.read<MyVivadooProvider>().getColor(Colors.white, Constants.orange),
                           ),
-                          child: const Text(
-                            'Submit',
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.of(context)!.submit,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color:  Colors.white,

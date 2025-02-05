@@ -8,11 +8,13 @@ import 'package:vivadoo/models/filters/sub_area_model.dart';
 
 import '../../../models/filters/area_model.dart';
 import '../../../models/filters/hive/recent_locations_box.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class LocationFilterProvider with ChangeNotifier{
   List<AreaModel> areaList = [];
   List<SubAreaModel> subAreaList = [];
   List<SubAreaModel> searchedResult = [];
-  String location = "All Over Country";
+  String location = "";
   String tempLocation = "";
   String city = "all-cities";
   String tempCity = "all-cities";
@@ -25,6 +27,7 @@ class LocationFilterProvider with ChangeNotifier{
   TextEditingController textEditingController = TextEditingController();
 
   bool loading = false;
+
 
   setLoading(bool newLoading){
     loading = newLoading;

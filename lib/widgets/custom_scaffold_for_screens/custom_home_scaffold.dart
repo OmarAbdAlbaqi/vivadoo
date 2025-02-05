@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:vivadoo/providers/ads_provider/ads_provider.dart';
+import 'package:vivadoo/providers/home_providers/home_search_provider.dart';
 
 import '../../models/ad_model.dart';
 import '../../providers/ads_provider/ad_details_provider.dart';
@@ -12,6 +13,8 @@ import '../../providers/home_providers/filters/location_filter.dart';
 import '../../providers/home_providers/home_page_provider.dart';
 import '../../utils/hive_manager.dart';
 import '../home_screen_widgets/location_widgets/location_search_bar.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class CustomHomeScaffold extends StatelessWidget {
    CustomHomeScaffold({super.key, required this.child});
   final Widget child;
@@ -32,13 +35,14 @@ class CustomHomeScaffold extends StatelessWidget {
             surfaceTintColor: Colors.transparent,
             toolbarHeight: context.watch<HomePageProvider>().height,
             automaticallyImplyLeading: false,
-            backgroundColor:context.watch<HomePageProvider>().searchedResult.isNotEmpty ? Colors.blue.withOpacity(0.1):  Colors.white,
+            backgroundColor:context.watch<HomeSearchProvider>().searchedResult.isNotEmpty || context.watch<HomeSearchProvider>().searchFocusNode.hasFocus ? Colors.blue.withOpacity(0.1):  Colors.white,
             titleSpacing: 12,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
                     onTap: () {
+                      context.read<HomeSearchProvider>().textEditingController.clear();
                       context.read<FilteredAdsProvider>().page = 1;
                       List<AdModel> adsList = context.read<AdsProvider>().adsList;
                       context.read<AdDetailsProvider>().setListOfAdDetails(adsList, clearList: true);
@@ -89,47 +93,62 @@ class CustomHomeScaffold extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
 
                   ),
-                  child: TextFormField(
-                    controller: context.watch<HomePageProvider>().textEditingController,
-                    onChanged: (value) {
-                      _debounce.run(() {
-                        context.read<HomePageProvider>().autoCompleteSearch();
-                      });
-                      if(context.read<HomePageProvider>().textEditingController.text.isEmpty){
-                        context.read<FilterProvider>().setFilterParams({}, "delete", keyToRemove: "keywords");
-                        context.read<FilteredAdsProvider>().getFilteredAds(context);
-                      }
-                    },
-                    decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                          const BorderSide(color: Colors.transparent, width: 0),
-                          borderRadius: BorderRadius.circular(8),
+                  child: Consumer<HomeSearchProvider>(
+                    builder: (context, search , _) {
+                      return TextFormField(
+                        onFieldSubmitted: (value) async {
+                          search.searchedResult.clear();
+                          context.read<FilterProvider>().clearFilter(context);
+                          search.resetSearch();
+                          context.read<FilterProvider>().setFilterParams({"keywords" : value}, "add");
+                          context.read<FilteredAdsProvider>().getFilteredAds(context);
+                          if(HiveStorageManager.hiveBox.get('route') != "FilteredHome"){
+                            context.push('/home/filteredHome');
+                          }
+                        },
+                        focusNode: search.searchFocusNode,
+                        controller: search.textEditingController,
+                        onChanged: (value) {
+                          _debounce.run(() {
+                            search.autoCompleteSearch();
+                          });
+                          if(search.textEditingController.text.isEmpty){
+                            context.read<FilterProvider>().setFilterParams({}, "delete", keyToRemove: "keywords");
+                            context.read<FilteredAdsProvider>().getFilteredAds(context);
+                          }
+                        },
+                        decoration: InputDecoration(
+                            fillColor: Colors.white,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide:
+                              const BorderSide(color: Colors.transparent, width: 0),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                const BorderSide(color: Colors.transparent,
+                                    width: 0),
+                                borderRadius: BorderRadius.circular(8)),
+                            hintText: AppLocalizations.of(context)!.search_vivadoo,
+                            hintStyle: const TextStyle(
+                                fontWeight: FontWeight.w300, color: Color.fromRGBO(
+                                88, 89, 91, 0.6)),
+                            contentPadding: const EdgeInsets.only(
+                                left: 12,
+                                right: 12,
+                                top: 0,
+                                bottom: 0),
+                            prefixIcon: const Icon(
+                                Icons.search, size: 35, color: Color.fromRGBO(88,
+                                89, 91, 0.6)),
+                            suffixIcon: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.mic_rounded, size: 30,
+                                  color: Color.fromRGBO(88, 89, 91, 0.7)),
+                            )
                         ),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide:
-                            const BorderSide(color: Colors.transparent,
-                                width: 0),
-                            borderRadius: BorderRadius.circular(8)),
-                        hintText: "Search Vivadoo",
-                        hintStyle: const TextStyle(
-                            fontWeight: FontWeight.w300, color: Color.fromRGBO(
-                            88, 89, 91, 0.6)),
-                        contentPadding: const EdgeInsets.only(
-                            left: 12,
-                            right: 12,
-                            top: 0,
-                            bottom: 0),
-                        prefixIcon: const Icon(
-                            Icons.search, size: 35, color: Color.fromRGBO(88,
-                            89, 91, 0.6)),
-                        suffixIcon: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.mic_rounded, size: 30,
-                              color: Color.fromRGBO(88, 89, 91, 0.7)),
-                        )
-                    ),
+                      );
+                    }
                   ),
                 ),
               ],
@@ -150,8 +169,8 @@ class CustomHomeScaffold extends StatelessWidget {
             ),
             title: Text(
               switch(page){
-              "Filter" || "FilterFromHome" => "Refine",
-              "LocationFilterFromFilter" || "LocationFilterFromHome" || "SubLocationFilterFromFilter" || "SubLocationFilterFromHome" || "LocationFilterFromFilterHome" || "SubLocationFilterFromFilterHome" => "Where are you looking?",
+              "Filter" || "FilterFromHome" => AppLocalizations.of(context)!.refine,
+              "LocationFilterFromFilter" || "LocationFilterFromHome" || "SubLocationFilterFromFilter" || "SubLocationFilterFromHome" || "LocationFilterFromFilterHome" || "SubLocationFilterFromFilterHome" => AppLocalizations.of(context)!.where_are_you_looking,
               _ => ""
             },
               style: const TextStyle(color: Color(0xFF000000),fontWeight: FontWeight.w600 , fontSize: 16),
@@ -187,7 +206,7 @@ class CustomHomeScaffold extends StatelessWidget {
                   height: 50,
                   color: Colors.transparent,
                   alignment: Alignment.center,
-                  child: const Text("Reset Filter" , style: TextStyle(color: Colors.indigoAccent, fontSize: 14 , fontWeight: FontWeight.w500),),
+                  child: Text( AppLocalizations.of(context)!.reset_filter, style: const TextStyle(color: Colors.indigoAccent, fontSize: 14 , fontWeight: FontWeight.w500),),
                 ),
               ),
             ],

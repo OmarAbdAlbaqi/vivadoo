@@ -272,7 +272,7 @@ class AppNavigation {
                               name: "MyVivadooProfile",
                               path: 'myVivadooProfile',
                               builder: (context, state) {
-                                return const MyVivadooProfile();
+                                return MyVivadooProfile();
                               },
                             ),
                             GoRoute(

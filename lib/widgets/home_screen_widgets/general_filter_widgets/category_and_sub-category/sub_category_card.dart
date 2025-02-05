@@ -12,6 +12,11 @@ Widget subCategoryCard (BuildContext context , SubCategoryModel subCategoryModel
         context.read<CategoryAndLocationProvider>().setCategoryLabel(subCategoryModel.name);
         context.read<CategoryAndLocationProvider>().categoryLink = subCategoryModel.cat_link;
         context.read<CategoryAndLocationProvider>().storeCategoryInHive(context,subCategoryModel.cat_link);
+        context.read<FilterProvider>().makeLink = "";
+        context.read<FilterProvider>().resetFilter(context);
+        context.read<FilterProvider>().categoryId = subCategoryModel.parent;
+        context.read<FilterProvider>().subCategoryId = subCategoryModel.id;
+        context.read<FilterProvider>().setCategoryMetaFields(context);
         context.read<CategoryAndLocationProvider>().bottomSheetController?.close();
       }else{
         context.read<FilterProvider>().makeLink = "";

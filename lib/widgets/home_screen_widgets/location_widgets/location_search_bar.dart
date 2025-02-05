@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../providers/filters/location_filter.dart';
+import '../../../providers/home_providers/filters/location_filter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+
 
 class Debounce {
   final int milliseconds;
@@ -45,7 +48,7 @@ Widget locationSearchBar (BuildContext context) {
             borderSide:
             const BorderSide(color: Colors.transparent, width: 0),
             borderRadius: BorderRadius.circular(8)),
-        hintText: "Search Vivadoo",
+        hintText: AppLocalizations.of(context)!.search_vivadoo,
         hintStyle: const TextStyle(
             fontWeight: FontWeight.w300,
             color: Color.fromRGBO(88, 89, 91, 0.6)),

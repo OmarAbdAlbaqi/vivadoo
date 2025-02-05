@@ -8,6 +8,8 @@ import '../../../constants.dart';
 import '../../../providers/my_vivadoo_providers/auth/sign_up_provider.dart';
 import '../../../providers/my_vivadoo_providers/my_vivadoo_general_provider.dart';
 import 'auth_input.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class SignUp extends StatelessWidget {
    const SignUp({super.key});
@@ -28,9 +30,9 @@ class SignUp extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(20, 15, 20, 80),
                     physics: const AlwaysScrollableScrollPhysics(),
                     children: [
-                      const Padding(
-                          padding: EdgeInsets.only(top: 15),
-                          child: Text("Let's get started")
+                       Padding(
+                          padding: const EdgeInsets.only(top: 15),
+                          child: Text(AppLocalizations.of(context)!.let_get_started)
                       ),
                       const SizedBox(height: 16),
 
@@ -41,14 +43,14 @@ class SignUp extends StatelessWidget {
                         textCapitalization: TextCapitalization.none,
                         validator: (value) {
                           if (value!.isEmpty || value.length < 4) {
-                            return 'Please enter a valid Name';
+                            return AppLocalizations.of(context)!.please_enter_a_valid_name;
                           } else {
                             return null;
                           }
                         },
-                        hint: 'First Name',
+                        hint: AppLocalizations.of(context)!.first_name,
                         obscure: false,
-                        title: 'First Name',
+                        title: AppLocalizations.of(context)!.first_name,
                         keyboard: TextInputType.name,
                       ),
                       const SizedBox(height: 8),
@@ -60,14 +62,14 @@ class SignUp extends StatelessWidget {
                         textCapitalization: TextCapitalization.none,
                         validator: (value) {
                           if (value!.isEmpty || value.length < 4) {
-                            return 'Please enter a valid Name';
+                            return AppLocalizations.of(context)!.please_enter_a_valid_last_name;
                           } else {
                             return null;
                           }
                         },
-                        hint: 'Last Name',
+                        hint: AppLocalizations.of(context)!.last_name,
                         obscure: false,
-                        title: 'Last Name',
+                        title: AppLocalizations.of(context)!.last_name,
                         keyboard: TextInputType.name,
                       ),
                       const SizedBox(height: 8),
@@ -79,14 +81,14 @@ class SignUp extends StatelessWidget {
                         textCapitalization: TextCapitalization.none,
                         validator: (value) {
                           if (value!.isEmpty || value.length < 8) {
-                            return 'Please enter a valid Phone number';
+                            return AppLocalizations.of(context)!.please_enter_a_valid_phone_number;
                           } else {
                             return null;
                           }
                         },
-                        hint: 'Phone Number',
+                        hint: AppLocalizations.of(context)!.phone_number,
                         obscure: false,
-                        title: 'Phone Number',
+                        title: AppLocalizations.of(context)!.phone_number,
                         keyboard: TextInputType.phone,
                       ),
                       const SizedBox(height: 8),
@@ -100,14 +102,14 @@ class SignUp extends StatelessWidget {
                           if (value!.isEmpty ||
                               !RegExp(r'(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
                                   .hasMatch(value)) {
-                            return 'Please enter a valid email';
+                            return AppLocalizations.of(context)!.please_enter_a_valid_email;
                           } else {
                             return null;
                           }
                         },
-                        hint: 'Email Address',
+                        hint: AppLocalizations.of(context)!.email_address,
                         obscure: false,
-                        title: 'Email Address',
+                        title: AppLocalizations.of(context)!.email_address,
                         keyboard: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 8),
@@ -128,14 +130,14 @@ class SignUp extends StatelessWidget {
                         textCapitalization: TextCapitalization.none,
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return 'Please enter a valid password';
+                            return AppLocalizations.of(context)!.please_enter_a_valid_password;
                           } else {
                             return null;
                           }
                         },
-                        hint: 'Password',
+                        hint: AppLocalizations.of(context)!.password,
                         obscure: signUp.visible,
-                        title: 'Password',
+                        title: AppLocalizations.of(context)!.password,
                         keyboard: TextInputType.visiblePassword,
                       ),
 
@@ -155,14 +157,14 @@ class SignUp extends StatelessWidget {
                         textCapitalization: TextCapitalization.none,
                         validator: (value) {
                           if (value != signUp.passwordController.text) {
-                            return 'Password not match';
+                            return AppLocalizations.of(context)!.password_not_match;
                           } else {
                             return null;
                           }
                         },
-                        hint: 'Confirm Password',
+                        hint: AppLocalizations.of(context)!.confirm_Password,
                         obscure: signUp.confirmVisible,
-                        title: 'Confirm Password',
+                        title: AppLocalizations.of(context)!.confirm_Password,
                         keyboard: TextInputType.visiblePassword,
                       ),
 
@@ -179,7 +181,7 @@ class SignUp extends StatelessWidget {
                               width:
                               (MediaQuery.of(context).size.width / 2) - 35,
                             ),
-                            const Text("OR"),
+                            Text(AppLocalizations.of(context)!.or),
                             Container(
                               color: Colors.grey.withOpacity(0.5),
                               height: 1,
@@ -333,9 +335,9 @@ class SignUp extends StatelessWidget {
                               backgroundColor: context.read<MyVivadooProvider>().getColor(Constants.orange, Colors.white),
                               foregroundColor: context.read<MyVivadooProvider>().getColor(Colors.white, Constants.orange),
                             ),
-                            child: const Text(
-                              'Sign Up',
-                              style: TextStyle(
+                            child: Text(
+                              AppLocalizations.of(context)!.sign_up,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color:  Colors.white,

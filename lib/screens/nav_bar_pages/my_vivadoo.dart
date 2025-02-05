@@ -15,9 +15,8 @@ class MyVivadoo extends StatelessWidget {
         valueListenable: HiveStorageManager.signedInNotifier,
         builder: (context, signedIn, _) {
           if (signedIn) {
-            print("getting user data ads list");
             context.read<UserInfoProvider>().getUserAds(context);
-            return const MyVivadooProfile();
+            return MyVivadooProfile();
           }
           return const Enrolling();
         }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vivadoo/providers/post_new_ad_provider/post_new_ad_provider.dart';
 
-import '../../../models/new_ad_model/new_ad_model.dart';
-import '../../../utils/hive_manager.dart';
+
+import '../../../models/filters/meta_fields_model.dart';
 import '../steps_bar_widget_provider.dart';
 class CategoryAndLocationProvider with ChangeNotifier{
 
@@ -14,6 +14,9 @@ class CategoryAndLocationProvider with ChangeNotifier{
   String categoryLabel = "";
   String categoryLink = "";
   PersistentBottomSheetController? bottomSheetController;
+
+  List<MetaFieldsModel> categoryMetaFields = [];
+  List<dynamic> makesList = [];
 
   setLocationLabel(String value){
     locationLabel = value;
@@ -50,7 +53,6 @@ class CategoryAndLocationProvider with ChangeNotifier{
       context.read<StepsBarWidgetProvider>().setCurrentTabBarViewIndex(tabController.index);
     });
   }
-
 
 
 }

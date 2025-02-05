@@ -14,6 +14,8 @@ import '../../../providers/home_providers/filters/filter_provider.dart';
 import '../../../providers/home_providers/filters/location_filter.dart';
 import 'category_and_sub-category/category_card.dart';
 import 'meta_fields/meta_fields_widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class FilterWidget extends StatelessWidget {
   const FilterWidget({super.key, this.showCategoryDialog});
@@ -67,7 +69,7 @@ void showCatDialog (BuildContext context){
                   selector: (context , prov) => prov.categoryLabel,
                   builder: (context , categoryLabel , _){
                     return filterSelector(
-                        "CATEGORY",
+                        AppLocalizations.of(context)!.category,
                         categoryLabel , (){
                           showCatDialog(context);
                     });
@@ -79,7 +81,8 @@ void showCatDialog (BuildContext context){
                 Selector<LocationFilterProvider , String>(
                   selector: (context , prov) => prov.tempLocation,
                   builder: (context , location , _){
-                    return filterSelector("LOCATION",
+                    return filterSelector(
+                        AppLocalizations.of(context)!.location_title,
                         location.isEmpty ? context.watch<LocationFilterProvider>().location : location ,
                             (){
                       HiveStorageManager.hiveBox.get('route') == 'FilterFromHome' ?
@@ -97,7 +100,7 @@ void showCatDialog (BuildContext context){
                     return Visibility(
                       visible: hasMakes,
                       child: filterSelector(
-                          "MAKE",
+                          AppLocalizations.of(context)!.make,
                           context.watch<FilterProvider>().makeLabel, (){
                         showDialog(
                             context: context,
@@ -182,7 +185,7 @@ void showCatDialog (BuildContext context){
                   selector: (context, prov) => prov.adsCount ?? AdsCount(count: 0, countCat: 0, categories: {}),
                   builder: (context, prov, _) {
                     return Text(
-                      "Search (${prov.count.toString()})",
+                      "${AppLocalizations.of(context)!.search} (${prov.count.toString()})",
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     );
                   }
@@ -248,7 +251,7 @@ Widget adType(BuildContext context){
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Ad Type" , style: TextStyle(color: Constants.orange),),
+            Text(AppLocalizations.of(context)!.ad_type , style: const TextStyle(color: Constants.orange),),
             Row(
               children: [
                 GestureDetector(
@@ -270,7 +273,7 @@ Widget adType(BuildContext context){
                           alignment: Alignment.center,
                           child: types.contains("Privates") ? const Icon(Icons.check , color: Constants.orange,size: 30,):null,
                         ),
-                        const Text("Privates" , style: TextStyle(fontWeight: FontWeight.w500),),
+                        Text(AppLocalizations.of(context)!.privates , style: const TextStyle(fontWeight: FontWeight.w500),),
                       ],
                     ),
                   ),
@@ -294,7 +297,7 @@ Widget adType(BuildContext context){
                           alignment: Alignment.center,
                           child: types.contains("Professionals") ? const Icon(Icons.check , color: Constants.orange,size: 30,):null,
                         ),
-                        const Text("Professionals" , style: TextStyle(fontWeight: FontWeight.w500),),
+                        Text(AppLocalizations.of(context)!.professionals , style: const TextStyle(fontWeight: FontWeight.w500),),
                       ],
                     ),
                   ),
@@ -319,7 +322,7 @@ Widget searchOnlyInTitle(){
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text("Search only in title"),
+            Text(AppLocalizations.of(context)!.search_only_in_title),
             CupertinoSwitch(
                 value: search,
                 onChanged: (value){
@@ -344,7 +347,7 @@ Widget showOnlyAdsWithPhotos() {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Show only ads with photos"),
+              Text(AppLocalizations.of(context)!.show_only_ads_with_photos),
               CupertinoSwitch(
                   value: search,
                   onChanged: (value){
@@ -369,7 +372,7 @@ Widget showOnlyFeaturedAds(){
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Show only featured ads"),
+              Text(AppLocalizations.of(context)!.show_only_featured_ads),
               CupertinoSwitch(
                   value: search,
                   onChanged: (value){
@@ -390,7 +393,9 @@ Widget makeCard(BuildContext context,Map<String , dynamic> make){
       context.read<FilterProvider>().cleanSelected();
       context.read<FilterProvider>().setMakeLabel(make['name']);
       context.read<FilterProvider>().setCategoryMetaFields(context , makeId: make['id'], method: "add");
-      context.read<FilterProvider>().showAdsCount(context);
+      if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
+        context.read<FilterProvider>().showAdsCount(context);
+      }
       Navigator.pop(context);
     },
     child: Container(

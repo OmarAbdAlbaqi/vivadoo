@@ -4,11 +4,14 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:vivadoo/models/ad_model.dart';
 import 'package:vivadoo/models/new_ad_model/new_ad_model.dart';
+import 'package:vivadoo/providers/home_providers/filters/location_filter.dart';
 import 'package:vivadoo/providers/post_new_ad_provider/steps_bar_widget_provider.dart';
 import 'package:vivadoo/providers/home_providers/home_page_provider.dart';
 import 'package:vivadoo/providers/general/nav_bar_provider.dart';
 import 'package:vivadoo/providers/post_new_ad_provider/post_new_ad_provider.dart';
 import 'package:vivadoo/utils/hive_manager.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 import '../providers/favorite_providers/favorite_provider.dart';
 import '../providers/general/navigation_shell_provider.dart';
@@ -23,28 +26,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   late PageController pageController;
-  List<Map<String , String>> navBarItems = [
-    {
-      "title" : "Home",
-      "imageUrl" : "assets/icons/nav_bar_icons/home.png",
-    },
-    {
-      "title" : "My Vivadoo",
-      "imageUrl" : "assets/icons/nav_bar_icons/user.png",
-    },
-    {
-      "title" : "Post",
-      "imageUrl" : "assets/icons/nav_bar_icons/camera.png",
-    },
-    {
-      "title" : "Favorite",
-      "imageUrl" : "assets/icons/nav_bar_icons/heart.png",
-    },
-    {
-      "title" : "Messages",
-      "imageUrl" : "assets/icons/nav_bar_icons/dialog.png",
-    },
-  ];
   double containerHeight = 100;
 
 
@@ -78,6 +59,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_){
+      context.read<NavBarProvider>().setNavBarData(context);
       List<AdModel> ads = HiveStorageManager.getFavoriteAds().values.toList().cast<AdModel>();
       context.read<FavoriteProvider>().setFavoriteAds(ads);
     });
@@ -98,9 +80,9 @@ class _MainScreenState extends State<MainScreen> {
                 left: false,
                 child: Visibility(
                   visible: hiveBox.get('route') == "Home" || hiveBox.get('route') == "MyVivadoo" || hiveBox.get('route') == "PostNewAd" || hiveBox.get('route') == "Saved" || hiveBox.get('route') == "Messages" || hiveBox.get('route') == "Category And Location"  || hiveBox.get('route') == "NewAdDetails"  || hiveBox.get('route') == "PosterInformation" || hiveBox.get('route') == "MyVivadooProfile",
-                  child: Selector<NavBarProvider , int>(
-                    selector: (context , prov) => prov.currentPage,
-                    builder: (context , currentPage , _) {
+                  child: Consumer<NavBarProvider >(
+                    // selector: (context , prov) => prov.currentPage,
+                    builder: (context , prov , _) {
                       return AnimatedContainer(
                         padding: const EdgeInsets.only(bottom: 6),
                         duration: const Duration(milliseconds: 500),
@@ -126,10 +108,10 @@ class _MainScreenState extends State<MainScreen> {
                                   case 4 : HiveStorageManager.hiveBox.put('route', 'Messages');
                                   break;
                                 }
-                                context.read<NavBarProvider>().setCurrentPage(index);
+                                prov.setCurrentPage(index);
                               },
-                              title: navBarItems[index]['title'] ?? "",
-                                imageUrl: navBarItems[index]['imageUrl'] ?? "",
+                              title: prov.navBarItems[index]['title'] ?? "",
+                                imageUrl: prov.navBarItems[index]['imageUrl'] ?? "",
                               );
                             }),
                       );
@@ -164,7 +146,9 @@ class _NavBarItemState extends State<NavBarItem> with TickerProviderStateMixin{
 
   @override
   void initState() {
+
     super.initState();
+
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -228,7 +212,7 @@ class _NavBarItemState extends State<NavBarItem> with TickerProviderStateMixin{
                       alignment: Alignment.bottomCenter,
                       child: SizedBox(
                         height: 18,
-                        child: Text(widget.title , style: TextStyle(fontSize: 12 ,  color: widget.index == currentPage ? Colors.red : Colors.orange,),),
+                        child: Text(widget.title ,textAlign: TextAlign.center, style: TextStyle(fontSize: 11 ,  color: widget.index == currentPage ? Colors.red : Colors.orange,),),
                       ),
                     ),)
                 ],

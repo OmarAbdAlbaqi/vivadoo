@@ -3,7 +3,7 @@
     "project_number": "44403949798",
     "firebase_url": "https://vivadoo-ddb5c.firebaseio.com",
     "project_id": "vivadoo-ddb5c",
-    "storage_bucket": "vivadoo-ddb5c.appspot.com"
+    "storage_bucket": "vivadoo-ddb5c.firebasestorage.app"
   },
   "client": [
     {

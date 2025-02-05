@@ -59,7 +59,10 @@ class SubLocationWidget extends StatelessWidget {
                                 if(route == "SubLocationFilterFromFilter"){
                                   locationFilterProvider.city = areaList[index].link;
                                   context.read<LocationFilterProvider>().setTempLocation("All Over ${areaList[context.read<LocationFilterProvider>().selectedArea].label}");
-                                  context.read<FilterProvider>().showAdsCount(context);
+                                  if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
+                                    context.read<FilterProvider>().showAdsCount(context);
+                                  }
+
                                 }else{
                                   locationFilterProvider.setCity(areaList[index].link);
                                   context.read<LocationFilterProvider>().setLocation("All Over ${areaList[context.read<LocationFilterProvider>().selectedArea].label}");
@@ -138,7 +141,10 @@ class SubLocationWidget extends StatelessWidget {
                                             if(route == "SubLocationFilterFromFilter"){
                                               locationFilterProvider.setTempLocation("${subAreaList[index].label} - ${subAreaList[index].parentLabel}");
                                               context.read<LocationFilterProvider>().city = subAreaList[index].link;
-                                              context.read<FilterProvider>().showAdsCount(context);
+                                              if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
+                                                context.read<FilterProvider>().showAdsCount(context);
+                                              }
+
                                             }else{
                                               locationFilterProvider.setLocation(subAreaList[index].label);
                                               locationFilterProvider.setCity(subAreaList[index].link);

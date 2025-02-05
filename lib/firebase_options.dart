@@ -55,7 +55,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '44403949798',
     projectId: 'vivadoo-ddb5c',
     databaseURL: 'https://vivadoo-ddb5c.firebaseio.com',
-    storageBucket: 'vivadoo-ddb5c.appspot.com',
+    storageBucket: 'vivadoo-ddb5c.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -64,9 +64,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '44403949798',
     projectId: 'vivadoo-ddb5c',
     databaseURL: 'https://vivadoo-ddb5c.firebaseio.com',
-    storageBucket: 'vivadoo-ddb5c.appspot.com',
+    storageBucket: 'vivadoo-ddb5c.firebasestorage.app',
     androidClientId: '44403949798-1b5n8gv242t4tcks1id4r119opkkgtjh.apps.googleusercontent.com',
     iosClientId: '44403949798-p6dlkf62je8fd9c5t1tnmi9rn9sop8fq.apps.googleusercontent.com',
     iosBundleId: 'com.Thales.Vivadoo',
   );
+
 }

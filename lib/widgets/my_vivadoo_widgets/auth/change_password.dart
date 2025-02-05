@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../../../providers/my_vivadoo_providers/auth/change_password_provider.dart';
 import 'auth_input.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class ChangePassword extends StatelessWidget {
   const ChangePassword({super.key});
 
@@ -24,9 +26,9 @@ class ChangePassword extends StatelessWidget {
                     children: [
                       Column(
                         children: [
-                          const Padding(
-                              padding: EdgeInsets.only(top: 15),
-                              child: Text("Enter your new password")
+                           Padding(
+                              padding: const EdgeInsets.only(top: 15),
+                              child: Text(AppLocalizations.of(context)!.enter_your_new_password)
                           ),
                           const SizedBox(height: 16),
                           AuthInput(
@@ -35,7 +37,7 @@ class ChangePassword extends StatelessWidget {
                             textCapitalization: TextCapitalization.words,
                             validator: (value) {
                               if (value!.isEmpty || value.length < 4) {
-                                return 'Please enter a valid password';
+                                return AppLocalizations.of(context)!.please_enter_a_valid_password;
                               } else {
                                 return null;
                               }
@@ -45,9 +47,9 @@ class ChangePassword extends StatelessWidget {
                                 child: Padding(
                                     padding: const EdgeInsets.all(12),
                                     child: SvgPicture.asset(prov.passwordVisible ? "assets/icons/auth/visible.svg" : "assets/icons/auth/invisible.svg"))),
-                            hint: 'Password',
+                            hint: AppLocalizations.of(context)!.password,
                             obscure: !prov.passwordVisible,
-                            title: 'Password',
+                            title: AppLocalizations.of(context)!.password,
                             keyboard: TextInputType.text,
                           ),
                           const SizedBox(height: 8),
@@ -57,7 +59,7 @@ class ChangePassword extends StatelessWidget {
                             textCapitalization: TextCapitalization.words,
                             validator: (value) {
                               if (value!.isEmpty || value != prov.passwordController.text) {
-                                return 'Password not match';
+                                return AppLocalizations.of(context)!.password_not_match;
                               } else {
                                 return null;
                               }
@@ -67,9 +69,9 @@ class ChangePassword extends StatelessWidget {
                                 child: Padding(
                                   padding: const EdgeInsets.all(12),
                                     child: SvgPicture.asset(prov.confirmPasswordVisible ? "assets/icons/auth/visible.svg" : "assets/icons/auth/invisible.svg"))),
-                            hint: 'Confirm Password',
+                            hint: AppLocalizations.of(context)!.confirm_Password,
                             obscure: !prov.confirmPasswordVisible,
-                            title: 'Confirm Password',
+                            title: AppLocalizations.of(context)!.confirm_Password,
                             keyboard: TextInputType.text,
                           ),
                         ],
@@ -100,9 +102,9 @@ class ChangePassword extends StatelessWidget {
                             backgroundColor: getColor(Colors.orange, Colors.white),
                             foregroundColor: getColor(Colors.white, Colors.orange),
                           ),
-                          child: const Text(
-                            "Submit",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                          child: Text(
+                            AppLocalizations.of(context)!.submit,
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                         ),
                       ),

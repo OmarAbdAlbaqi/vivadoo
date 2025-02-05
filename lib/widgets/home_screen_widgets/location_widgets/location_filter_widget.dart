@@ -13,6 +13,7 @@ import '../../../widgets/home_screen_widgets/location_widgets/location_search_ba
 import '../../../models/filters/area_model.dart';
 import '../../../models/filters/hive/recent_locations_box.dart';
 import 'location_search_result_widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 
@@ -67,17 +68,17 @@ class LocationFilterWidget extends StatelessWidget {
                           height: 60,
                           width: double.infinity,
                           color: Colors.transparent,
-                          child: const Row(
+                          child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.my_location,
                                 size: 25,
                                 color: Color.fromRGBO(152, 152, 156, 1),
                               ),
-                              SizedBox(width: 12),
+                              const SizedBox(width: 12),
                               Text(
-                                "Near Me",
-                                style: TextStyle(
+                                AppLocalizations.of(context)!.near_me,
+                                style: const TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.w400),
                               )
                             ],
@@ -101,11 +102,15 @@ class LocationFilterWidget extends StatelessWidget {
                             filteredProvider.setTempLocation("All Over Country");
                             filteredProvider.setCity("all-cities");
                             print(filteredProvider.city);
-                            context.read<FilterProvider>().showAdsCount(context);
+                            if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
+                              context.read<FilterProvider>().showAdsCount(context);
+                            }
                           }else{
                             filteredProvider.setCity("all-cities");
                             filteredProvider.setLocation("All Over Country");
-                            context.read<FilterProvider>().showAds(context);
+                            if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
+                              context.read<FilterProvider>().showAds(context);
+                            }
                           }
                           context.pop();
                         },
@@ -122,9 +127,9 @@ class LocationFilterWidget extends StatelessWidget {
                                 color: const Color.fromRGBO(133, 133, 133, 1),
                               ),
                               const SizedBox(width: 12),
-                              const Text(
-                                "All Over Country",
-                                style: TextStyle(
+                              Text(
+                                AppLocalizations.of(context)!.all_over_country,
+                                style: const TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.w400),
                               )
                             ],
@@ -159,7 +164,7 @@ class LocationFilterWidget extends StatelessWidget {
                                       child: Stack(
                                         alignment: Alignment.centerLeft,
                                         children: [
-                                          const Text("Recent Location"),
+                                          Text(AppLocalizations.of(context)!.recent_location),
                                           Align(
                                             alignment: Alignment.bottomCenter,
                                             child: Divider(
@@ -186,11 +191,16 @@ class LocationFilterWidget extends StatelessWidget {
                                                 if(route == "LocationFilterFromFilter"){
                                                   locationFilterProvider.setTempLocation("${items[index].label} - ${items[index].parentLabel}");
                                                   locationFilterProvider.city = items[index].link;
-                                                  context.read<FilterProvider>().showAdsCount(context);
+                                                  if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
+                                                    context.read<FilterProvider>().showAdsCount(context);
+                                                  }
+
                                                 }else{
                                                   locationFilterProvider.setLocation(items[index].label);
                                                   locationFilterProvider.setCity(items[index].link);
-                                                  context.read<FilterProvider>().showAds(context);
+                                                  if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
+                                                    context.read<FilterProvider>().showAds(context);
+                                                  }
                                                 }
                                                 context.pop();
                                               },
@@ -246,7 +256,7 @@ class LocationFilterWidget extends StatelessWidget {
                                 child: Stack(
                                   alignment: Alignment.centerLeft,
                                   children: [
-                                    const Text("Select Region"),
+                                    Text(AppLocalizations.of(context)!.select_region),
                                     Align(
                                       alignment: Alignment.bottomCenter,
                                       child: Divider(

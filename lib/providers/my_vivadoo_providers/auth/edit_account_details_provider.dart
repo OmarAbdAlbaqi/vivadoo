@@ -50,6 +50,7 @@ class EditAccountDetailsProvider with ChangeNotifier{
     if(response.statusCode == 200){
       var extractedData = jsonDecode(response.body);
       bool success = extractedData['success'] == 1;
+      print(extractedData.toString());
       if(success){
         userInfoBox.putAt(
             0,
@@ -64,7 +65,8 @@ class EditAccountDetailsProvider with ChangeNotifier{
         if(context.mounted){
           PopUps.apiConfirmation(context, message);
         }
-      }else{
+      }
+      else{
         if(context.mounted){
           PopUps.somethingWentWrong(context);
         }

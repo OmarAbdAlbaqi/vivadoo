@@ -90,9 +90,6 @@ class FilterProvider with ChangeNotifier {
     // notifyListeners();
   }
 
-
-  void test (){}
-
   // Function to save the current state of the filters (for reset)
   void saveCurrentState() {
     selectedParams = Map.from(filterParams); // Save the current state to restore later

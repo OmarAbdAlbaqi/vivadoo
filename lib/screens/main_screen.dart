@@ -3,14 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:vivadoo/models/ad_model.dart';
-import 'package:vivadoo/models/new_ad_model/new_ad_model.dart';
-import 'package:vivadoo/providers/home_providers/filters/location_filter.dart';
 import 'package:vivadoo/providers/post_new_ad_provider/steps_bar_widget_provider.dart';
 import 'package:vivadoo/providers/home_providers/home_page_provider.dart';
 import 'package:vivadoo/providers/general/nav_bar_provider.dart';
 import 'package:vivadoo/providers/post_new_ad_provider/post_new_ad_provider.dart';
 import 'package:vivadoo/utils/hive_manager.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 import '../providers/favorite_providers/favorite_provider.dart';
@@ -39,7 +36,7 @@ class _MainScreenState extends State<MainScreen> {
     }
     print(HiveStorageManager.getFavoriteAds().values.toList().cast<AdModel>().toList());
   pageController = PageController(initialPage: 0);
-  Future.delayed(const Duration(milliseconds: 800)).then((value) => setState(() {
+  Future.delayed(const Duration(milliseconds: 500)).then((value) => setState(() {
     containerHeight = 60;
   }));
   pageController.addListener(() {
@@ -63,77 +60,106 @@ class _MainScreenState extends State<MainScreen> {
       List<AdModel> ads = HiveStorageManager.getFavoriteAds().values.toList().cast<AdModel>();
       context.read<FavoriteProvider>().setFavoriteAds(ads);
     });
+
     return Scaffold(
-      body:
-      SizedBox.expand(
-        child: widget.navigationShell
+      body: SizedBox.expand(
+        child: widget.navigationShell,
       ),
       bottomNavigationBar: ValueListenableBuilder(
-          valueListenable: HiveStorageManager.hiveBox.listenable(),
+        valueListenable: HiveStorageManager.hiveBox.listenable(),
         builder: (context, hiveBox, widget) {
-          return Stack(
-            children: [
-              SafeArea(
-                bottom: hiveBox.get('route') == "Home" || hiveBox.get('route') == "MyVivadoo" || hiveBox.get('route') == "PostNewAd" || hiveBox.get('route') == "Saved" || hiveBox.get('route') == "Messages" || hiveBox.get('route') == "Category And Location"  || hiveBox.get('route') == "NewAdDetails"  || hiveBox.get('route') == "PosterInformation" || hiveBox.get('route') == "MyVivadooProfile" ? true : false,
-                top: false,
-                right: false,
-                left: false,
-                child: Visibility(
-                  visible: hiveBox.get('route') == "Home" || hiveBox.get('route') == "MyVivadoo" || hiveBox.get('route') == "PostNewAd" || hiveBox.get('route') == "Saved" || hiveBox.get('route') == "Messages" || hiveBox.get('route') == "Category And Location"  || hiveBox.get('route') == "NewAdDetails"  || hiveBox.get('route') == "PosterInformation" || hiveBox.get('route') == "MyVivadooProfile",
-                  child: Consumer<NavBarProvider >(
-                    // selector: (context , prov) => prov.currentPage,
-                    builder: (context , prov , _) {
-                      return AnimatedContainer(
-                        padding: const EdgeInsets.only(bottom: 6),
-                        duration: const Duration(milliseconds: 500),
-                        height: containerHeight,
-                        child:
-                        ListView.builder(
-                          
-                          padding: EdgeInsets.zero,
-                          scrollDirection: Axis.horizontal,
-                            itemCount: 5,
-                            itemBuilder: (context , index){
-                              return NavBarItem(index: index , onTap: (){
-                                NavigationManager().goBranch(index);
-                                switch(index){
-                                  case 0 : context.read<HomePageProvider>().onNavigateToHomePage(context);
-                                  break;
-                                  case 1 : HiveStorageManager.hiveBox.put('route', 'MyVivadoo');
-                                  break;
-                                  case 2 : context.read<StepsBarWidgetProvider>().setCurrentPostNewAdPage(context);
-                                  break;
-                                  case 3 : context.read<FavoriteProvider>().onNavigateToFavoritePage(context);
-                                  break;
-                                  case 4 : HiveStorageManager.hiveBox.put('route', 'Messages');
-                                  break;
-                                }
-                                prov.setCurrentPage(index);
+          bool visible = [
+            "Home",
+            "MyVivadoo",
+            "PostNewAd",
+            "Saved",
+            "Messages",
+            "Category And Location",
+            "NewAdDetails",
+            "PosterInformation",
+            "MyVivadooProfile"
+          ].contains(hiveBox.get('route'));
+
+          return SafeArea(
+            bottom: visible,
+            top: false,
+            right: false,
+            left: false,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              height: visible ? containerHeight : 0, // Ensures the bar doesn't collapse
+              child: Stack(
+                children: [
+                  AnimatedPositioned(
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                    bottom: visible ? 0 : -containerHeight, // Slide down effect
+                    left: 0,
+                    right: 0,
+                    child: Consumer<NavBarProvider>(
+                      builder: (context, prov, _) {
+                        return AnimatedOpacity(
+                          duration: const Duration(milliseconds: 800),
+                          opacity: visible ? 1 : 0,
+                          child: Container(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            height: containerHeight,
+                            child: ListView.builder(
+                              padding: EdgeInsets.zero,
+                              scrollDirection: Axis.horizontal,
+                              itemCount: 5,
+                              itemBuilder: (context, index) {
+                                return NavBarItem (
+                                  onTap: () {
+                                    NavigationManager().goBranch(index);
+                                    switch (index) {
+                                      case 0:
+                                        context.read<HomePageProvider>().onNavigateToHomePage(context);
+                                        break;
+                                      case 1:
+                                        HiveStorageManager.hiveBox.put('route', 'MyVivadoo');
+                                        break;
+                                      case 2:
+                                        context.read<StepsBarWidgetProvider>().setCurrentPostNewAdPage(context);
+                                        break;
+                                      case 3:
+                                        context.read<FavoriteProvider>().onNavigateToFavoritePage(context);
+                                        break;
+                                      case 4:
+                                        HiveStorageManager.hiveBox.put('route', 'Messages');
+                                        break;
+                                    }
+                                    prov.setCurrentPage(index);
+                                  },
+                                  title: prov.navBarItems[index]['title'] ?? "",
+                                  imageUrl: prov.navBarItems[index]['imageUrl'] ?? "",
+                                  selected: prov.currentPage == index,
+                                );
                               },
-                              title: prov.navBarItems[index]['title'] ?? "",
-                                imageUrl: prov.navBarItems[index]['imageUrl'] ?? "",
-                              );
-                            }),
-                      );
-                    }
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           );
-        }
+        },
       ),
     );
+
   }
 }
 
 
 class NavBarItem extends StatefulWidget {
-  const NavBarItem({super.key, required this.index, required this.onTap, required this.title, required this.imageUrl});
-  final int index;
+  const NavBarItem({super.key, required this.onTap, required this.title, required this.imageUrl, required this.selected});
   final Function onTap;
   final String title;
   final String imageUrl;
+  final bool selected;
 
 
   @override
@@ -146,50 +172,39 @@ class _NavBarItemState extends State<NavBarItem> with TickerProviderStateMixin{
 
   @override
   void initState() {
-
     super.initState();
-
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
 
-    _animation = Tween<double>(begin: -2.6 , end: widget.index == 0 ? -0.3 : 0.4).animate(
+     _animation = Tween<double>(begin: -0.5 , end: 0.4).animate(
       CurvedAnimation(
         parent: _controller,
         curve: Curves.easeInOut,
       ),
     );
-          _controller.forward();
-          Future.delayed(const Duration(milliseconds: 500)).then((value) => context.read<NavBarProvider>().setFirstRun());
-
   }
-
-
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
+  bool test = true;
   @override
   Widget build(BuildContext context) {
-    final bool firstRun = context.watch<NavBarProvider>().firstRun;
-    final int currentPage = context.watch<NavBarProvider>().currentPage;
-    final animation2 = Tween<double>(begin: -0.4, end:  0.4).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
-   if(!firstRun){
-     currentPage == widget.index ? _controller.reverse():_controller.forward();
-   }
+    if(test){
+      _controller.reverse();
+      test = false;
+    }else{
+      widget.selected ? _controller.reverse():_controller.forward();
+    }
     return GestureDetector(
       onTap: (){
         widget.onTap();
       },
       child: AnimatedBuilder(
-          animation: _controller,
+          animation:  _controller ,
           builder: (context , child){
             return Container(
               color: Colors.transparent,
@@ -200,19 +215,19 @@ class _NavBarItemState extends State<NavBarItem> with TickerProviderStateMixin{
                 alignment: Alignment.center,
                 children: [
                   Align(
-                    alignment: Alignment(0.0 , firstRun? _animation.value: animation2.value),
+                    alignment: Alignment(0.0 , _animation.value ),
                     child: SizedBox(
                       height: 30,
-                      child: Image.asset(widget.imageUrl, color: widget.index == currentPage ? Colors.red : Colors.orange,),
+                      child: Image.asset(widget.imageUrl, color: widget.selected ? Colors.red : Colors.orange,),
                     ),
                   ),
                   Visibility(
-                    visible: widget.index == currentPage,
+                    visible: widget.selected,
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child: SizedBox(
                         height: 18,
-                        child: Text(widget.title ,textAlign: TextAlign.center, style: TextStyle(fontSize: 11 ,  color: widget.index == currentPage ? Colors.red : Colors.orange,),),
+                        child: Text(widget.title ,textAlign: TextAlign.center, style: TextStyle(fontSize: 11 ,  color: widget.selected ? Colors.red : Colors.orange,),),
                       ),
                     ),)
                 ],

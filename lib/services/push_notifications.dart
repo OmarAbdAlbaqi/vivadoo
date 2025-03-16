@@ -127,7 +127,7 @@ class FirebaseAPI{
     AndroidInitializationSettings('@drawable/notification_icon');
     final DarwinInitializationSettings initializationSettingsDarwin =
     DarwinInitializationSettings(
-      onDidReceiveLocalNotification: (id, title, body, payload) => null,
+      // onDidReceiveLocalNotification: (id, title, body, payload) => null,
     );
     // const settings = InitializationSettings( iOS: iOS);
 

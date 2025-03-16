@@ -1,0 +1,1 @@
+/Users/omar/StudioProjects/vivadoo/build/app/intermediates/cxx/Debug/4a464k4a/obj/arm64-v8a

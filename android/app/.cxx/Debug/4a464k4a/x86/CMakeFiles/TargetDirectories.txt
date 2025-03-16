@@ -1,0 +1,2 @@
+/Users/omar/StudioProjects/vivadoo/android/app/.cxx/Debug/4a464k4a/x86/CMakeFiles/edit_cache.dir
+/Users/omar/StudioProjects/vivadoo/android/app/.cxx/Debug/4a464k4a/x86/CMakeFiles/rebuild_cache.dir

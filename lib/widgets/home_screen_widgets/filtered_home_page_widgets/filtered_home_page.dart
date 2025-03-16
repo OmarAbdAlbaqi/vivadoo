@@ -100,10 +100,11 @@ class FilteredHomePage extends StatelessWidget {
                                 radius: 13,
                                 backgroundColor: Colors.orange,
                                 child: Text(
-                                  context
-                                      .watch<FilterProvider>()
-                                      .filterCounter
-                                      .toString(),
+                                  "Filter Counter",
+                                  // context
+                                  //     .watch<FilterProvider>()
+                                  //     .filterCounter
+                                  //     .toString(),
                                   style: const TextStyle(
                                       color: Color(0xFFffffff),
                                       fontSize: 18,

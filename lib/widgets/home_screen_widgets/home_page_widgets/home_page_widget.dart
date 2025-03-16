@@ -129,6 +129,7 @@ class HomePageWidget extends StatelessWidget {
                                 context.read<FilterProvider>().setCategoryLabel("Real Estate");
                                 context.read<FilterProvider>().getAdsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
+                                context.read<FilterProvider>().saveCurrentState();
                                 context.push('/home/filteredHome');
                               },
                               imagePath: "assets/icons/filter_search/house.png",
@@ -153,6 +154,7 @@ class HomePageWidget extends StatelessWidget {
                                 context.read<FilterProvider>().setCategoryLabel("Cars For Sale");
                                 context.read<FilterProvider>().getAdsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
+                                context.read<FilterProvider>().saveCurrentState();
                                 context.push('/home/filteredHome');
                               },
                               imagePath: "assets/icons/filter_search/car.png",
@@ -174,6 +176,7 @@ class HomePageWidget extends StatelessWidget {
                                   },
                                   "add",
                                 );
+                                context.read<FilterProvider>().saveCurrentState();
                                 context.push('/home/filteredHome');
                                 context.read<FilterProvider>().setCategoryLabel("Jobs");
                                 context.read<FilterProvider>().getAdsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
@@ -198,6 +201,7 @@ class HomePageWidget extends StatelessWidget {
                                   },
                                   "add",
                                 );
+                                context.read<FilterProvider>().saveCurrentState();
                                 context.push('/home/filteredHome');
                                 context.read<FilterProvider>().setCategoryLabel("For Sale");
                                 context.read<FilterProvider>().getAdsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
@@ -212,6 +216,7 @@ class HomePageWidget extends StatelessWidget {
                               scrollController: homeProv.scrollController,
                               onTap: (){
                                 context.read<LocationFilterProvider>().location = AppLocalizations.of(context)!.all_over_country;
+                                context.read<FilterProvider>().saveCurrentState();
                                 context.go('/home/filterFromHome', extra: {'showDialog': true});
                               },
                               imagePath: "assets/icons/filter_search/more.png",

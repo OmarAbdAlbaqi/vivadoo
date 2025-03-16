@@ -12,4 +12,8 @@ class RangeFilterProvider with ChangeNotifier{
     currentRangeValues = const RangeValues(0, 1);
     rangeMetaFieldId = null;
   }
+
+  clearRangeMetaField(){
+    rangeMetaFieldId = null;
+  }
 }

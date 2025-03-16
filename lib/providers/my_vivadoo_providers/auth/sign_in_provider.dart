@@ -6,23 +6,27 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:vivadoo/services/firebase_service.dart';
+import 'package:vivadoo/utils/api_manager.dart';
 import '../../../models/auth/user_info_model.dart';
-import '../../../providers/my_vivadoo_providers/auth/social_media_auth/apple_auth_provider.dart';
-import '../../../providers/my_vivadoo_providers/auth/social_media_auth/facebook_auth_provider.dart';
-import '../../../providers/my_vivadoo_providers/auth/social_media_auth/google_auth_provider.dart';
 import '../../../providers/my_vivadoo_providers/auth/user_info_provider.dart';
 
 import '../../../constants.dart';
 import '../../../utils/hive_manager.dart';
 import '../../../utils/pop-ups/pop_ups.dart';
+enum SocialLoginProvider {facebook,google,apple}
 class SignInProvider with ChangeNotifier{
   bool visible = true;
 
   bool signInLoading = false;
 
+
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> formStateS = GlobalKey<FormState>();
+
+
+  ApiManager apiManager = ApiManager();
 
   toggleVisible(){
     visible =! visible;
@@ -33,18 +37,6 @@ class SignInProvider with ChangeNotifier{
     signInLoading = value;
     notifyListeners();
   }
-  Future<String?> _getId() async {
-    var deviceInfo = DeviceInfoPlugin();
-    if (Platform.isIOS) { // import 'dart:io'
-      var iosDeviceInfo = await deviceInfo.iosInfo;
-      return iosDeviceInfo.identifierForVendor; // unique ID on iOS
-    } else if(Platform.isAndroid) {
-      var androidDeviceInfo = await deviceInfo.androidInfo;
-      return androidDeviceInfo.id; // unique ID on Android
-    }
-    return null;
-  }
-
 
   Future<void> signIn(BuildContext context)async{
     setSignInLoading(true);
@@ -54,7 +46,7 @@ class SignInProvider with ChangeNotifier{
       Constants.signInPath,
     );
 
-    String? deviceId = await _getId();
+    String? deviceId = await apiManager.getDeviceId();
     String firebaseToken = box.get('firebaseToken');
 
     Map<String, dynamic> userInfo = {
@@ -63,8 +55,6 @@ class SignInProvider with ChangeNotifier{
       'device_id' : deviceId,
       'device_token' : firebaseToken
     };
-
-
     try {
       http.Response response = await http.post(url, body: userInfo).timeout(const Duration(seconds: 10));
       if(response.statusCode == 200){
@@ -77,6 +67,7 @@ class SignInProvider with ChangeNotifier{
           userInfoBox.add(userInfoModel);
           if(context.mounted){
             context.read<UserInfoProvider>().setUserInfo(userInfoModel.firstName, userInfoModel.lastName, userInfoModel.emailAddress, userInfoModel.phoneNumber, userInfoModel.token, userInfoModel.key);
+            FirebaseService().addUser(userInfoModel.key, "${userInfoModel.firstName} ${userInfoModel.lastName}");
             context.go('/myVivadoo/myVivadooProfile');
           }
         }else{
@@ -99,28 +90,45 @@ class SignInProvider with ChangeNotifier{
     }
   }
 
-  Future<void> continueWithGoogle(BuildContext context) async {
-    if(!signInLoading){
-      setSignInLoading(true);
-      await context.read<MyGoogleAuthProvider>().signInWithGoogle(context);
-      setSignInLoading(false);
-    }
-  }
+  Future<void> loginWithSocial(BuildContext context,SocialLoginProvider provider) async {
+    setSignInLoading(true);
+    UserInfoModel? userInfoModel;
+    switch(provider){
+      case SocialLoginProvider.google : {
+            String? accessToken = await apiManager.signInWithGoogle();
+          if(accessToken != null){
+            userInfoModel = await apiManager.socialSignIn(accessToken, provider, true);
+          }
+      }
+      case SocialLoginProvider.facebook : {
+        bool appTrackingTransparency = await apiManager.checkAppTransparency();
+        if(appTrackingTransparency){
+          String? accessToken = await apiManager.signInWithFacebook();
+          if(accessToken != null){
+            userInfoModel = await apiManager.socialSignIn(accessToken, provider, true);
+          }
+        }
+        }
 
-  Future<void> continueWithFacebook(BuildContext context) async {
-    if(!signInLoading){
-      setSignInLoading(true);
-      await context.read<MyFacebookAuthProvider>().checkAppTrackingTransparency(context);
-      setSignInLoading(false);
+      case SocialLoginProvider.apple : {
+        PopUps.somethingWentWrong(context);
+      }
     }
-  }
+    if(userInfoModel != null){
+      HiveStorageManager.setSignedIn(true);
+      final userInfoBox = HiveStorageManager.getUserInfoModel();
+      userInfoBox.add(userInfoModel);
+      FirebaseService().addUser(userInfoModel.key, "${userInfoModel.firstName} ${userInfoModel.lastName}");
+      if(context.mounted){
+        context.go('/myVivadoo/myVivadooProfile');
+      }
+    }else{
+      if(context.mounted){
+        PopUps.somethingWentWrong(context);
+      }
+    }
+    setSignInLoading(false);
 
-  Future<void> continueWithApple(BuildContext context) async {
-    if(!signInLoading){
-      setSignInLoading(true);
-      await context.read<MyAppleAuthProvider>().signInWithApple(context);
-      setSignInLoading(false);
-    }
   }
 
 

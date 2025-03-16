@@ -39,13 +39,13 @@ dependencies:
   flutter_svg: ^2.0.10+1
   image_picker: ^1.0.5
   google_sign_in: ^6.2.1
-  firebase_core: ^3.2.0
+  firebase_core: ^3.12.1
   firebase_auth: ^5.3.4
   sign_in_with_apple: ^6.1.1
   flutter_facebook_auth: ^7.0.1
   app_tracking_transparency: ^2.0.5
   firebase_messaging: ^15.0.3
-  flutter_local_notifications: ^17.2.1+2
+  flutter_local_notifications: ^18.0.1
   crypto: ^3.0.3
   photo_view: ^0.15.0
   share_plus: ^10.0.2
@@ -53,6 +53,7 @@ dependencies:
   speech_to_text: ^7.0.0
   flutter_chat_ui: ^1.6.15
   flutter_chat_types: ^3.6.2
+  cloud_firestore: ^5.6.5
 
 
 

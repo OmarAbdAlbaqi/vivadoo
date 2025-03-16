@@ -122,7 +122,7 @@ class SignIn extends StatelessWidget {
                               //google login
                               ElevatedButton(
                                 onPressed:() {
-                                  signIn.continueWithGoogle(context);
+                                  signIn.loginWithSocial(context , SocialLoginProvider.google);
                                 },
                                 style: ButtonStyle(
                                   minimumSize: WidgetStateProperty
@@ -175,7 +175,7 @@ class SignIn extends StatelessWidget {
                               //facebook login
                               ElevatedButton(
                                 onPressed: () {
-                                  signIn.continueWithFacebook(context);
+                                  signIn.loginWithSocial(context, SocialLoginProvider.facebook);
                                 },
                                 style: ButtonStyle(
                                   minimumSize:
@@ -229,7 +229,7 @@ class SignIn extends StatelessWidget {
                                       ),
                                       ElevatedButton(
                                         onPressed: () {
-                                          signIn.continueWithApple(context);
+                                          signIn.loginWithSocial(context, SocialLoginProvider.apple);
                                         },
                                         style: ButtonStyle(
                                           minimumSize:

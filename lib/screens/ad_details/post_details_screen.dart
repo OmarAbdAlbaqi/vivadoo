@@ -1,4 +1,5 @@
 
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -9,6 +10,8 @@ import 'package:go_router/go_router.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:vivadoo/screens/ad_details/favorite_widget.dart';
+import 'package:vivadoo/screens/ad_details/share_button.dart';
 import 'package:vivadoo/screens/ad_details/user_ads_screen.dart';
 import '../../models/ad_details_model.dart';
 import '../../providers/ads_provider/ad_details_provider.dart';
@@ -25,9 +28,7 @@ class PostDetailsScreen extends StatefulWidget {
 }
 
 class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProviderStateMixin{
-  final ScrollController _scrollController = ScrollController();
-  late AnimationController _controller;
-  late Animation<double> _animation;
+  final ScrollController scrollController = ScrollController();
   late TabController tabController;
 
   final Dio dio = Dio();
@@ -43,40 +44,28 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
     print("_saveNetworkImage");
   }
 
+
+  void _scrollListener() {
+    double offset = scrollController.offset;
+    double opacity =
+    (offset / 200).clamp(0, 1);
+    context.read<AdDetailsProvider>().setTitleOpacity(opacity);
+  }
+
   @override
   void initState() {
     tabController = TabController(length: 2 , vsync: this);
     tabController.addListener(() {
       tabController.index == 0 ? context.read<AdDetailsProvider>().setIsSummary(true) : context.read<AdDetailsProvider>().setIsSummary(false);
     });
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels > 190) {
-        context.read<AdDetailsProvider>().setTitleOpacity(1);
-      } else {
-        context.read<AdDetailsProvider>().setTitleOpacity(0);
-      }
-    });
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 150),
-    );
-    _animation = Tween<double>(begin: 1.0, end: 0.0).animate(_controller)
-      ..addListener(() {
-        setState(() {});
-      });
-    if (!widget.isFavorite) {
-      _controller.reverse();
-    } else {
-      _controller.forward();
-    }
+    scrollController.addListener(_scrollListener);
     super.initState();
   }
 
   @override
   void dispose() {
     tabController.dispose();
-    _scrollController.dispose();
-    _controller.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 
@@ -91,16 +80,15 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
   }
 
   bool isFavorite = false;
-  double initialPositionX = 0;
   @override
   Widget build(BuildContext context) {
+    print("AdDetailsPageREBUILD");
     return Material(
       color: Colors.white,
       child: Stack(
         children: [
           NestedScrollView(
-            physics: const BouncingScrollPhysics(),
-            controller: _scrollController,
+            controller: scrollController,
             headerSliverBuilder:
                 (BuildContext context, innerBoxIsScrolled){
               return [
@@ -121,50 +109,30 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                       thickness: 0.5,
                     ),
                   ),
-                  title: AnimatedOpacity(
-                    opacity:  context.watch<AdDetailsProvider>().titleOpacity,
-                    duration: const Duration(milliseconds: 300),
-                    child: Text(widget.adDetailsModel.title ?? "" ,maxLines: 1,style: const TextStyle(fontSize: 16 , fontWeight: FontWeight.w700 , color: Colors.black , overflow: TextOverflow.ellipsis),),
+                  title: Consumer<AdDetailsProvider>(
+                    builder: (_ , prov , child) {
+                      return AnimatedOpacity(
+                        opacity:  prov.titleOpacity,
+                        duration: const Duration(milliseconds: 300),
+                        child: Text(widget.adDetailsModel.title ?? "" ,maxLines: 1,style: const TextStyle(fontSize: 16 , fontWeight: FontWeight.w700 , color: Colors.black , overflow: TextOverflow.ellipsis),),
+                      );
+                    }
                   ),
-                  leading: GestureDetector(
-                    onTap: () => context.pop(),
-                    child: const Icon(Icons.arrow_back_ios_new_outlined , color: Color(0xffffffff),),
+                  leading: Selector<AdDetailsProvider , double>(
+                    selector: (_ , prov) => prov.titleOpacity,
+                    builder: (_, titleOpacity , child) {
+                      print("back rebuilt");
+                      return GestureDetector(
+                        onTap: () => context.pop(),
+                        child: Icon(Icons.arrow_back_ios_new_outlined , color: Color.lerp(
+                            Colors.white, Colors.black , titleOpacity),),
+                      );
+                    }
                   ),
                   actions: [
-                    GestureDetector(
-                      onTap: (){
-                        if (isFavorite) {
-                          _controller.reverse();
-                        } else {
-                          _controller.forward();
-                        }
-                        setState(() {
-                          isFavorite =! isFavorite;
-                        });
-                        // widget.favorite();
-                      },
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Transform.scale(
-                            scale: _animation.value,
-                            child:  Image.asset("assets/icons/nav_bar_icons/heart.png" , color: Colors.white ,width: 25,),
-                          ),
-                          Transform.scale(
-                            scale: 1 - _animation.value,
-                            child: Image.asset("assets/icons/nav_bar_icons/filled_heart.png" , color: Colors.red ,width: 25,),
-                          ),
-                        ],
-                      ),
-                    ),
+                    FavoriteWidget(isFav: isFavorite),
                     const SizedBox(width: 12),
-                    GestureDetector(
-                      onTap: () {
-                        print("share link");
-                          // SocialShare.shareOptions(widget.adDetailsModel.longLink ?? "");
-                      },
-                      child: const Icon(Icons.share , color: Colors.white,),
-                    ),
+                    shareButton(),
                     const SizedBox(width: 12),
                   ],
                   flexibleSpace: FlexibleSpaceBar(
@@ -174,14 +142,17 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                     ],
                     background: Stack(
                       children: [
-                        PageView.builder(
-                            onPageChanged: (value){
-                              context.read<AdDetailsProvider>().setImageIndex(value);
-                            },
-                            itemCount: widget.adDetailsModel.images.length,
-                            itemBuilder: (context , index){
-                              return List.generate(widget.adDetailsModel.images.length ?? 0, (index) =>
-                                  ImageHolder(
+                        Consumer<AdDetailsProvider>(
+                          builder: (_ , prov , child) {
+
+                            return PageView.builder(
+                                onPageChanged: (value){
+                                  Provider.of<AdDetailsProvider>(context,listen: false).setImageIndex(value);
+                                  // prov.setImageIndex(value);
+                                },
+                                itemCount: widget.adDetailsModel.images.length,
+                                itemBuilder: (context , index){
+                                  return ImageHolder(
                                       onTap: (){
                                         showCupertinoModalPopup(
                                             useRootNavigator: false,
@@ -221,14 +192,14 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                                                                 hint: const Text("Save" , style: TextStyle(fontSize: 16,fontWeight: FontWeight.w900 ,color: Colors.white ),),
                                                                 items: [
                                                                   DropdownMenuItem(
-                                                
+
                                                                     value: "photo",
                                                                     child: Container(
                                                                         alignment: Alignment.center,
                                                                         height: 30,
                                                                         child: const Text("Photo", style: TextStyle(fontSize: 14 , color: Colors.white , fontWeight: FontWeight.w500),)),
                                                                   ),
-                                                
+
                                                                   DropdownMenuItem(
                                                                     value: "all photos",
                                                                     child: Container(
@@ -292,10 +263,10 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                                                               width: 70,
                                                               height: 60,
                                                               alignment: Alignment.center,
-                                                              child: Selector<AdDetailsProvider , int>(
-                                                                  selector: (context, prov) => prov.originalImageIndex,
-                                                                  builder: (context , imageIndex , _) {
-                                                                    return Text("${imageIndex.toString()}/${widget.adDetailsModel.images.length}" , style: const TextStyle(fontSize: 13 , color: Colors.white , fontWeight: FontWeight.w700),);
+                                                              child: Consumer<AdDetailsProvider >(
+                                                                  // selector: (context, prov) => prov.originalImageIndex,
+                                                                  builder: (context , prov , _) {
+                                                                    return Text("${prov.originalImageIndex.toString()}/${widget.adDetailsModel.images.length}" , style: const TextStyle(fontSize: 13 , color: Colors.white , fontWeight: FontWeight.w700),);
                                                                   }
                                                               ),
                                                             ),
@@ -353,8 +324,10 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                                             });
                                       },
                                       imageUrl: widget.adDetailsModel.images[index]['main'],
-                                      adId: widget.adDetailsModel.id.toString()))[index];
-                            }),
+                                      adId: widget.adDetailsModel.id.toString());
+                                });
+                          }
+                        ),
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: Container(
@@ -363,10 +336,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                             height: 24,
                             color: Colors.black.withOpacity(0.3),
                             alignment: Alignment.centerLeft,
-                            child: Selector<AdDetailsProvider , int>(
-                                selector: (context, prov) => prov.originalImageIndex,
-                                builder: (context , imageIndex , _) {
-                                  return Text("${imageIndex.toString()}/${widget.adDetailsModel.images.length}" , style: const TextStyle(fontSize: 13 , color: Colors.white , fontWeight: FontWeight.w700),);
+                            child: Consumer<AdDetailsProvider>(
+                                builder: (context , prov , _) {
+                                  return Text("${prov.imageIndex.toString()}/${widget.adDetailsModel.images.length}" , style: const TextStyle(fontSize: 13 , color: Colors.white , fontWeight: FontWeight.w700),);
                                 }
                             ),
                           ),
@@ -576,14 +548,19 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                           ],
                         ),
                       ),
-                      AnimatedContainer(
-                        margin: EdgeInsets.only(left: context.watch<AdDetailsProvider>().isSummary == false ? MediaQuery.of(context).size.width/2 : 0 , right: context.watch<AdDetailsProvider>().isSummary == true ? MediaQuery.of(context).size.width/2 : 0),
-                        duration: const Duration(milliseconds: 250),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width /2,
-                          height: 1,
-                          color: const Color.fromRGBO(245, 135, 41, 1),
-                        ),
+                      Selector<AdDetailsProvider , bool>(
+                        selector: (_ , prov) => prov.isSummary,
+                        builder: (_ , isSummary , child) {
+                          return AnimatedContainer(
+                            margin: EdgeInsets.only(left: !isSummary ? MediaQuery.of(context).size.width/2 : 0 , right: isSummary ? MediaQuery.of(context).size.width/2 : 0),
+                            duration: const Duration(milliseconds: 250),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width /2,
+                              height: 1,
+                              color: const Color.fromRGBO(245, 135, 41, 1),
+                            ),
+                          );
+                        }
                       ),
 
                       Selector<AdDetailsProvider , bool>(

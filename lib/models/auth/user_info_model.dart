@@ -29,8 +29,8 @@ class UserInfoModel extends HiveObject{
     return UserInfoModel(
         firstName: json['firstname'],
         lastName: json['lastname'],
-        emailAddress: json['talebfadi@gmail.com'],
-        phoneNumber: json['phone'],
+        emailAddress: json['username'],
+        phoneNumber: json['phone'] ?? "",
         token: json['token'],
         key: json['key']
     );

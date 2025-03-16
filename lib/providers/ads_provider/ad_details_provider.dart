@@ -76,7 +76,7 @@ class AdDetailsProvider with ChangeNotifier{
         var extractedData = jsonDecode(response.body);
         AdDetailsModel adDetailsModel = AdDetailsModel.fromJson(extractedData);
         AdDetailsModel temp = listOfAdDetails.firstWhere((element) => element.id == int.parse(adId));
-        temp.images = adDetailsModel.images;
+        temp.images.addAll(adDetailsModel.images.skip(1));
         temp.publicLink = adDetailsModel.publicLink;
         temp.longLink = adDetailsModel.longLink;
         temp.postBy = adDetailsModel.postBy;

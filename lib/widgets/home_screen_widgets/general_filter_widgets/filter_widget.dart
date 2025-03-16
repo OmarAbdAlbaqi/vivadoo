@@ -392,7 +392,7 @@ Widget makeCard(BuildContext context,Map<String , dynamic> make){
       context.read<FilterProvider>().makeLink = make['cat_link'];
       context.read<FilterProvider>().cleanSelected();
       context.read<FilterProvider>().setMakeLabel(make['name']);
-      context.read<FilterProvider>().setCategoryMetaFields(context , makeId: make['id'], method: "add");
+      context.read<FilterProvider>().setCategoryMetaFields(context , makeId: make['id'], clear: false);
       if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
         context.read<FilterProvider>().showAdsCount(context);
       }

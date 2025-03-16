@@ -8,6 +8,7 @@ import 'package:vivadoo/providers/home_providers/filters/filter_provider.dart';
 import 'package:vivadoo/providers/home_providers/filters/location_filter.dart';
 import 'package:vivadoo/providers/home_providers/filters/range_filter_provider.dart';
 import 'package:vivadoo/providers/home_providers/home_search_provider.dart';
+import 'package:vivadoo/providers/messages/messages_provider.dart';
 import 'package:vivadoo/utils/app_navigation.dart';
 import '../providers/my_vivadoo_providers/my_vivadoo_profile_provider.dart';
 import '../providers/post_new_ad_provider/post_new_ad_provider.dart';
@@ -18,8 +19,6 @@ import '../providers/my_vivadoo_providers/auth/forgot_password_provider.dart';
 import '../providers/my_vivadoo_providers/auth/sign_in_provider.dart';
 import '../providers/my_vivadoo_providers/auth/sign_up_provider.dart';
 import '../providers/my_vivadoo_providers/auth/social_media_auth/apple_auth_provider.dart';
-import '../providers/my_vivadoo_providers/auth/social_media_auth/facebook_auth_provider.dart';
-import '../providers/my_vivadoo_providers/auth/social_media_auth/google_auth_provider.dart';
 import '../providers/my_vivadoo_providers/auth/user_info_provider.dart';
 import 'constants.dart';
 import 'providers/post_new_ad_provider/pages_providers/ad_poster_information_provider.dart';
@@ -99,9 +98,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => CategoryAndLocationProvider()),
         ChangeNotifierProvider(create: (context) => NewAdDetailsProvider()),
         ChangeNotifierProvider(create: (context) => HomePageProvider(context)),
-        ChangeNotifierProvider(create: (context) => MyGoogleAuthProvider()),
         ChangeNotifierProvider(create: (context) => MyAppleAuthProvider()),
-        ChangeNotifierProvider(create: (context) => MyFacebookAuthProvider()),
         ChangeNotifierProvider(create: (context) => AdPosterInformationProvider()),
         ChangeNotifierProvider(create: (context) => ForgotPasswordProvider()),
         ChangeNotifierProvider(create: (context) => EditAccountDetailsProvider()),
@@ -111,6 +108,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => RangeFilterProvider()),
         ChangeNotifierProvider(create: (context) => FavoriteProvider()),
         ChangeNotifierProvider(create: (context) => HomeSearchProvider()),
+        ChangeNotifierProvider(create: (context) => MessagesProvider()),
       ],
       child: ValueListenableBuilder(
           valueListenable: HiveStorageManager.hiveBox.listenable(),
@@ -123,7 +121,7 @@ class _MyAppState extends State<MyApp> {
                     WidgetsBinding.instance.addPostFrameCallback((_){
                       List<AdModel> adsList = context.read<AdsProvider>().adsList;
                       context.read<AdDetailsProvider>().setListOfAdDetails(adsList, clearList: true);
-                      context.read<FilterProvider>().resetFilter(context);
+                      context.read<FilterProvider>().clearFilter(context);
                       context.read<FilteredAdsProvider>().setFirstAnimation(false);
                     });
                   }

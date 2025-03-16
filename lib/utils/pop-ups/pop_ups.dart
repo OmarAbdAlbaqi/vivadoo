@@ -430,6 +430,7 @@ class PopUps {
                         context.read<MyVivadooProvider>().changeValue(true);
                         HiveStorageManager.setSignedIn(false);
                         HiveStorageManager.getUserInfoModel().clear();
+                        context.read<MyVivadooProvider>().toolbarHeightValue = 350.0;
                         Navigator.pop(ctx);
                       },
                       child: Container(

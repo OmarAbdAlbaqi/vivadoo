@@ -3,13 +3,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class NavBarProvider with ChangeNotifier{
   int currentPage = 0;
-  bool firstRun = true;
+
   List<Map<String , String>> navBarItems = [];
 
-  setFirstRun(){
-    firstRun = false;
-    notifyListeners();
-  }
+
 
   setCurrentPage(int newPage){
     currentPage = newPage;

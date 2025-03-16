@@ -40,4 +40,9 @@ class MyAppleAuthProvider with ChangeNotifier{
       print("Error: $err");
     }
   }
+
+
+
+
+
 }

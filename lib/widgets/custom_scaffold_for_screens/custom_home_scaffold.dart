@@ -199,7 +199,7 @@ class CustomHomeScaffold extends StatelessWidget {
             actions: [
               GestureDetector(
                 onTap: (){
-                  context.read<FilterProvider>().clearFilter(context);
+                  context.read<FilterProvider>().resetFilter(context);
                 },
                 child: Container(
                   width: 120,

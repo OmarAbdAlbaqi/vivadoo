@@ -10,12 +10,15 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:vivadoo/models/auth/user_info_model.dart';
 import 'package:vivadoo/providers/my_vivadoo_providers/auth/sign_in_provider.dart';
 import 'package:vivadoo/utils/hive_manager.dart';
+import 'package:vivadoo/utils/pop-ups/general_functions.dart';
 
 import '../constants.dart';
 import 'package:http/http.dart' as http;
 
+import '../tsting.dart';
+
 class ApiManager {
-  static const String authority = Constants.authority;
+  final String authority = Constants.authority;
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
   /// Get The Device Id
@@ -129,14 +132,12 @@ class ApiManager {
     return null;
   }
 
-
-
-  static Future<Map<String, dynamic>?> getAdsCount(Map<String, dynamic> params) async {
+   Future<Map<String, dynamic>?> getAdsCount(Map<String, dynamic> params) async {
     const String adsPath = Constants.adsPath;
     try {
-      params["ads_count"] = "1"; // Ensure ads_count is always included
+      params["ads_count"] = "1";
       Uri url = Uri.https(authority, adsPath, params);
-
+      print(url.toString());
       debugPrint("Fetching ads count: $url");
 
       final response = await http.get(url).timeout(const Duration(seconds: 10));
@@ -152,5 +153,147 @@ class ApiManager {
       return null;
     }
   }
+
+  Future<void> listOfDialogs([String page = '1' , String type = 'inbox']) async {
+
+    Map<String, dynamic> params = {
+      'page' : page,
+      'type' : type
+    };
+    Uri url = Uri.https(
+      Constants.authority,
+      Constants.listOfDialogsPath,
+      params
+    );
+    Map<String, String> headers = GeneralFunctions.getHeader(url, "GET");
+    print(headers);
+    try {
+      http.Response response = await http.get(url, headers: headers).timeout(const Duration(seconds: 10));
+      var extractedData = jsonDecode(response.body);
+      if(response.statusCode == 200){
+        print("extracted Data when status is 200 is $extractedData");
+      }else{
+        print("statuc code is not 200 ${response.statusCode}");
+        print(response.reasonPhrase);
+      }
+    } catch(e){}
+  }
+
+  Future<void> startNewDialog(String postId , String message) async {
+    Map<String, String> body = {
+      'id' : postId, //post id
+      'message' : message  //the message
+    };
+    Uri url = Uri.https(
+        Constants.authority,
+        Constants.listOfDialogsPath,
+    );
+    Map<String, String> headers = GeneralFunctions.getHeader(url, "POST");
+    print(headers);
+    try {
+      http.Response response = await http.post(url, headers: headers , body: body).timeout(const Duration(seconds: 10));
+      var extractedData = jsonDecode(response.body);
+      if(response.statusCode == 200){
+        print("extracted Data when status is 200 is $extractedData");
+      }else{
+        print("statuc code is not 200 ${response.statusCode}");
+        print(response.reasonPhrase);
+      }
+    } catch(e){}
+  }
+
+  Future<void> archiveDialog(String chatId) async {
+    Map<String, String> body = {
+      'chat_id' : chatId,
+    };
+    Uri url = Uri.https(
+      Constants.authority,
+      Constants.archiveDialogPath,
+    );
+    Map<String, String> headers = GeneralFunctions.getHeader(url, "POST");
+    print(headers);
+    try {
+      http.Response response = await http.post(url, headers: headers , body: body).timeout(const Duration(seconds: 10));
+      var extractedData = jsonDecode(response.body);
+      if(response.statusCode == 200){
+        print("extracted Data when status is 200 is $extractedData");
+      }else{
+        print("statuc code is not 200 ${response.statusCode}");
+        print(response.reasonPhrase);
+      }
+    } catch(e){}
+  }
+
+  Future<void> postNewMessage(String chatId , String message) async {
+    Map<String, String> body = {
+      'chat_id' : chatId, //post id
+      'message' : message  //the message
+    };
+    Uri url = Uri.https(
+      Constants.authority,
+      Constants.postNewMessagePath,
+    );
+    Map<String, String> headers = GeneralFunctions.getHeader(url, "POST");
+    print(headers);
+    try {
+      http.Response response = await http.post(url, headers: headers , body: body).timeout(const Duration(seconds: 10));
+      var extractedData = jsonDecode(response.body);
+      if(response.statusCode == 200){
+        print("extracted Data when status is 200 is $extractedData");
+      }else{
+        print("statuc code is not 200 ${response.statusCode}");
+        print(response.reasonPhrase);
+      }
+    } catch(e){}
+  }
+
+  Future<void> postNewImageMessage(String chatId , String messageId , String image) async {
+    Map<String, String> body = {
+      'chat_id' : chatId,
+      'message_id' : messageId,
+      'photo' : image
+    };
+    Uri url = Uri.https(
+      Constants.authority,
+      Constants.postNewImageMessagePath,
+    );
+    Map<String, String> headers = GeneralFunctions.getHeader(url, "POST");
+    print(headers);
+    try {
+      http.Response response = await http.post(url, headers: headers , body: body).timeout(const Duration(seconds: 10));
+      var extractedData = jsonDecode(response.body);
+      if(response.statusCode == 200){
+        print("extracted Data when status is 200 is $extractedData");
+      }else{
+        print("statuc code is not 200 ${response.statusCode}");
+        print(response.reasonPhrase);
+      }
+    } catch(e){}
+  }
+
+  Future<void> messagesByDialog(String chatId , String page) async {
+    Map<String, dynamic> params = {
+      'chat_id' : chatId,
+      'page' : page
+    };
+    Uri url = Uri.https(
+        Constants.authority,
+        Constants.messagesByDialogPath,
+        params
+    );
+    Map<String, String> headers = GeneralFunctions.getHeader(url, "GET");
+    print(headers);
+    try {
+      http.Response response = await http.get(url, headers: headers).timeout(const Duration(seconds: 10));
+      var extractedData = jsonDecode(response.body);
+      if(response.statusCode == 200){
+        print("extracted Data when status is 200 is $extractedData");
+      }else{
+        print("statuc code is not 200 ${response.statusCode}");
+        print(response.reasonPhrase);
+      }
+    } catch(e){}
+  }
+
 
 }

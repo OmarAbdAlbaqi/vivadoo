@@ -10,7 +10,6 @@ class Constants{
   static const String signInPath = "en/classifieds/api-secure/auth";
   static const String signUpPath = "en/classifieds/api-secure/signup";
   static const String forgotPasswordPath = "en/classifieds/api-secure/forgot";
-  // static const String facebookAuthPath = "en/classifieds/api-secure/authexternal";
   static const String userAdsListPath = "en/classifieds/api-secure/list";
   static const String editAccountDetailsPath = "en/classifieds/api-secure/save-account";
   static const String changePasswordPath = "en/classifieds/api-secure/save-password";
@@ -19,5 +18,16 @@ class Constants{
   static const String checkEmailActivePath = "en/classifieds/api-secure/username";
   static const String sendCodePath = "en/classifieds/api-secure/send-code";
   static const String loginSocialPath = "en/classifieds/api-secure/authexternal";
+  static const String listOfDialogsPath = "en/classifieds/api-secure/dialogs";
+  static const String startNewDialogPath = "en/classifieds/api-secure/start-dialog";
+  static const String archiveDialogPath = "en/classifieds/api-secure/message-archive";
+  static const String postNewMessagePath = "en/classifieds/api-secure/message-post";
+  static const String postNewImageMessagePath = "en/classifieds/api-secure/message-post-image";
+  static const String messagesByDialogPath = "en/classifieds/api-secure/messages-list";
+
 
 }
+const String CATEGORY_KEY = "category";
+const String SUBCATEGORY_KEY = "subCategory";
+const String CITY_KEY = "city";
+const String MAKEKEY = "make";

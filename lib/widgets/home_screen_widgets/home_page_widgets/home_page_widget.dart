@@ -117,8 +117,8 @@ class HomePageWidget extends StatelessWidget {
                               scrollController: homeProv.scrollController,
                               onTap: (){
                                 context.read<LocationFilterProvider>().location = AppLocalizations.of(context)!.all_over_country;
-                                context.read<FilterProvider>().categoryId = 0;
-                                context.read<FilterProvider>().subCategoryId = 2;
+                                context.read<FilterProvider>().categoryId = 2;
+                                context.read<FilterProvider>().subCategoryId = 0;
                                 context.read<FilterProvider>().setCategoryMetaFields(context);
                                 context.read<FilterProvider>().setFilterParams(
                                     {
@@ -127,7 +127,7 @@ class HomePageWidget extends StatelessWidget {
                                     },
                                     "add");
                                 context.read<FilterProvider>().setCategoryLabel("Real Estate");
-                                context.read<FilterProvider>().getAdsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
+                                context.read<FilterProvider>().showAdsCount(context);
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
                                 context.read<FilterProvider>().saveCurrentState();
                                 context.push('/home/filteredHome');
@@ -152,7 +152,7 @@ class HomePageWidget extends StatelessWidget {
                                   "add",
                                 );
                                 context.read<FilterProvider>().setCategoryLabel("Cars For Sale");
-                                context.read<FilterProvider>().getAdsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
+                                context.read<FilterProvider>().showAdsCount(context);
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
                                 context.read<FilterProvider>().saveCurrentState();
                                 context.push('/home/filteredHome');
@@ -179,7 +179,7 @@ class HomePageWidget extends StatelessWidget {
                                 context.read<FilterProvider>().saveCurrentState();
                                 context.push('/home/filteredHome');
                                 context.read<FilterProvider>().setCategoryLabel("Jobs");
-                                context.read<FilterProvider>().getAdsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
+                                context.read<FilterProvider>().showAdsCount(context);
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
                               },
                               imagePath: "assets/icons/filter_search/search.png",
@@ -204,7 +204,7 @@ class HomePageWidget extends StatelessWidget {
                                 context.read<FilterProvider>().saveCurrentState();
                                 context.push('/home/filteredHome');
                                 context.read<FilterProvider>().setCategoryLabel("For Sale");
-                                context.read<FilterProvider>().getAdsCount(context, temp: true , extraParams: context.read<FilterProvider>().filterParams);
+                                context.read<FilterProvider>().showAdsCount(context);
                                 context.read<FilteredAdsProvider>().getFilteredAds(context );
                               },
                               imagePath: "assets/icons/filter_search/check.png",
@@ -216,7 +216,6 @@ class HomePageWidget extends StatelessWidget {
                               scrollController: homeProv.scrollController,
                               onTap: (){
                                 context.read<LocationFilterProvider>().location = AppLocalizations.of(context)!.all_over_country;
-                                context.read<FilterProvider>().saveCurrentState();
                                 context.go('/home/filterFromHome', extra: {'showDialog': true});
                               },
                               imagePath: "assets/icons/filter_search/more.png",

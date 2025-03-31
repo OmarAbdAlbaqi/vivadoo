@@ -70,7 +70,8 @@ void showCatDialog (BuildContext context){
                   builder: (context , categoryLabel , _){
                     return filterSelector(
                         AppLocalizations.of(context)!.category,
-                        categoryLabel , (){
+                        categoryLabel,
+                            (){
                           showCatDialog(context);
                     });
                   },
@@ -157,7 +158,8 @@ void showCatDialog (BuildContext context){
                       context.pop();
                       HiveStorageManager.hiveBox.put('route', 'FilteredHome');
                     }
-                  }else{
+                  }
+                  else{
                     if(context.mounted){
                       context.pop();
                     }
@@ -389,9 +391,7 @@ Widget showOnlyFeaturedAds(){
 Widget makeCard(BuildContext context,Map<String , dynamic> make){
   return GestureDetector(
     onTap: (){
-      context.read<FilterProvider>().makeLink = make['cat_link'];
-      context.read<FilterProvider>().cleanSelected();
-      context.read<FilterProvider>().setMakeLabel(make['name']);
+      context.read<FilterProvider>().setMake(context, make);
       context.read<FilterProvider>().setCategoryMetaFields(context , makeId: make['id'], clear: false);
       if(HiveStorageManager.getCurrentRoute() != "Category And Location"){
         context.read<FilterProvider>().showAdsCount(context);

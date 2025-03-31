@@ -1,5 +1,3 @@
-
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -13,15 +11,18 @@ import 'package:shimmer/shimmer.dart';
 import 'package:vivadoo/screens/ad_details/favorite_widget.dart';
 import 'package:vivadoo/screens/ad_details/share_button.dart';
 import 'package:vivadoo/screens/ad_details/user_ads_screen.dart';
+import 'package:vivadoo/utils/api_manager.dart';
+import 'package:vivadoo/utils/pop-ups/general_functions.dart';
 import '../../models/ad_details_model.dart';
 import '../../providers/ads_provider/ad_details_provider.dart';
 
 
 import '../../constants.dart';
 class PostDetailsScreen extends StatefulWidget {
-  const PostDetailsScreen({super.key, required this.isFavorite, required this.adDetailsModel,});
+  const PostDetailsScreen({super.key, required this.isFavorite, required this.adDetailsModel, required this.index,});
   final bool isFavorite;
   final AdDetailsModel adDetailsModel;
+  final int index;
 
   @override
   State<PostDetailsScreen> createState() => _PostDetailsScreenState();
@@ -78,11 +79,42 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
 
     return withoutHtmlTags;
   }
+  /// Function to calculate text height dynamically
+  double _calculateTextHeight(BuildContext context, String text, int maxLines) {
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(
+        text: text,
+        style: const TextStyle(fontSize: 16),
+      ),
+      maxLines: maxLines,
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: MediaQuery.of(context).size.width - 20);
+
+    return textPainter.height;
+  }
 
   bool isFavorite = false;
+
+  final Decoration decoration = BoxDecoration(
+    borderRadius: BorderRadius.circular(10),
+    color: const Color(0xffffffff),
+    boxShadow: const [
+      BoxShadow(
+        color: Color(0x33000000),
+        offset: Offset(0, 3),
+        blurRadius: 3,
+        spreadRadius: -3,
+      ),
+      BoxShadow(
+        color: Color(0x33000000),
+        offset: Offset(0, -3),
+        blurRadius: 3,
+        spreadRadius: -3,
+      ),
+    ],
+  );
   @override
   Widget build(BuildContext context) {
-    print("AdDetailsPageREBUILD");
     return Material(
       color: Colors.white,
       child: Stack(
@@ -109,19 +141,15 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                       thickness: 0.5,
                     ),
                   ),
-                  title: Consumer<AdDetailsProvider>(
-                    builder: (_ , prov , child) {
-                      return AnimatedOpacity(
-                        opacity:  prov.titleOpacity,
-                        duration: const Duration(milliseconds: 300),
-                        child: Text(widget.adDetailsModel.title ?? "" ,maxLines: 1,style: const TextStyle(fontSize: 16 , fontWeight: FontWeight.w700 , color: Colors.black , overflow: TextOverflow.ellipsis),),
-                      );
+                  title: Selector<AdDetailsProvider , double>(
+                    selector: (_, prov) => prov.titleOpacity,
+                    builder: (_ , opacity , child) {
+                      return Text(widget.adDetailsModel.title ?? "" ,maxLines: 1,style:  TextStyle(fontSize: 16 , fontWeight: FontWeight.w700 , color: Color.lerp(Colors.transparent, Colors.black, opacity) , overflow: TextOverflow.ellipsis),);
                     }
                   ),
                   leading: Selector<AdDetailsProvider , double>(
                     selector: (_ , prov) => prov.titleOpacity,
                     builder: (_, titleOpacity , child) {
-                      print("back rebuilt");
                       return GestureDetector(
                         onTap: () => context.pop(),
                         child: Icon(Icons.arrow_back_ios_new_outlined , color: Color.lerp(
@@ -142,9 +170,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                     ],
                     background: Stack(
                       children: [
-                        Consumer<AdDetailsProvider>(
-                          builder: (_ , prov , child) {
-
+                        Selector<AdDetailsProvider , List<Map<String , dynamic>>>(
+                          selector: (_ , prov) => prov.listOfAdDetails[widget.index].images,
+                          builder: (_ , images , child) {
                             return PageView.builder(
                                 onPageChanged: (value){
                                   Provider.of<AdDetailsProvider>(context,listen: false).setImageIndex(value);
@@ -323,7 +351,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                                               );
                                             });
                                       },
-                                      imageUrl: widget.adDetailsModel.images[index]['main'],
+                                      imageUrl: images[index]['main'],
                                       adId: widget.adDetailsModel.id.toString());
                                 });
                           }
@@ -351,35 +379,63 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
             },
             body: ListView(
               physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.zero,
+              padding: const EdgeInsets.all(10),
               children: [
 
                 //title price address
                 Container(
                   width: double.infinity,
                   height: 150,
-                  padding: const EdgeInsets.only(left: 16 , top: 20 , bottom: 20),
-                  decoration: const BoxDecoration(
-                    color: Color(0xffffffff),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0x33000000),
-                        offset: Offset(0, 3),
-                        blurRadius: 3,
-                        spreadRadius: -3,
-                      ),
-                    ],
-                  ),
+                  padding: const EdgeInsets.all(8),
+                  decoration: decoration,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text( widget.adDetailsModel.title ?? "null", style: const TextStyle(fontSize: 18 , color: Color(0xff000000) ),),
-                      const SizedBox(height: 25),
+                      Selector<AdDetailsProvider , String?>(
+                        selector: (_ , prov) => prov.listOfAdDetails[widget.index].title,
+                        builder: (_ ,title , child) {
+                          if(title == null || title.isEmpty) {
+                            return Shimmer.fromColors(
+                              baseColor: Colors.grey.withOpacity(0.3),
+                              highlightColor: Colors.white,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 22,
+                                    width: double.infinity,
+                                    margin: const EdgeInsets.only(bottom: 8, right: 60),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(30)
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 22,
+                                    width: double.infinity,
+                                    margin: const EdgeInsets.only(bottom: 8 , right: 160),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(30)
+                                    ),
+                                  ),
+                                ],
+                              )
+                            );
+                          }
+                          return Container(
+                            alignment: const Alignment(-1, 0),
+                              height: 60,
+                              child: Text( widget.adDetailsModel.title ?? "null", style: const TextStyle(fontSize: 18 , color: Color(0xff000000) ),));
+                        }
+                      ),
+                      const SizedBox(height: 15),
                       Text(widget.adDetailsModel.priceFormatted ?? "null" , style: const TextStyle(fontSize: 18 , color: Color(0xff000000) , fontWeight: FontWeight.w700),),
                       const Spacer(),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const Icon(Icons.location_on , color: Colors.orange,),
+                          Image.asset("assets/icons/location_pin.png" , color: Constants.orange, height: 16,),
+                          const SizedBox(width: 4,),
                           Text(widget.adDetailsModel.location ?? "" , style: const TextStyle(color: Color.fromRGBO(245, 102, 1, 1) , fontWeight: FontWeight.w500),)
                         ],
                       ),
@@ -392,34 +448,18 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                 //user card
                 GestureDetector(
                   onTap: (){
-                    Get.to(
-                        () => const UserAdsScreen(),
-                      transition: Transition.native,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut
-                    );
+                    // Get.to(
+                    //     () => const UserAdsScreen(),
+                    //   transition: Transition.native,
+                    //   duration: const Duration(milliseconds: 300),
+                    //   curve: Curves.easeInOut
+                    // );
                   },
                   child: Container(
                     padding: const EdgeInsets.only(left: 8 , right: 8),
                     width: double.infinity,
                     height: 90,
-                    decoration: const BoxDecoration(
-                      color: Color(0xffffffff),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0x33000000),
-                          offset: Offset(0, 3),
-                          blurRadius: 3,
-                          spreadRadius: -3,
-                        ),
-                        BoxShadow(
-                          color: Color(0x33000000),
-                          offset: Offset(0, -3),
-                          blurRadius: 3,
-                          spreadRadius: -3,
-                        ),
-                      ],
-                    ),
+                    decoration: decoration,
                     child:  Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -496,23 +536,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
 
                 //specs
                 Container(
-                  decoration: const BoxDecoration(
-                    color: Color(0xffffffff),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0x33000000),
-                        offset: Offset(0, 3),
-                        blurRadius: 3,
-                        spreadRadius: -3,
-                      ),
-                      BoxShadow(
-                        color: Color(0x33000000),
-                        offset: Offset(0, -3),
-                        blurRadius: 3,
-                        spreadRadius: -3,
-                      ),
-                    ],
-                  ),
+                  decoration: decoration,
                   child: Column(
                     children: [
 
@@ -529,7 +553,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                               },
                               child: Container(
                                   color: Colors.transparent,
-                                  width: MediaQuery.of(context).size.width /2,
+                                  width: MediaQuery.of(context).size.width /2 -16,
                                   height: 40,
                                   alignment: Alignment.center,
                                   child: const Text("Summary", style: TextStyle(color: Color.fromRGBO(133, 133, 133, 1)),)),
@@ -570,32 +594,41 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                           return isSummary ?
 
                               //summary
-                          Consumer<AdDetailsProvider >(
-                            // selector: (context, prov) => prov.maxLine,
+                          Consumer<AdDetailsProvider>(
                             builder: (context, prov, _) {
+                              bool isExpandable = prov.maxLine > 4;
                               return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   AnimatedContainer(
                                     duration: const Duration(milliseconds: 300),
-                                    height: prov.maxLine > 4 ? prov.readMore ? prov.maxLine * 25 : 100 : prov.maxLine * 30,
-                                    padding: const EdgeInsets.fromLTRB(12, 8, 8, 0),
+                                    margin: const EdgeInsets.fromLTRB(8 , 8 , 8 , 0),
+
                                     width: double.infinity,
                                     color: Colors.transparent,
-                                    child: Text(convertHtml(widget.adDetailsModel.description ?? ""))
-                                  ),
-                                  Visibility(
-                                    visible: prov.maxLine > 4,
-                                    child: GestureDetector(
-                                      onTap: (){
-                                        prov.toggleReadMore();
-                                      },
-                                      child: const Text("Read More", style: TextStyle(fontSize: 16 , color: Colors.indigoAccent),),
+                                    height: prov.readMore ? _calculateTextHeight(context, convertHtml(widget.adDetailsModel.description ?? ""), prov.maxLine): _calculateTextHeight(context, convertHtml(widget.adDetailsModel.description ?? ""), 4 ) +4  ,
+                                    child: Text(
+                                      convertHtml(widget.adDetailsModel.description ?? ""),
+                                      maxLines: isExpandable ? (prov.readMore ? null : 4) : prov.maxLine,
+                                      overflow: isExpandable && !prov.readMore ? TextOverflow.ellipsis : TextOverflow.visible,
                                     ),
                                   ),
+                                  if (isExpandable)
+                                    GestureDetector(
+                                      onTap: prov.toggleReadMore,
+                                      child: Padding(
+                                        padding:  EdgeInsets.only(left: 8 , top: prov.readMore ? 16 : 0),
+                                        child: Text(
+                                          prov.readMore ? "Read Less" : "Read More",
+                                          style: const TextStyle(fontSize: 16, color: Colors.indigoAccent),
+                                        ),
+                                      ),
+                                    ),
                                 ],
                               );
-                            }
-                          ):
+                            },
+                          )
+                          :
 
                               //specs
                           ListView.separated(
@@ -634,23 +667,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   width: double.infinity,
                   height: 65,
-                  decoration: const BoxDecoration(
-                    color: Color(0xffffffff),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0x33000000),
-                        offset: Offset(0, 3),
-                        blurRadius: 3,
-                        spreadRadius: -3,
-                      ),
-                      BoxShadow(
-                        color: Color(0x33000000),
-                        offset: Offset(0, -3),
-                        blurRadius: 3,
-                        spreadRadius: -3,
-                      ),
-                    ],
-                  ),
+                  decoration: decoration,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -697,23 +714,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
                   padding: const EdgeInsets.symmetric(horizontal: 12 , vertical: 12),
                   width: double.infinity,
                   height: 88,
-                  decoration: const BoxDecoration(
-                    color: Color(0xffffffff),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0x33000000),
-                        offset: Offset(0, 3),
-                        blurRadius: 3,
-                        spreadRadius: -3,
-                      ),
-                      BoxShadow(
-                        color: Color(0x33000000),
-                        offset: Offset(0, -3),
-                        blurRadius: 3,
-                        spreadRadius: -3,
-                      ),
-                    ],
-                  ),
+                  decoration: decoration,
                   child: Column(
                     children: [
                       Row(
@@ -743,18 +744,60 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> with TickerProvid
           ),
           Align(
             alignment: const Alignment(0.0, 0.9),
-            child: GestureDetector(
-              onTap: (){},
-              child: Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(35),
-                  color: Colors.green,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                if(widget.adDetailsModel.contactByPhone ?? false)
+                GestureDetector(
+                  onTap: (){
+                    GeneralFunctions.contactByPhone(widget.adDetailsModel.contactPhone ?? "");
+                  },
+                  child: Container(
+                    width: 60,
+                    height: 60,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.lightGreen,
+                    ),
+                    alignment: Alignment.center,
+                    child: Image.asset("assets/icons/post_details_icons/phone-call.png" , width: 40,color: Colors.white,),
+                  ),
                 ),
-                alignment: Alignment.center,
-                child: Image.asset("assets/icons/post_details_icons/phone-call.png" , width: 40,color: Colors.white,),
-              ),
+                if(widget.adDetailsModel.contactByMail ?? false)
+                GestureDetector(
+                  onTap: (){
+                    ApiManager().listOfDialogs();
+                    // GeneralFunctions.contactByEmail(email)
+                  },
+                  child: Container(
+                    width: 60,
+                    height: 60,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.lightBlueAccent,
+                    ),
+                    alignment: Alignment.center,
+                    child: Image.asset("assets/icons/post_details_icons/email.png" , width: 40,color: Colors.white,),
+                  ),
+                ),
+                if(widget.adDetailsModel.hasChat ?? false)
+                GestureDetector(
+                  onTap: (){},
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Constants.orange,
+                    ),
+                    alignment: Alignment.center,
+                    child: Image.asset("assets/icons/post_details_icons/chat.png" ,color: Colors.white,),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

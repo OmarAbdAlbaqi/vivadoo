@@ -21,6 +21,9 @@ class AdDetailsProvider with ChangeNotifier{
   int initialPage = 0;
 
 
+  ////////////////////////////////////////////////////////////////////////////////
+
+
 
   toggleReadMore(){
     readMore =! readMore;
@@ -50,7 +53,7 @@ class AdDetailsProvider with ChangeNotifier{
   }
 
   setListOfAdDetails(List<AdModel> ads,{bool clearList = false}){
-    print("set list of ad details has been called");
+    // print("set list of ad details has been called");
     if(clearList == true){
       listOfAdDetails = [];
     }
@@ -59,24 +62,25 @@ class AdDetailsProvider with ChangeNotifier{
 
       listOfAdDetails.add(AdDetailsModel(images: [{"main":element.thumb}], id: element.id, title: element.title, priceFormatted: element.price, location: element.location));
     }
-    print(listOfAdDetails.length);
-    notifyListeners();
+    print(listOfAdDetails);
+    // notifyListeners();
   }
 
 
   Future<void> getAdDetails (BuildContext context,String adId) async {
     Uri url = Uri.https(
-      Constants.authority,
-      Constants.adDetailsPath,
-      {"id": adId}
+        Constants.authority,
+        Constants.adDetailsPath,
+        {"id": adId}
     );
     try {
       http.Response response = await http.get(url).timeout(const Duration(seconds: 10));
       if(response.statusCode == 200){
         var extractedData = jsonDecode(response.body);
         AdDetailsModel adDetailsModel = AdDetailsModel.fromJson(extractedData);
+        int index = listOfAdDetails.indexWhere((element) => element.id == int.parse(adId));
         AdDetailsModel temp = listOfAdDetails.firstWhere((element) => element.id == int.parse(adId));
-        temp.images.addAll(adDetailsModel.images.skip(1));
+        temp.images = adDetailsModel.images;
         temp.publicLink = adDetailsModel.publicLink;
         temp.longLink = adDetailsModel.longLink;
         temp.postBy = adDetailsModel.postBy;
@@ -94,8 +98,8 @@ class AdDetailsProvider with ChangeNotifier{
         temp.userIsPro = adDetailsModel.userIsPro;
         temp.count = adDetailsModel.count;
         temp.since = adDetailsModel.since;
-        int index = listOfAdDetails.indexWhere((element) => element.id == int.parse(adId));
         listOfAdDetails[index] = temp;
+        notifyListeners();
 
       }else{
         Navigator.pop(context.mounted ? navigatorKey.currentState!.overlay!.context : context);
@@ -109,6 +113,13 @@ class AdDetailsProvider with ChangeNotifier{
         PopUps.somethingWentWrong(context);
       }
     }
+    // notifyListeners();
+  }
+
+
+  setImage(int index , List<Map<String, dynamic>> images){
+    images.removeAt(0);
+    listOfAdDetails[index].images.addAll(images);
     notifyListeners();
   }
 }

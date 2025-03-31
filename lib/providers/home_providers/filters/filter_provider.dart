@@ -1,4 +1,4 @@
-import 'dart:convert';
+
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:vivadoo/providers/ads_provider/filtered_ads_provider.dart';
 
-import 'package:http/http.dart' as http;
 import 'package:vivadoo/providers/home_providers/filters/range_filter_provider.dart';
 import 'package:vivadoo/utils/api_manager.dart';
 
@@ -47,22 +46,58 @@ class FilterProvider with ChangeNotifier {
   bool showOnlyFeaturedAds = false;
   List<String> adType = ["Privates", "Professionals"];
 
+  SubCategoryModel? getSubCategoryFromId( FilteredAdsProvider provider){
+    if (subCategoryId != 0) {
+      final category = provider.categoryList.firstWhere(
+            (element) => element.id == categoryId,
+        orElse: () => CategoryModel(id: 0, name: "", subCategoryModel: [], cat_link: '', icon: '', label: '', cat_type: ''),
+      );
+
+      return category.subCategoryModel.firstWhere(
+            (element) => element.id == subCategoryId,
+        orElse: () => SubCategoryModel(id: 0, name: "", children: [], cat_link: '', cat_link_parent: '', parent: 0, color: '', label: ''),
+      );
+    }
+    return null;
+  }
+
   // Reset to previous filter state
   void resetFilter(BuildContext context) {
     // Reset selected parameters from selectedParams (previous state)
     filterParams = Map.from(selectedParams);
+    print("selectedParams $selectedParams");
 
-    // Reset category, sub-category, makes, and other necessary properties
-    makeLabel = "All Makes";
-    categoryId = 0;
-    subCategoryId = 0;
-    categoryLabel = "";
-    categoryMetaFields = [];
-    makesList = [];
-    selectedMetaFields = {};
-    context.read<LocationFilterProvider>().city = "all-cities";
-    context.read<LocationFilterProvider>().location = "All Over Country";
+    final provider = context.read<FilteredAdsProvider>();
+    if (filterParams[SUBCATEGORY_KEY] != null) {
+      final category = provider.categoryList.firstWhere(
+            (element) => element.cat_link== filterParams[CATEGORY_KEY],
+        orElse: () => CategoryModel(id: 0, name: "", subCategoryModel: [], cat_link: '', icon: '', label: '', cat_type: ''),
+      );
+      categoryId = category.id;
 
+       SubCategoryModel subCategoryModel =  category.subCategoryModel.firstWhere(
+            (element) => element.cat_link == filterParams[SUBCATEGORY_KEY],
+        orElse: () => SubCategoryModel(id: 0, name: "", children: [], cat_link: '', cat_link_parent: '', parent: 0, color: '', label: ''),
+      );
+       subCategoryId = subCategoryModel.id;
+       categoryLabel = subCategoryModel.name;
+      makesList = subCategoryModel.children?.isNotEmpty == true ? subCategoryModel.children! : [];
+
+    }
+    else{
+     CategoryModel category =  provider.categoryList.firstWhere(
+           (element) => element.cat_link== filterParams[CATEGORY_KEY],
+       orElse: () => CategoryModel(id: 0, name: "", subCategoryModel: [], cat_link: '', icon: '', label: '', cat_type: ''),
+     );
+     subCategoryId = 0;
+     categoryLabel = category.name;
+    }
+    setCategoryMetaFields(context);
+    if(filterParams.containsKey("make")){
+      if(filterParams.containsKey("make")){
+        makeLabel = makesList.firstWhere((element)=> element['cat_link'] == filterParams['make'])["name"];
+      }
+    }
     notifyListeners();
   }
 
@@ -91,11 +126,10 @@ class FilterProvider with ChangeNotifier {
   }
 
 
-  void test (){}
-
   // Function to save the current state of the filters (for reset)
   void saveCurrentState() {
     selectedParams = Map.from(filterParams); // Save the current state to restore later
+
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -106,31 +140,14 @@ class FilterProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setMakeLabel(String value) {
-    makeLabel = value;
-    notifyListeners();
-  }
-
   void setCategoryMetaFields(BuildContext context, {int? makeId, bool clear = true}) {
+    final provider = context.read<FilteredAdsProvider>();
     if (clear) selectedMetaFields.clear();
     categoryMetaFields = [];
 
     List<MetaFieldsModel> temp = [];
-    final provider = context.read<FilteredAdsProvider>();
 
-    SubCategoryModel? subCategoryModel;
-    if (categoryId != 0) {
-      final category = provider.categoryList.firstWhere(
-            (element) => element.id == categoryId,
-        orElse: () => CategoryModel(id: 0, name: "", subCategoryModel: [], cat_link: '', icon: '', label: '', cat_type: ''),
-      );
-
-      subCategoryModel = category.subCategoryModel.firstWhere(
-            (element) => element.id == subCategoryId,
-        orElse: () => SubCategoryModel(id: 0, name: "", children: [], cat_link: '', cat_link_parent: '', parent: 0, color: '', label: ''),
-      );
-    }
-
+    SubCategoryModel? subCategoryModel = getSubCategoryFromId(provider);
     if (subCategoryModel == null || subCategoryModel.id == 0) return;
 
     categoryLabel = subCategoryModel.name;
@@ -161,7 +178,6 @@ class FilterProvider with ChangeNotifier {
       int orderB = b.categories.isNotEmpty ? (b.categories[0]['orderBy'] ?? 0) : 0;
       return orderA.compareTo(orderB);
     });
-
     categoryMetaFields = temp;
     notifyListeners();
   }
@@ -264,7 +280,7 @@ class FilterProvider with ChangeNotifier {
   }
 
   void multiCheckSelection(BuildContext context, String key, String value, int index) {
-    String formattedKey = "mtfs[$key]";
+    String formattedKey = "mtfs$key";
 
     // Toggle selection
     filterParams.containsKey(formattedKey)
@@ -275,7 +291,6 @@ class FilterProvider with ChangeNotifier {
     if (HiveStorageManager.getCurrentRoute() != "Category And Location") {
       showAdsCount(context);
     }
-
     notifyListeners();
   }
 
@@ -296,13 +311,25 @@ class FilterProvider with ChangeNotifier {
     }
 
     // Debugging (optional, remove in production)
-    debugPrint(filterParams.toString());
+    // debugPrint(filterParams.toString());
 
     // Update ads count if not in "Category And Location" route
     if (HiveStorageManager.getCurrentRoute() != "Category And Location") {
       showAdsCount(context);
     }
 
+    notifyListeners();
+  }
+
+  void setMake(BuildContext context , Map<String , dynamic> make){
+    filterParams.addAll({"make" : make['cat_link']});
+    makeLabel = make['name'];
+    Map<String, dynamic> temp = {};
+    filterParams.forEach((key, value) {
+      temp.addIf(!oldMakesKeys.contains(key), key, value);
+    });
+    filterParams = temp;
+    oldMakesKeys = [];
     notifyListeners();
   }
 
@@ -339,68 +366,25 @@ class FilterProvider with ChangeNotifier {
     tempFilterParams["subCategory"] = subCategoryModel?.cat_link;
 
     // Override subcategory if `makeLink` is set
-    if (makeLink != null && makeLink!.isNotEmpty) {
-      tempFilterParams["subCategory"] = makeLink;
+    if(tempFilterParams.containsKey("make") && filterParams["make"].toString().isNotEmpty){
+      tempFilterParams.removeWhere((key, value) => key == "subCategory");
+      tempFilterParams.addAll({"subCategory": filterParams["make"]});
     }
-
     // Fetch ads count
-    final response = await ApiManager.getAdsCount(tempFilterParams);
+    final response = await ApiManager().getAdsCount(tempFilterParams);
 
     if (response != null) {
       adsCount = AdsCount.fromJson(response);
       notifyListeners();
     } else {
       if (context.mounted) {
+        print(response.toString());
         PopUps.apiError(context, "Failed to fetch ad count");
       }
     }
   }
 
-  //okay hal shi ma b3ref shu bdi fih hon
-  Future<void> getAdsCount(BuildContext context, {bool? temp, Map<String, dynamic>? extraParams}) async {
-    print("getting the ads counts ");
-    Map<String , dynamic> params = {
-      "ads_count" : "1"
-    };
-
-    if(extraParams != null){
-      params.addAll(extraParams);
-    }
-    Uri url = Uri.https(
-        Constants.authority,
-        Constants.adsPath,
-        params
-    );
-    try {
-      http.Response response = await http.get(url).timeout(const Duration(seconds: 10));
-      if(response.statusCode == 200){
-        var extractedData = jsonDecode(response.body);
-        print(extractedData);
-        adsCount = AdsCount.fromJson(extractedData);
-
-      } else {
-        if(context.mounted){
-          PopUps.apiError(context, response.reasonPhrase!);
-        }
-      }
-    } catch (e){
-      print("Error: $e");
-    }
-    notifyListeners();
-  }
-
   ////////////////////////////////////////////////////////////////////////////////////////
-
-
-  //need to check
-  cleanSelected() {
-    Map<String, dynamic> temp = {};
-    filterParams.forEach((key, value) {
-      temp.addIf(!oldMakesKeys.contains(key), key, value);
-    });
-    filterParams = temp;
-    oldMakesKeys = [];
-  }
 
   setFilterParams(Map<String, dynamic> value, String method, {String? keyToRemove}) {
     switch (method) {
@@ -430,6 +414,7 @@ class FilterProvider with ChangeNotifier {
   }
 
   showAds(BuildContext context) async {
+    saveCurrentState();
     String route = HiveStorageManager.hiveBox.get('route');
     if(route != "FilterFromHome"){
       context.read<FilteredAdsProvider>().page = 1;
@@ -453,11 +438,12 @@ class FilterProvider with ChangeNotifier {
     });
 
     //edit the sub category in case the user set make
-    if (makeLink != "" && makeLink != null) {
+    if(filterParams.containsKey("make")){
+      print("has make on show ads");
       filterParams.removeWhere((key, value) => key == "subCategory");
-      filterParams.addAll({"subCategory": makeLink});
+      filterParams.addAll({"subCategory": filterParams["make"]});
+      filterParams.remove("make");
     }
-    saveCurrentState();
     await context.read<FilteredAdsProvider>().getFilteredAds(context);
 
   }
@@ -753,6 +739,6 @@ class FilterProvider with ChangeNotifier {
       tempFilterParams.addAll({"subCategory": makeLink});
     }
 
-    getAdsCount(context, temp: true, extraParams: tempFilterParams);
+    showAdsCount(context);
   }
 }

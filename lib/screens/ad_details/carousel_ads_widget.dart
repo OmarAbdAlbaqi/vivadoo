@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vivadoo/models/ad_details_model.dart';
 import 'package:vivadoo/providers/ads_provider/ad_details_provider.dart';
 import 'package:vivadoo/providers/ads_provider/ads_provider.dart';
 import 'package:vivadoo/screens/ad_details/post_details_screen.dart';
 import 'package:vivadoo/utils/hive_manager.dart';
 
 import '../../providers/home_providers/home_page_provider.dart';
+
 class CarouselAdsWidget extends StatefulWidget {
-  const CarouselAdsWidget({super.key, required this.isFavorite,  required this.initialIndex});
+  const CarouselAdsWidget({super.key, required this.isFavorite, required this.initialIndex});
   final bool isFavorite;
   final int initialIndex;
 
@@ -17,74 +19,63 @@ class CarouselAdsWidget extends StatefulWidget {
 
 class _CarouselAdsWidgetState extends State<CarouselAdsWidget> {
   late PageController controller;
-  double _previousPage = 0;
 
   @override
   void initState() {
     int initialPage = context.read<AdDetailsProvider>().initialPage;
-    controller = PageController(initialPage: initialPage, viewportFraction: 1.01)..addListener(_onPageViewScroll);
+    controller = PageController(initialPage: initialPage, viewportFraction: 1.01);
     super.initState();
   }
+
   @override
   void dispose() {
-    controller.removeListener(_onPageViewScroll);
     controller.dispose();
     super.dispose();
   }
 
-  void _onPageViewScroll() {
-    double currentPage = controller.page!;
-    if (currentPage > _previousPage) {
-      //next page
-
-    } else if (currentPage < _previousPage) {
-      //previous page
-    }
-    _previousPage = currentPage;
-  }
-
-
   @override
   Widget build(BuildContext context) {
-    return Consumer<AdDetailsProvider>(
-      builder: (context, prov, _) {
-        return Scaffold(
-          backgroundColor: Colors.white,
-          body: PageView.builder(
-            itemCount: prov.listOfAdDetails.length,
-            padEnds: true,
-            controller: controller,
-            pageSnapping: true,
-              itemBuilder: (context, index){
-                return AnimatedBuilder(
-                  animation: controller,
-                  builder: (context, child) {
-                    double value = -1;
-                    if (controller.position.haveDimensions) {
-                      value = controller.page! - index;
-                      value = (1 - (value.abs() * 0.15)).clamp(0.0, 1);
-                    }
-                    return Transform(
-                      transform: Matrix4.identity()
-                        ..scale(value)
-                        ..translate(value * 1),
-                      child: PostDetailsScreen(isFavorite: false, adDetailsModel: prov.listOfAdDetails[index]),
-                    );
-                  },
-                );
-              },
-            onPageChanged: (index){
-              String prevRoute = HiveStorageManager.hiveBox.get('prevRoute');
-              context.read<AdDetailsProvider>().getAdDetails(context, prov.listOfAdDetails[index].id.toString());
-              if(index >= prov.listOfAdDetails.length - 3 && prevRoute != "Saved"){
-                if(!context.read<HomePageProvider>().homePageLoading){
-                  context.read<AdsProvider>().getMoreAds(context);
-                }
+    List<AdDetailsModel> listOfAdDetails = context.read<AdDetailsProvider>().listOfAdDetails;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: PageView.builder(
+        itemCount: listOfAdDetails.length,
+        controller: controller,
+        pageSnapping: true,
+        itemBuilder: (context, index) {
+          return AnimatedBuilder(
+            animation: controller,
+            builder: (context, child) {
+              double value = 1;
+              if (controller.position.haveDimensions) {
+                double pageOffset = controller.page ?? controller.initialPage.toDouble();
+                value = (1 - ((pageOffset - index).abs() * 0.1)).clamp(0.9, 1.0);
               }
+
+              return Transform.scale(
+                scale: value,
+                child: child, // ✅ Child is passed to avoid unnecessary rebuilds
+              );
             },
-          ),
-        );
-      }
+            child: PostDetailsScreen(
+              isFavorite: false,
+              adDetailsModel: listOfAdDetails[index],
+              index: index,
+            ),
+          );
+        },
+        onPageChanged: (index) {
+          String prevRoute = HiveStorageManager.hiveBox.get('prevRoute');
+          context.read<AdDetailsProvider>().getAdDetails(context, listOfAdDetails[index].id.toString());
+
+          if (index >= listOfAdDetails.length - 3 && prevRoute != "Saved") {
+            if (!context.read<HomePageProvider>().homePageLoading) {
+              context.read<AdsProvider>().getMoreAds(context);
+            }
+          }
+        },
+      ),
     );
   }
 }

@@ -46,6 +46,7 @@ class FilteredHomePage extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
+                          context.read<FilterProvider>().showAdsCount(context);
                           context.push('/home/filteredHome/filter');
                         },
                         child: Container(
@@ -96,7 +97,7 @@ class FilteredHomePage extends StatelessWidget {
                               const SizedBox(width: 8),
                               Text(AppLocalizations.of(context)!.filters),
                               const SizedBox(width: 8),
-                              CircleAvatar(
+                              const CircleAvatar(
                                 radius: 13,
                                 backgroundColor: Colors.orange,
                                 child: Text(

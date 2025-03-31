@@ -26,7 +26,6 @@ Widget multiSelectionWidget (BuildContext context , MetaFieldsModel metaFieldsMo
               itemBuilder: (context , index){
                 return GestureDetector(
                   onTap: (){
-                    // context.read<FilterProvider>().showAdsCount(context);
                     filter.multiCheckSelection(context,"[${metaFieldsModel.id}][$index]",metaFieldsModel.options[index], index);
                   },
                   child: Row(

@@ -153,6 +153,17 @@ class _MyAppState extends State<MyApp> {
                   }
                   break;
                 }
+                case "FilteredHome" : {
+                if(hiveBox.get('prevRoute') == "Filter"){
+                  print("here i have to reset the filter");
+                  WidgetsBinding.instance.addPostFrameCallback((_){
+                    context.read<FilterProvider>().resetFilter(context);
+                  });
+
+                  // context.read<StepsBarWidgetProvider>().setCurrentIndex(2);
+                }
+                break;
+              }
 
               }
               hiveBox.put('popped', false);

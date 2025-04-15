@@ -32,10 +32,16 @@ class Saved extends StatelessWidget {
                 height: MediaQuery.of(context).size.height - 162,
                 width: double.infinity,
               ),
-              Image.asset("assets/no_data.png"),
-              const Align(
-                alignment: Alignment(0, 0.5),
-                child: Text("Sorry we didn't find any result!", style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w500),),
+              SizedBox(
+                  width: 250,
+                  child: Image.asset("assets/icons/nav_bar_icons/heart_bold.png" , color: Colors.grey.withAlpha(20),fit: BoxFit.fill,)),
+               Align(
+                alignment: const Alignment(0, -0.1),
+                child: Text("Your favorites are empty", textAlign: TextAlign.center,style: TextStyle(fontSize: 22, color: Colors.black.withAlpha(200), fontWeight: FontWeight.w600),),
+              ),
+               Align(
+                alignment: const Alignment(0, 0.1),
+                child:  Text("Tab the heart icon on any ad to make it your favorite!", textAlign: TextAlign.center,style: TextStyle(fontSize: 16, color: Colors.black.withAlpha(200), fontWeight: FontWeight.w500),),
               ),
             ],
           );

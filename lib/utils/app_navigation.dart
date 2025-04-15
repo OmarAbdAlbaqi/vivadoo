@@ -23,6 +23,7 @@ import '../../screens/nav_bar_pages/my_vivadoo.dart';
 import '../../screens/nav_bar_pages/post_new_ad.dart';
 import '../../screens/nav_bar_pages/saved.dart';
 import '../../utils/hive_manager.dart';
+import '../screens/ad_details/user_ads_screen.dart';
 import '../widgets/custom_scaffold_for_screens/custom_home_scaffold.dart';
 import '../widgets/custom_scaffold_for_screens/custom_post_new_ad_scaffold.dart';
 import '../widgets/home_screen_widgets/filtered_home_page_widgets/filtered_home_page.dart';
@@ -65,6 +66,18 @@ class AppNavigation {
           final data = state.extra! as Map<String, dynamic>;
           return CarouselAdsWidget(isFavorite: data['isFavorite'], initialIndex: data['initialIndex']);
         },
+        routes: [
+          //AdDetailsUserPage
+          GoRoute(
+            path: 'adDetailsUserPage',
+            name: 'AdDetailsUserPage',
+            builder: (context, state) {
+              final data = state.extra! as Map<String, dynamic>;
+              // return PreviewAd(isFavorite: data['isFavorite'], adDetailsModel: data['adDetailsModel']);
+              return UserAdsScreen(userProModel: data['ad'],);
+            },
+          ),
+        ]
       ),
       //PreviewAd
       GoRoute(
@@ -93,6 +106,7 @@ class AppNavigation {
                     return CustomHomeScaffold(child: child);
                   },
                   routes: [
+                    //Home
                     GoRoute(
                         name: 'Home',
                         path: '/home',
@@ -100,6 +114,7 @@ class AppNavigation {
                           return const HomePage();
                         },
                         routes: [
+                          //FilteredHome
                           GoRoute(
                               name: "FilteredHome",
                               path: 'filteredHome',
@@ -107,6 +122,7 @@ class AppNavigation {
                                 return const FilteredHomePage();
                               },
                               routes: [
+                                //Filter
                                 GoRoute(
                                     name: "Filter",
                                     path: 'filter',
@@ -114,6 +130,7 @@ class AppNavigation {
                                       return const FilterWidget();
                                     },
                                     routes: [
+                                      //LocationFilterFromFilter
                                       GoRoute(
                                           name: "LocationFilterFromFilter",
                                           path: 'locationFilterFromFilter',
@@ -121,6 +138,7 @@ class AppNavigation {
                                             return const LocationFilterWidget();
                                           },
                                           routes: [
+                                            //SubLocationFilterFromFilter
                                             GoRoute(
                                                 name: "SubLocationFilterFromFilter",
                                                 path: 'subLocationFilterFromFilter',
@@ -132,6 +150,7 @@ class AppNavigation {
                                       ),
                                     ]
                                 ),
+                                //LocationFilterFromHome
                                 GoRoute(
                                     name: "LocationFilterFromHome",
                                     path: 'locationFilterFromHome',
@@ -176,6 +195,7 @@ class AppNavigation {
                                 // ),
                               ]
                           ),
+                          //FilterFromHome
                           GoRoute(
                               name: "FilterFromHome",
                               path: 'filterFromHome',
@@ -184,6 +204,7 @@ class AppNavigation {
                                 return FilterWidget(showCategoryDialog: data?['showDialog']);
                               },
                               routes: [
+                                //LocationFilterFromFilterHome
                                 GoRoute(
                                     name: "LocationFilterFromFilterHome",
                                     path: 'locationFilterFromFilterHome',
@@ -191,6 +212,7 @@ class AppNavigation {
                                       return const LocationFilterWidget();
                                     },
                                     routes: [
+                                      //SubLocationFilterFromFilterHome
                                       GoRoute(
                                           name: "SubLocationFilterFromFilterHome",
                                           path: 'subLocationFilterFromFilterHome',
@@ -387,7 +409,16 @@ class AppNavigation {
                     builder: (context, state) {
                       return Messages(key: state.pageKey);
                     },
-                    routes: const []
+                    routes: [
+                      GoRoute(
+                          path: 'chatScreen',
+                          name: 'Chat Screen',
+                          builder: (context, state) {
+                            final data = state.extra as Map<String, dynamic>?;
+                            return ChatScreen(key: state.pageKey , dialog: data?['dialog'],);
+                          },
+                      ),
+                    ]
                 ),
               ],
             ),
@@ -478,6 +509,9 @@ class MyRouteObserver extends NavigatorObserver {
         break;
         case "TermsOfUse":
         box.put('route', 'MyVivadoo');
+        break;
+      case "Chat Screen":
+        box.put('route', 'Messages');
         break;
     }
     box.put('prevRoute', poppedFrom);

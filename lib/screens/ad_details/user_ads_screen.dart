@@ -1,12 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:vivadoo/models/ad_details_model.dart';
+import 'package:vivadoo/models/user_pro_model.dart';
 import 'package:vivadoo/providers/ads_provider/user_ads_screen_provider.dart';
 
 import '../../widgets/ad_cards/full_width_ad_card.dart';
 class UserAdsScreen extends StatelessWidget {
-  const UserAdsScreen({super.key});
+  const UserAdsScreen({super.key, required this.userProModel});
+  final UserProModel userProModel;
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +29,8 @@ class UserAdsScreen extends StatelessWidget {
                 centerTitle: false,
                 stretch: true,
                 leadingWidth: 65,
-                // title: const Text("Title Text", style: TextStyle(color: Colors.orange),),
                 leading: GestureDetector(
-                  onTap: () => Get.back(),
+                  onTap: () => context.pop(),
                   child: Container(
                     width: 65,
                       color: Colors.transparent,
@@ -36,7 +39,7 @@ class UserAdsScreen extends StatelessWidget {
                 actions: [
                   GestureDetector(
                     onTap: (){},
-                    child: Image.asset("assets/icons/user_ads_icons/paper-plane.png" , height: 30, color: Color(0xFFffffff),),
+                    child: Image.network('' , height: 30, color: Color(0xFFffffff),),
                   ),
                   const SizedBox(width: 6),
                   GestureDetector(

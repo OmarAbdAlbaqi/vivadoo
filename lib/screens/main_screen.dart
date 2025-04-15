@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -7,9 +8,11 @@ import 'package:vivadoo/providers/post_new_ad_provider/steps_bar_widget_provider
 import 'package:vivadoo/providers/home_providers/home_page_provider.dart';
 import 'package:vivadoo/providers/general/nav_bar_provider.dart';
 import 'package:vivadoo/providers/post_new_ad_provider/post_new_ad_provider.dart';
+import 'package:vivadoo/utils/chat_service.dart';
 import 'package:vivadoo/utils/hive_manager.dart';
 
 
+import '../models/auth/user_info_model.dart';
 import '../providers/favorite_providers/favorite_provider.dart';
 import '../providers/general/navigation_shell_provider.dart';
 class MainScreen extends StatefulWidget {
@@ -34,7 +37,12 @@ class _MainScreenState extends State<MainScreen> {
     }else{
       context.read<PostNewAdProvider>().adInProgress = false;
     }
-    print(HiveStorageManager.getFavoriteAds().values.toList().cast<AdModel>().toList());
+    if(HiveStorageManager.signedInNotifier.value){
+      final userInfoBox = HiveStorageManager.getUserInfoModel();
+      String userId = userInfoBox.values.toList().cast<UserInfoModel>()[0].emailAddress;
+      ChatService.updateDialogsInFirestore(userId);
+    }
+
   pageController = PageController(initialPage: 0);
   Future.delayed(const Duration(milliseconds: 500)).then((value) => setState(() {
     containerHeight = 60;
@@ -62,6 +70,7 @@ class _MainScreenState extends State<MainScreen> {
     });
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SizedBox.expand(
         child: widget.navigationShell,
       ),
@@ -78,6 +87,7 @@ class _MainScreenState extends State<MainScreen> {
             "NewAdDetails",
             "PosterInformation",
             "MyVivadooProfile"
+            "Chat Screen"
           ].contains(hiveBox.get('route'));
 
           return SafeArea(
@@ -86,12 +96,12 @@ class _MainScreenState extends State<MainScreen> {
             right: false,
             left: false,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 200),
               height: visible ? containerHeight : 0, // Ensures the bar doesn't collapse
               child: Stack(
                 children: [
                   AnimatedPositioned(
-                    duration: const Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 200),
                     curve: Curves.easeInOut,
                     bottom: visible ? 0 : -containerHeight, // Slide down effect
                     left: 0,
@@ -175,7 +185,7 @@ class _NavBarItemState extends State<NavBarItem> with TickerProviderStateMixin{
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 200),
     );
 
      _animation = Tween<double>(begin: -0.5 , end: 0.4).animate(

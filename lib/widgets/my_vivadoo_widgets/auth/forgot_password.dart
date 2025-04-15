@@ -17,7 +17,7 @@ class ForgotPasswordWidget extends StatelessWidget {
       child: Consumer<ForgotPasswordProvider>(
         builder: (context, forgotPassword, _) {
           return Material(
-            color:  const Color.fromRGBO(235, 236, 247, 1),
+            color:  const Color.fromRGBO(255, 255, 255, 1),
             child: Form(
               autovalidateMode: AutovalidateMode.onUserInteraction,
               key: forgotPassword.formStateForgotPassword,
@@ -29,7 +29,7 @@ class ForgotPasswordWidget extends StatelessWidget {
                     child: Column(
                       children: [
                        Padding(
-                            padding: EdgeInsets.only(top: 15),
+                            padding: const EdgeInsets.only(top: 15),
                             child: Text(AppLocalizations.of(context)!.please_enter_your_email_address_to_reset_your_password)
                         ),
                         const SizedBox(height: 16),

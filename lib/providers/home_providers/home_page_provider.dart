@@ -36,11 +36,11 @@ class HomePageProvider with ChangeNotifier{
       if(scrollController.position.pixels == scrollController.position.maxScrollExtent) {
           if(context.read<AdsProvider>().hasMore){
             if(!homePageLoading){
+              setHomePageLoading(true);
               scrollController.animateTo(
                   duration:  const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  scrollController.position.maxScrollExtent + 100);
-              setHomePageLoading(true);
+                  curve: Curves.linear,
+                  scrollController.position.maxScrollExtent );
               context.read<AdsProvider>().getMoreAds(context).then((_) => setHomePageLoading(false));
             }
           }

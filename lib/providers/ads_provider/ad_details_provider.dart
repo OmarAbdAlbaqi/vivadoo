@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import 'package:vivadoo/main.dart';
 import 'package:vivadoo/models/ad_model.dart';
 import 'package:vivadoo/utils/pop-ups/pop_ups.dart';
@@ -19,11 +18,17 @@ class AdDetailsProvider with ChangeNotifier{
   double titleOpacity = 0;
   bool isSummary = true;
   int initialPage = 0;
+  bool isScrollingUp = false;
 
 
   ////////////////////////////////////////////////////////////////////////////////
 
 
+
+  setIsScrollingUp(bool value){
+    isScrollingUp = value;
+    notifyListeners();
+  }
 
   toggleReadMore(){
     readMore =! readMore;
@@ -62,8 +67,6 @@ class AdDetailsProvider with ChangeNotifier{
 
       listOfAdDetails.add(AdDetailsModel(images: [{"main":element.thumb}], id: element.id, title: element.title, priceFormatted: element.price, location: element.location));
     }
-    print(listOfAdDetails);
-    // notifyListeners();
   }
 
 
@@ -99,8 +102,8 @@ class AdDetailsProvider with ChangeNotifier{
         temp.count = adDetailsModel.count;
         temp.since = adDetailsModel.since;
         listOfAdDetails[index] = temp;
+        print(temp);
         notifyListeners();
-
       }else{
         Navigator.pop(context.mounted ? navigatorKey.currentState!.overlay!.context : context);
         if(context.mounted){

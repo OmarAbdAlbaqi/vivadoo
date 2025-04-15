@@ -15,6 +15,7 @@ import 'package:vivadoo/utils/pop-ups/pop_ups.dart';
 
 import '../../constants.dart';
 import '../../models/auth/user_info_model.dart';
+import '../../utils/pop-ups/general_functions.dart';
 import '../home_providers/filters/filter_provider.dart';
 import '../my_vivadoo_providers/auth/generate_signature.dart';
 final GlobalKey<ScaffoldState> scaffoldKeyPostNewAd = GlobalKey<ScaffoldState>();
@@ -398,15 +399,7 @@ class PostNewAdProvider with ChangeNotifier{
       Constants.authority,
       Constants.postNewAdPath,
     );
-    final userInfoBox = HiveStorageManager.getUserInfoModel();
-    UserInfoModel user = userInfoBox.values.toList().cast<UserInfoModel>()[0];
-    Map<String, String> headers = AppSignature2.generateHeaders(
-      method: 'POST',
-      fullUrl: url.toString(),
-      secretKey: user.key,
-      publicKey: user.token,
-      username: user.emailAddress,
-    );
+    Map<String, String> headers = GeneralFunctions.getHeader(url, "POST");
     print(photosIds.toString());
     Map<String, dynamic> body = {
       'title' : title,
@@ -423,10 +416,7 @@ class PostNewAdProvider with ChangeNotifier{
       'photos' : photos,
       'metafields' : metaields,
     };
-    print(headers);
-    // AppSignature.generateAuthorization(headers, 'POST', url.toString());
     try {
-      print(url);
       http.Response response = await http.post(url, body: body, headers: headers).timeout(const Duration(seconds: 10));
       var extractedData = jsonDecode(response.body);
       print("The response is ${extractedData.toString()}");
@@ -460,10 +450,8 @@ class PostNewAdProvider with ChangeNotifier{
 
   }
 
-
   String verificationCode = "";
   Future<void> verifyPhoneNumber(BuildContext context) async {
-
     String phone = context.read<AdPosterInformationProvider>().phoneController.text;
     print(verificationCode);
     if(verificationCode.length != 4){

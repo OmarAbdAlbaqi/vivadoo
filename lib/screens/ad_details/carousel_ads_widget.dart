@@ -59,8 +59,7 @@ class _CarouselAdsWidgetState extends State<CarouselAdsWidget> {
               );
             },
             child: PostDetailsScreen(
-              isFavorite: false,
-              adDetailsModel: listOfAdDetails[index],
+              isFavorite: HiveStorageManager.getFavoriteAds().values.toList().any((element)=> element.id == listOfAdDetails[index].id),
               index: index,
             ),
           );

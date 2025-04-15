@@ -1,7 +1,11 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:vivadoo/providers/messages/messages_provider.dart';
 import 'package:vivadoo/providers/post_new_ad_provider/post_new_ad_provider.dart';
 import 'package:vivadoo/widgets/post_new_ad_widgets/photos_widget/verification_code_form.dart';
 import '../../providers/my_vivadoo_providers/my_vivadoo_general_provider.dart';
@@ -128,10 +132,10 @@ class PopUps {
         );
       });
 
-  static Future selectPhotoPickType (BuildContext context) => showDialog(
+  static Future selectPhotoPickType (BuildContext context, {bool isMessage = false}) => showDialog(
       context: context,
       builder: (BuildContext ctx){
-        return Dialog(
+        return  Dialog(
           backgroundColor: Colors.transparent,
           child: Container(
             width: 200,
@@ -147,13 +151,24 @@ class PopUps {
               children: [
                 GestureDetector(
                   onTap: () async {
-                    Navigator.pop(ctx);
-                    final List<XFile> images = await ImagePicker().pickMultiImage();
-                    if (images.isNotEmpty) {
-                      if(context.mounted){
-                        context.read<AddPhotosProvider>().setImageList(context,images);
+                    if(isMessage){
+                      final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+                      if(image != null){
+                        if(context.mounted){
+                          final bytes = await image.readAsBytes();
+                          final base64Image = base64Encode(bytes);
+                          context.read<MessagesProvider>().photo = base64Image;
+                        }
+                      }
+                    }else{
+                      final List<XFile> images = await ImagePicker().pickMultiImage();
+                      if (images.isNotEmpty) {
+                        if(context.mounted){
+                          context.read<AddPhotosProvider>().setImageList(context,images);
+                        }
                       }
                     }
+                    Navigator.pop(ctx);
                   },
                   child: Container(
                     padding: const EdgeInsets.only(left: 20),
@@ -176,13 +191,20 @@ class PopUps {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    Navigator.pop(ctx);
-                    final XFile? images = await ImagePicker().pickImage(source: ImageSource.camera);
-                    if (images != null) {
-                      if(context.mounted){
-                        context.read<AddPhotosProvider>().setImageList(context,[images]);
+
+                    final XFile? image = await ImagePicker().pickImage(source: ImageSource.camera);
+                    if (image != null) {
+                      if(isMessage){
+                        if(context.mounted){
+                          context.read<MessagesProvider>().photo =  image.readAsBytes().toString();
+                        }
+                      }else{
+                        if(context.mounted){
+                          context.read<AddPhotosProvider>().setImageList(context,[image]);
+                        }
                       }
                     }
+                    Navigator.pop(ctx);
                   },
                   child: Container(
                     color: Colors.transparent,
@@ -426,11 +448,11 @@ class PopUps {
                   children: [
                     GestureDetector(
                       onTap: (){
+                        ctx.read<MyVivadooProvider>().setToolbarHeightValue(350);
                         context.pushReplacement('/myVivadoo');
                         context.read<MyVivadooProvider>().changeValue(true);
                         HiveStorageManager.setSignedIn(false);
                         HiveStorageManager.getUserInfoModel().clear();
-                        context.read<MyVivadooProvider>().toolbarHeightValue = 350.0;
                         Navigator.pop(ctx);
                       },
                       child: Container(

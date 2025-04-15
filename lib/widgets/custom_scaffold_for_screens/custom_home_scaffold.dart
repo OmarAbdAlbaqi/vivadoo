@@ -111,11 +111,12 @@ class CustomHomeScaffold extends StatelessWidget {
                         onChanged: (value) {
                           _debounce.run(() {
                             search.autoCompleteSearch();
+                            // search.searchFocusNode.unfocus();
                           });
-                          if(search.textEditingController.text.isEmpty){
-                            context.read<FilterProvider>().setFilterParams({}, "delete", keyToRemove: "keywords");
-                            context.read<FilteredAdsProvider>().getFilteredAds(context);
-                          }
+                          // if(search.textEditingController.text.isEmpty){
+                          //   context.read<FilterProvider>().setFilterParams({}, "delete", keyToRemove: "keywords");
+                          //   context.read<FilteredAdsProvider>().getFilteredAds(context);
+                          // }
                         },
                         decoration: InputDecoration(
                             fillColor: Colors.white,

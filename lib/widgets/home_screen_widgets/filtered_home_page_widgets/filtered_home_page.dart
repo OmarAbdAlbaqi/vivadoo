@@ -97,19 +97,21 @@ class FilteredHomePage extends StatelessWidget {
                               const SizedBox(width: 8),
                               Text(AppLocalizations.of(context)!.filters),
                               const SizedBox(width: 8),
-                              const CircleAvatar(
+                               CircleAvatar(
                                 radius: 13,
                                 backgroundColor: Colors.orange,
-                                child: Text(
-                                  "Filter Counter",
-                                  // context
-                                  //     .watch<FilterProvider>()
-                                  //     .filterCounter
-                                  //     .toString(),
-                                  style: const TextStyle(
-                                      color: Color(0xFFffffff),
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600),
+                                child: Selector<FilterProvider , int >(
+                                  selector: (_ , prov) => prov.filterParams.length - 5,
+                                  builder: (_ , counter , child) {
+                                    print(context.read<FilterProvider>().filterParams);
+                                    return Text(
+                                      counter.toString(),
+                                      style: const TextStyle(
+                                          color: Color(0xFFffffff),
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600),
+                                    );
+                                  }
                                 ),
                               ),
                             ],
@@ -571,7 +573,7 @@ class FilteredHomePage extends StatelessWidget {
             Consumer<HomeSearchProvider>(
                 builder: (context, search, _) {
                   return Visibility(
-                    visible: search.searchedResult.isNotEmpty || search.searchFocusNode.hasFocus,
+                    visible: search.searchedResult.isNotEmpty && search.searchFocusNode.hasFocus,
                     child: GestureDetector(
                       onTap: (){
                         search.searchedResult.clear();

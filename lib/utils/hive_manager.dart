@@ -48,7 +48,7 @@ class HiveStorageManager {
       hiveBox.get('route');
 
   static String getCurrentLocal() =>
-      hiveBox.get('locale') ?? "ar";
+      hiveBox.get('locale') ?? "en";
 
   // static String getUserStatus() =>
 

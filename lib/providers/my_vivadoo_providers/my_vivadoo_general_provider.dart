@@ -6,7 +6,10 @@ class MyVivadooProvider with ChangeNotifier{
   double toolbarHeightValue = 350.0;
    Timer? timer;
 
-
+   setToolbarHeightValue(double value){
+     toolbarHeightValue = value;
+     notifyListeners();
+   }
   WidgetStateProperty<Color> getColor(Color color, Color colorPressed) {
     getColor(Set<WidgetState> states) {
       if (states.contains(WidgetState.pressed)) {

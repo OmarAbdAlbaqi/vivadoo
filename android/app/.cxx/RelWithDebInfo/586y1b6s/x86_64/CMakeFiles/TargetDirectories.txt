@@ -1,0 +1,2 @@
+/Users/omar/StudioProjects/vivadoo/android/app/.cxx/RelWithDebInfo/586y1b6s/x86_64/CMakeFiles/edit_cache.dir
+/Users/omar/StudioProjects/vivadoo/android/app/.cxx/RelWithDebInfo/586y1b6s/x86_64/CMakeFiles/rebuild_cache.dir

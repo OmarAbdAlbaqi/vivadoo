@@ -46,6 +46,7 @@ class FilterProvider with ChangeNotifier {
   bool showOnlyFeaturedAds = false;
   List<String> adType = ["Privates", "Professionals"];
 
+
   SubCategoryModel? getSubCategoryFromId( FilteredAdsProvider provider){
     if (subCategoryId != 0) {
       final category = provider.categoryList.firstWhere(

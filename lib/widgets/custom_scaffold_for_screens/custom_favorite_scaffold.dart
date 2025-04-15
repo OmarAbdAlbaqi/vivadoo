@@ -7,35 +7,21 @@ class CustomFavoriteScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(245, 246, 255, 1),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         surfaceTintColor: Colors.white,
-        toolbarHeight:  120,
         backgroundColor: Colors.white,
-        leading: Stack(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              color: const Color.fromRGBO(245, 246, 255, 1),
+            Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: Image.asset("assets/images/logo.png" , width: 100,),
             ),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 60),
-              width: double.infinity,
-              height:  120,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(bottomLeft: Radius.circular( MediaQuery.of(context).size.width / 5 ), bottomRight: Radius.circular( MediaQuery.of(context).size.width / 5 ))
-              ),
-              child: Image.asset(
-                'assets/images/logo.png',
-                width: 200,
-                height: 200,
-              ),
-            ),
+            const SizedBox(width: 8),
+            const Text("Favorites" , style: TextStyle(fontWeight: FontWeight.w600),),
           ],
         ),
-        leadingWidth: double.infinity,
       ),
       body: Column(
         children: [

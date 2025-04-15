@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,7 @@ appInit() async {
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await HiveStorageManager.openHiveBox();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await appInit();
@@ -124,8 +126,13 @@ class _MyAppState extends State<MyApp> {
                       context.read<FilterProvider>().clearFilter(context);
                       context.read<FilteredAdsProvider>().setFirstAnimation(false);
                     });
+                    break;
                   }
-                  break;
+                  if(hiveBox.get('prevRoute') == "Home Page Ad Details"){
+                    context.read<AdDetailsProvider>().readMore = false;
+                    context.read<AdDetailsProvider>().titleOpacity = 0;
+                    break;
+                  }
                 }
                 case "MyVivadoo" : {
                   if(hiveBox.get('prevRoute') == "SignIn" || hiveBox.get('prevRoute') == "SignUp" || hiveBox.get('prevRoute') == "ForgotPassword" || hiveBox.get('prevRoute') == "TermsOfUse" ){
@@ -155,16 +162,17 @@ class _MyAppState extends State<MyApp> {
                 }
                 case "FilteredHome" : {
                 if(hiveBox.get('prevRoute') == "Filter"){
-                  print("here i have to reset the filter");
                   WidgetsBinding.instance.addPostFrameCallback((_){
                     context.read<FilterProvider>().resetFilter(context);
                   });
-
-                  // context.read<StepsBarWidgetProvider>().setCurrentIndex(2);
+                  break;
                 }
-                break;
+                if(hiveBox.get('prevRoute') == "Home Page Ad Details"){
+                  context.read<AdDetailsProvider>().readMore = false;
+                  context.read<AdDetailsProvider>().titleOpacity = 0;
+                  break;
+                }
               }
-
               }
               hiveBox.put('popped', false);
             }

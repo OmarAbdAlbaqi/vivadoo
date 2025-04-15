@@ -48,6 +48,7 @@ class SignUpProvider with ChangeNotifier{
     context.read<MyVivadooProvider>().changeValue(false);
     context.go('/myVivadoo/signIn');
   }
+
   Future<void> signUp(BuildContext context) async {
     setSignUpLoading(true);
     Uri url = Uri.https(
@@ -69,7 +70,6 @@ class SignUpProvider with ChangeNotifier{
         var extractedData = jsonDecode(response.body);
         bool success = extractedData['success'] == 1;
         if(success){
-
           print(extractedData.toString());
         }else{
           if(context.mounted){

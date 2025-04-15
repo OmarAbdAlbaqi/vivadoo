@@ -1,3 +1,5 @@
+import 'package:vivadoo/models/user_pro_model.dart';
+
 class AdDetailsModel {
   final int? id;
   List<Map<String, dynamic>> images;
@@ -22,7 +24,7 @@ class AdDetailsModel {
   int? userIsPro;
   int? count;
   String? since;
-
+  UserProModel? userProModel;
   AdDetailsModel({
     this.id,
     required this.images,
@@ -47,6 +49,7 @@ class AdDetailsModel {
     this.userIsPro,
     this.count,
     this.since,
+    this.userProModel
   });
 
   factory AdDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -73,6 +76,7 @@ class AdDetailsModel {
       userIsPro: json['userIsPro'],
       count: json['count'],
       since: json['since'] ?? "",
+      userProModel: UserProModel.fromJson(json['userPro'] ?? {}),
     );
   }
 

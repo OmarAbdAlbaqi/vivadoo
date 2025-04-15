@@ -79,13 +79,11 @@ class FilteredAdsProvider with ChangeNotifier{
     setLoading(true);
     filteredAdsList = [];
     final params = context.read<FilterProvider>().filterParams;
-    print(params);
     Uri url = Uri.https(
         Constants.authority,
         Constants.adsPath,
         params
     );
-    print(url);
     try {
       http.Response response = await http.get(url).timeout(const Duration(seconds: 10));
       if(response.statusCode == 200){

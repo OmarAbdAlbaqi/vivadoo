@@ -22,7 +22,6 @@ class HomePageWidget extends StatelessWidget {
   const HomePageWidget({super.key});
   @override
   Widget build(BuildContext context) {
-    bool firstAnimate = context.watch<HomePageProvider>().firstAnimated;
     return Consumer<HomePageProvider>(
       builder: (context, homeProv, _) {
         return Stack(
@@ -46,45 +45,57 @@ class HomePageWidget extends StatelessWidget {
               child: ListView(
                 controller: homeProv.scrollController,
                 children: [
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 700),
-                    height: homeProv.isScrollingUp ? 0 : 80,),
+                  const SizedBox(
+                    height:  72,),
                   Selector<AdsProvider , List<AdModel>>(
                       selector: (context , prov) => prov.adsList,
                       builder: (context , ads , _) {
                         return AnimationLimiter(
                           child: GridView.builder(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: ads.length,
-                              shrinkWrap: true,
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2 , mainAxisSpacing: 12 , childAspectRatio: 0.8),
-                              itemBuilder: (context , index){
-                                return AnimationConfiguration.synchronized(
-                                  duration: const Duration(seconds: 500),
-                                  child: SlideAnimation(
-                                    duration: const Duration(milliseconds: 500),
-                                    verticalOffset: firstAnimate ? 120 : 0,
-                                    child: AdCardForHomePage(
-                                      adModel: ads[index],
-                                      index: index,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: ads.length,
+                            shrinkWrap: true,
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 12,
+                              childAspectRatio: 0.8,
+                            ),
+                            itemBuilder: (context, index) {
+                              return AnimationConfiguration.staggeredGrid(
+                                position: index,
+                                columnCount: 2,
+                                duration: const Duration(milliseconds: 300), // Fast and smooth
+                                child: SlideAnimation(
+                                  verticalOffset: 50, // Less jumpy than 120
+                                  curve: Curves.fastOutSlowIn, // Smooth in and out
+                                  child: FadeInAnimation(
+                                    duration: const Duration(milliseconds: 300),
+                                    child: ScaleAnimation(
+                                      scale: 0.95,
+                                      duration: const Duration(milliseconds: 300),
+                                      child: AdCardForHomePage(
+                                        adModel: ads[index],
+                                        index: index,
+                                      ),
                                     ),
                                   ),
-                                );
-                              }),
+                                ),
+                              );
+                            },
+                          ),
                         );
+
                       }
                   ),
-                  Visibility(
-                      visible: homeProv.homePageLoading,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        width: double.infinity,
-                        height: 64,
-                        alignment: Alignment.center,
-                        child: const CupertinoActivityIndicator(
-                        ),
-                      )),
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    width: double.infinity,
+                    height: 64,
+                    alignment: Alignment.center,
+                    child: const CupertinoActivityIndicator(
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -230,6 +241,8 @@ class HomePageWidget extends StatelessWidget {
               },
             ),
 
+
+
             Consumer<HomeSearchProvider>(
               builder: (context, search, _) {
                 return Visibility(
@@ -238,7 +251,6 @@ class HomePageWidget extends StatelessWidget {
                     onTap: (){
                       search.searchedResult.clear();
                       search.searchFocusNode.unfocus();
-
                     },
                     child: Container(
                       width: double.infinity,

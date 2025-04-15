@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
@@ -68,7 +69,7 @@ class SignInProvider with ChangeNotifier{
           if(context.mounted){
             context.read<UserInfoProvider>().setUserInfo(userInfoModel.firstName, userInfoModel.lastName, userInfoModel.emailAddress, userInfoModel.phoneNumber, userInfoModel.token, userInfoModel.key);
             FirebaseService().addUser(userInfoModel.key, "${userInfoModel.firstName} ${userInfoModel.lastName}");
-            context.go('/myVivadoo/myVivadooProfile');
+            context.go('/myVivadoo');
           }
         }else{
           if(context.mounted){
@@ -96,16 +97,24 @@ class SignInProvider with ChangeNotifier{
     switch(provider){
       case SocialLoginProvider.google : {
             String? accessToken = await apiManager.signInWithGoogle();
-          if(accessToken != null){
+            if(accessToken != null){
+
+            print("Access Token For Google is $accessToken");
             userInfoModel = await apiManager.socialSignIn(accessToken, provider, true);
+            if(userInfoModel == null){
+              ApiManager().socialSignOut(provider);
+            }
+          }else{
+            PopUps.apiError(context, "Error getting Google Access Token");
           }
       }
       case SocialLoginProvider.facebook : {
         bool appTrackingTransparency = await apiManager.checkAppTransparency();
-        if(appTrackingTransparency){
+        if(Platform.isAndroid || (Platform.isIOS && appTrackingTransparency)){
           String? accessToken = await apiManager.signInWithFacebook();
           if(accessToken != null){
-            userInfoModel = await apiManager.socialSignIn(accessToken, provider, true);
+            print("Access Token For Facebook is $accessToken");
+            // userInfoModel = await apiManager.socialSignIn(accessToken, provider, true);
           }
         }
         }
